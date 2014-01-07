@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">                        
+                        <div align="left" style="vertical-align: middle; min-height: 40px">
+                            <h:outputText value="Groups" style="font-size: 22pt" />
+                            <hr size="3" noshade="true"/>
+                        </div>
+                        <p:dataTable id="groupBrowserTable"
+                                     var="group"
+                                     value="#{backingBean.groups}"
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     rows="25"
+                                     rowKey="#{group.name}"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     selection="#{backingBean.selectedGroup}"
+                                     selectionMode="single">
+                            <p:ajax event="rowSelect" listener="#{backingBean.onGroupsRowSelectNavigate}"/>
+                            <f:facet name="header">
+                                <div align="left" style="vertical-align: middle">
+                                    <h:outputText value="Groups" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right">
+                                        <p:menuitem value="New"  url="/user/create-group.xhtml"  />
+                                    </p:menuButton>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Group name" 
+                                      filterBy="#{group.name}" 
+                                      filterMatchMode="contains" >
+                                <h:outputText value="#{group.name}" />
+                            </p:column>
+                            <p:column headerText="Leader">
+                                <h:outputText value="#{group.leaderLoginName}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

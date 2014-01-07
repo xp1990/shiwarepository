@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateUser}" >
+                    <h:outputText value="Only admins are allowed to be here"/>
+                </p:outputPanel>
+
+                <h:form id="mainForm" rendered="#{backingBean.canCreateUser}">                                        
+                    <h1>Domains</h1>                                                            
+                    <p:treeTable id="domainsTree"
+                                 value="#{backingBean.getDomainContext().getDomainsTreeNode()}"
+                                 var="domainObj">
+                        <p:column>
+                            <f:facet name="header">Name</f:facet>
+                            <h:outputText value="#{domainObj}"/>
+                        </p:column>
+
+                        <p:column>                 
+                            <f:facet name="header">Action</f:facet>    
+                           
+                            <p:commandButton action="#{backingBean.getDomainContext().setSelectedDomain(domainObj)}"
+                                             oncomplete="deleteDomainDialog.show();"
+                                             update="mainForm:deleteDomainPanel"
+                                             value="Delete"
+                                             ajax="true"/>
+                        </p:column>
+                    </p:treeTable>                                        
+
+                    <h2>Create new domain / subdomain(s)</h2>                                                            
+                    
+                    <h:panelGrid columns="2"  width="100%">
+                        <p:column>
+                            <h:outputText value="Domain:"/>
+                            <p:inputText value="#{backingBean.getDomainContext().newDomain}"/>
+                            <p:commandButton action="#{backingBean.getDomainContext().createNewDomain}"
+                                             ajax="true"
+                                             update="domainsTree, growl, jsonContent"
+                                             value="Add"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="Subdomain(s):"/>
+                            <p:inputText value="#{backingBean.getDomainContext().newSubdomains}"
+                                         title="Use ';' to create multiple subdomains"/>
+
+                            <p:commandButton action="#{backingBean.getDomainContext().createNewSubdomains}"
+                                             ajax="true"
+                                             update="domainsTree, growl, jsonContent"
+                                             value="Add"/>
+                        </p:column>
+                    </h:panelGrid>
+                    
+                    <p:commandButton ajax="true"
+                                     onclick="JSONdialog.show()"
+                                     value="Show JSON"
+                                     styleClass="justifyLeft"/>
+                    
+                    <p:dialog widgetVar="JSONdialog" modal="true">
+                        <h:outputText id="jsonContent"
+                                      value="#{backingBean.getDomainContext().domainHandler.jsonToString()}" 
+                                      styleClass="justifyLeft"/>
+                        <br/>
+                        <p:commandButton action="#{backingBean.getDomainContext().createNewSubdomains}"
+                                             ajax="false"
+                                             onclick="JSONdialog.hide()"
+                                             value="OK"/>
+                    </p:dialog>                    
+                    
+                    <p:dialog id="domainDialogId"
+                              header="Delete Domain" 
+                              showEffect="fade" 
+                              widgetVar="deleteDomainDialog">
+                                <p:outputPanel id="deleteDomainPanel">
+                                    <h:outputText value="Are you sure you want to delete '#{backingBean.getDomainContext().getSelectedDomain()}'?" />
+                                </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Yes" 
+                                                         action="#{backingBean.getDomainContext().deleteDomain(backingBean.getDomainContext().getSelectedDomain())}"                                                         
+                                                         ajax="false"/>
+                                        <p:commandButton value="No"                                                          
+                                                         onclick="deleteDomainDialog.hide()"/>
+                                    </div>
+
+                            </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

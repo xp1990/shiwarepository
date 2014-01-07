@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadImpAttribute}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadImpAttribute}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="#{backingBean.selectedImp.appName} / #{backingBean.selectedImp.version} (#{backingBean.selectedImp.platformName}) / #{backingBean.selectedImpAttr.name}" style="font-size: 22pt" />
+                        <p:menuButton value="Actions" style="float: right">
+                            <p:menuitem value="Delete" onclick="deleteImpAttrDialogWidget.show()" rendered="#{backingBean.canDeleteImpAttribute}" />
+                        </p:menuButton>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                        <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:outputText value="Name:" />
+                            <h:outputText id="editImpAttrName"
+                                         value="#{backingBean.selectedImpAttr.name}"
+                                         style="width: auto"/>
+                            <h:outputText value="Value:" />
+                                <h:inputTextarea id="editImpAttrValue"
+                                                 value="#{backingBean.selectedImpAttr.value}"
+                                                 required="true"
+                                                 label="Attribute value"
+                                                 readonly="#{!backingBean.canUpdateImpAttribute}"
+                                                 disabled="#{!backingBean.canUpdateImpAttribute}"
+                                                 style="width: auto"
+                                                 cols="90"
+                                                 rows="10"
+                                                 title="This is an optional field and must be less than 5000 characters long">
+                                <f:validateLength maximum="5000"/>
+                            </h:inputTextarea>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Save" action="#{backingBean.updateImpAttribute}" update="growl" disabled="#{!backingBean.canUpdateImpAttribute}" />
+                        </div>
+                        <p:message for="editImpAttrName" />
+                        <p:message for="editImpAttrValue" />
+                    </p:panel>
+                    <p:dialog id="deleteImpAttrDialog"
+                              widgetVar="deleteImpAttrDialogWidget"
+                              modal="true"
+                              header="Delete attribute?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this attribute?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteImpAttrDialogWidget.hide()" action="#{backingBean.deleteImpAttribute}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteImpAttrDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

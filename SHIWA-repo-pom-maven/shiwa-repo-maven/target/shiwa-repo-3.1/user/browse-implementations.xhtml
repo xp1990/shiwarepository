@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">
+                        <p:tab title="Implementations">
+                            <div align="left">
+                                <p:panel header="Filters" toggleable="true" collapsed="true" >
+                                    <div style="max-width: 400px" align="right">
+                                        <h:panelGrid columns="3" cellpadding="4" style="width:100%" columnClasses="justifyRight,justifyLeft" >
+                                            <h:outputText value="Attribute name:"/>
+                                            <p:autoComplete id="editAppOwner"
+                                                         value="#{backingBean.impAttrNameFilter}"
+                                                         title="Use this field to filter implementations based on their attribute names"
+                                                         completeMethod="#{backingBean.completeImpAttrName}" />
+                                            <h:outputText value=" "/>
+                                            <h:outputText value="Attribute value:"/>
+                                            <h:inputText id="AttributeValueFilter"
+                                                         value="#{backingBean.impAttrValueFilter}"
+                                                         required="false"
+                                                         label="Name"
+                                                         readonly="false"
+                                                         style="width: auto"
+                                                         title="Use this field to filter implementations based on their attribute values">
+                                                <f:validateLength maximum="500"/>
+                                            </h:inputText>
+                                            <p:commandButton update="impBrowserTable" value="update"/>
+                                        </h:panelGrid>
+                                    </div>
+                                </p:panel>
+                            </div>
+
+                            <p:dataTable id="impBrowserTable"
+                                     var="appImp"
+                                     value="#{backingBean.implementations}"
+                                     selection="#{backingBean.selectedImp}"
+                                     rowKey="#{appImp.appName}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">
+                                <p:ajax event="rowSelect" listener="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate}"/>
+                                <f:facet name="header">
+                                    <div align="right">
+                                        <h:outputText value="Implementations" style="font-size: 20pt"/>
+                                    </div>
+                                </f:facet>
+                                <p:column sortBy="#{appImp.appName}" filterBy="#{appImp.appName}">
+                                    <f:facet name="header">Workflow</f:facet>
+                                    <h:outputText value="#{appImp.appName}" />
+                                </p:column>
+                                <p:column sortBy="#{appImp.platformName}" filterBy="#{appImp.platformName}">
+                                    <f:facet name="header">Engine</f:facet>
+                                    <h:outputText value="#{appImp.platformName}" />
+                                </p:column>
+                                <p:column sortBy="#{appImp.version}" filterBy="#{appImp.version}">
+                                    <f:facet name="header">Version</f:facet>
+                                    <h:outputText value="#{appImp.version}" />
+                                </p:column>
+                                <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
+                                    <h:outputText value="#{appImp.statusFriendlyName}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

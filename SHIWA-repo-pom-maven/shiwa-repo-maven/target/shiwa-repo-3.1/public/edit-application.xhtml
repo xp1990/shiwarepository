@@ -1,0 +1,721 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <f:metadata>
+            <f:viewParam name="appid" value="#{backingBean.applicationID}" required="false"/>
+        </f:metadata>
+
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadApplication}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadApplication}" prependId="false">
+
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <table width="100%">
+                            <tr><td>
+                                <h:outputText value="Selected workflow: " style="font-size: 14pt" />
+                                <h:outputText id="selectedWorkflowName" value="#{backingBean.selectedApp.name}" style="font-size: 14pt" />
+                            </td><td>
+                                <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canDeleteApplication}">
+                                    <p:menuitem value="Delete" onclick="deleteAppDialogWidget.show();" icon="ui-icon ui-icon-close" rendered="#{backingBean.canDeleteApplication}"/>
+                                </p:menuButton>
+                            </td></tr>
+                        </table>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="editAppDetails">
+                        <p:tab title="Details">
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="ID:"/>
+                                <h:outputText value="#{backingBean.selectedApp.id}"/>
+                                <h:outputText value="Description:" style="width: 13ex"/>
+                                <h:inputTextarea id="editAppDescription"
+                                                 value="#{backingBean.selectedApp.description}"
+                                                 readonly="#{!backingBean.canUpdateAppDetails}"
+                                                 disabled="#{!backingBean.canUpdateAppDetails}"
+                                                 required="true"
+                                                 label="Description"
+                                                 style="width: 100%"
+                                                 rows="10"
+                                                 title="This is an optional field and must be less than 5000 characters long">
+                                    <f:validateLength minimum="0" maximum="5000"/>
+                                </h:inputTextarea>
+                            </h:panelGrid>
+                            <p:message for="editAppDescription" />
+                            <div align="right">
+                                <p:commandButton value="Save"
+                                                 action="#{backingBean.updateAppDetails}"
+                                                 update="growl"
+                                                 rendered="#{backingBean.canUpdateAppDetails}" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="Owner">
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Owner:" />
+                                <p:autoComplete id="editAppOwner"
+                                                forceSelection="true"
+                                                value="#{backingBean.selectedApp.ownerLoginName}"
+                                                readonly="#{!backingBean.canChangeAppOwner}"
+                                                disabled="#{!backingBean.canChangeAppOwner}"
+                                                completeMethod="#{backingBean.completeAppOwnerName}" />
+                            </h:panelGrid>
+                            <p:message for="editAppOwner" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save"
+                                                 action="#{backingBean.changeAppOwner}"
+                                                 disabled="#{!backingBean.canChangeAppOwner}"
+                                                 update="growl"/>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Access">
+                            <p:fieldset legend="Access rights">
+                                <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                    <h:outputText value="Group name:" />
+                                    <p:autoComplete id="editAppGroup"
+                                                    forceSelection="true"
+                                                    value="#{backingBean.selectedApp.groupName}"
+                                                    readonly="#{!backingBean.canUpdateAppDetails}"
+                                                    disabled="#{!backingBean.canUpdateAppDetails}"
+                                                    completeMethod="#{backingBean.completeNewAppGroupName}"/>
+                                </h:panelGrid>
+                                <h:panelGrid  id="accessRightsPanel" columns="4" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft,justifyLeft,justifyLeft">
+                                    <h:outputText value="" />
+                                    <h:outputText value="Read" />
+                                    <h:outputText value="Download" />
+                                    <h:outputText value="Modify" />
+                                    <h:outputText value="Group:" />
+                                    <h:selectBooleanCheckbox id="editAppGroupRead"
+                                                             title="groupReadCheckbox"
+                                                             value="#{backingBean.selectedApp.groupRead}"
+                                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                                             disabled="#{!backingBean.canUpdateAppDetails}"/>
+                                    <h:selectBooleanCheckbox id="editAppGroupDownload"
+                                                             title="groupDownloadCheckbox"
+                                                             value="#{backingBean.selectedApp.groupDownload}"
+                                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                                             disabled="#{!backingBean.canUpdateAppDetails}"/>
+                                    <h:selectBooleanCheckbox id="editAppGroupModify"
+                                                             title="groupModifyCheckbox"
+                                                             value="#{backingBean.selectedApp.groupModify}"
+                                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                                             disabled="#{!backingBean.canUpdateAppDetails}"/>
+
+                                    <h:outputText value="Others:" />
+                                    <h:selectBooleanCheckbox id="editAppOthersRead"
+                                                             title="othersReadCheckbox"
+                                                             value="#{backingBean.selectedApp.othersRead}"
+                                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                                             disabled="#{!backingBean.canUpdateAppDetails}"/>
+                                    <h:selectBooleanCheckbox id="editAppOthersDownload"
+                                                             title="othersDownloadCheckbox"
+                                                             value="#{backingBean.selectedApp.othersDownload}"
+                                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                                             disabled="#{!backingBean.canUpdateAppDetails}"/>
+                                    <h:outputText value="" />
+                                </h:panelGrid>
+                                <br/>
+                                <div align="left">
+                                    <h:outputText rendered="#{backingBean.canUpdateAppDetails}"
+                                        value="Please make sure that the provided data is correct. Public visibility means the workflow is publicly available to guest users as well. " />
+                                </div>
+                            </p:fieldset>
+                            <br/>
+
+                            <p:fieldset legend="Visibility" >
+                                <div align="left">
+                                    <h:panelGrid columns="2" cellpadding="4" width="33%" columnClasses="justifyRight,justifyLeft">
+                                        <h:outputText value="Public:" />
+                                        <h:selectBooleanCheckbox id="editAppPublished"
+                                                                 title="Make workflow public."
+                                                                 value="#{backingBean.selectedApp.published}"
+                                                                 readonly="#{!backingBean.canUpdateAppDetails}"
+                                                                 disabled="#{!backingBean.canUpdateAppDetails}"/>
+                                    </h:panelGrid>
+                                </div>
+                            </p:fieldset>
+                            <br/>
+
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save"
+                                                 action="#{backingBean.updateAppAccess}"
+                                                 disabled="#{!backingBean.canUpdateAppDetails}"
+                                                 ajax="true"
+                                                 update="growl, accessRightsPanel" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="Attributes">
+                            <div align="left" style="vertical-align: middle">
+                                <h:outputText value="Attributes" style="font-size: 22pt"/>
+                                <p:menuButton value="Actions" style="float: right">
+                                    <p:menuitem value="Expand/Colapse" update="growl" ajax="false" action="#{backingBean.appAttrTree.expandColapse}"/>
+                                    <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadApplicationAttributeTree}"/>
+                                    <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedApplication}" rendered="#{backingBean.canCreateAppAttributes}"/>
+                                </p:menuButton>
+                                <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedApplication}" rendered="#{backingBean.canCreateAppAttributes}" style="float: right"/>
+                            </div>
+                            <p:treeTable id="appAttrTreeTable"
+                                         value="#{backingBean.appAttrTree.root}"
+                                         var="node">
+                                <p:column>
+                                        <f:facet name="header">
+                                                Name
+                                        </f:facet>
+                                        <h:outputText value="#{node.name}" />
+                                </p:column>
+                                <p:column>
+                                        <f:facet name="header">
+                                                Value
+                                        </f:facet>
+                                        <h:outputText value="#{node.value}" />
+                                </p:column>
+
+
+                                <p:column rendered="#{backingBean.canCreateAppAttributes or backingBean.canDownloadAppFiles}" >
+                                        <f:facet name="header">
+                                                Actions
+                                        </f:facet>
+                                    <p:commandLink rendered="#{backingBean.doesAppFileExist(node) and backingBean.canDownloadAppFiles}"
+                                                   title="click to download item">
+                                        <a href="../download?appid=#{backingBean.selectedApp.id}&amp;filename=#{node.value}">
+                                            Download
+                                        </a>
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canAddPort(node) and backingBean.canCreateAppAttributes}"
+                                                   update="addPortPanel dialog"
+                                                   oncomplete="addPortDialog.show();"
+                                                   title="click to add a port"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canAddConfig(node) and backingBean.canCreateAppAttributes}"
+                                                   update="addConfigPanel dialog"
+                                                   oncomplete="addConfigDialog.show();"
+                                                   title="click to add a dataset"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canAddPortToConfig(node) and backingBean.canCreateAppAttributes}"
+                                                   update="addPortToConfigPanel dialog"
+                                                   oncomplete="addPortToConfigDialog.show();"
+                                                   title="click to add a port to the dataset"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+                                    </p:commandLink>
+
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canEdit(node) and backingBean.canCreateAppAttributes
+                                                               and not backingBean.appAttrTree.isDomainOrSubdomain(node)}"
+                                                   oncomplete="editValueDialog.show();"
+                                                   title="click to edit value"
+                                                   update="editValuePanel dialog"
+                                                   value=" Edit ">
+
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+
+                                    </p:commandLink>
+
+                                    <h:outputText value="Please specify! "
+                                                  rendered="#{backingBean.appAttrTree.isDomain(node)
+                                                               and backingBean.appAttrTree.canEdit(node)
+                                                               and backingBean.canCreateAppAttributes
+                                                               and (empty node or empty node.value)}"
+                                                  style="color:red"/>
+
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.isDomainOrSubdomain(node)
+                                                               and backingBean.appAttrTree.canEdit(node)
+                                                               and backingBean.canCreateAppAttributes}"
+                                                   oncomplete="editDomainDialog.show();"
+                                                   title="click to edit value"
+                                                   update="editDomainPanel dialog"
+                                                   value=" Edit ">
+
+                                                   <f:setPropertyActionListener value="#{node}"
+                                                                                target="#{backingBean.appAttrTree.selectedNode}" />
+
+                                    </p:commandLink>
+
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canEditDatatype(node) and backingBean.canCreateAppAttributes}"
+                                                   oncomplete="editDatatypeDialog.show();"
+                                                   title="click to edit datatype"
+                                                   update="editDatatypePanel dialog"
+                                                   value=" Edit ">
+                                                <f:setPropertyActionListener value="#{backingBean.appAttrTree.processDataType(node)}"
+                                                                             target="#{backingBean.appAttrTree.dataTypeManager}" />
+
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canEditConf(node) and backingBean.canCreateAppAttributes}"
+                                                   oncomplete="editValueDialog.show();"
+                                                   title="click to edit configuration"
+                                                   update="editValuePanel dialog"
+                                                   value=" Edit ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.appAttrTree.canRemove(node) and backingBean.canCreateAppAttributes}"
+                                                   oncomplete="removeItemDialog.show();"
+                                                   title="click to remove item"
+                                                   update="removeItemPanel dialog"
+                                                   value=" Remove ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.appAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                </p:column>
+                            </p:treeTable>
+                        </p:tab>
+                        <p:tab title="Files" rendered="#{!backingBean.canDownloadAppFiles}">
+                            <p:dataTable id="appFileTableNoDownload"
+                                         value="#{backingBean.filesOfSelectedApplication}"
+                                         selection="#{backingBean.selectedAppSelectedFiles}"
+                                         var="appFile"
+                                         paginator="true"
+                                         rowKey="#{appFile.pathName}"
+                                         paginatorPosition="top"
+                                         paginatorAlwaysVisible="true"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Files" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}" >
+                                            <p:menuitem value="Upload"
+                                                        onclick="uploadAppFilesDialogWidget.show();"
+                                                        update="growl,appFileTable"
+                                                        rendered="#{backingBean.canUploadAppFile}"/>
+                                            <p:menuitem value="Delete"
+                                                        oncomplete="deleteAppFilesDialogWidget.show()"
+                                                        rendered="#{backingBean.canDeleteAppFiles}"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteAppFiles}"/>
+                                <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}">
+                                    <h:outputText value="#{appFile.pathName}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Files" rendered="#{backingBean.canDownloadAppFiles}">
+                            <p:dataTable id="appFileTable"
+                                         value="#{backingBean.filesOfSelectedApplication}"
+                                         selection="#{backingBean.selectedAppSelectedFiles}"
+                                         var="appFile"
+                                         paginator="true"
+                                         rowKey="#{appFile.pathName}"
+                                         paginatorPosition="top"
+                                         paginatorAlwaysVisible="true"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25"
+                                         rendered="#{backingBean.canDownloadAppFiles}">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Files" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}">
+                                            <p:menuitem value="Upload"
+                                                        onclick="uploadAppFilesDialogWidget.show();"
+                                                        update="growl,appFileTable"
+                                                        rendered="#{backingBean.canUploadAppFile}"/>
+                                            <p:menuitem value="Delete"
+                                                        oncomplete="deleteAppFilesDialogWidget.show()"
+                                                        rendered="#{backingBean.canDeleteAppFiles}"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteAppFiles}"/>
+                                <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}">
+                                    <a href="../download?appid=#{appFile.appId}&amp;filename=#{appFile.pathName}">
+                                        <h:outputText value="#{appFile.pathName}"/>
+                                    </a>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Implementations">
+                            <p:dataTable id="impBrowserTable"
+                                     var="appImp"
+                                     value="#{backingBean.implementationsOfSelectedApplication}"
+                                     rowKey="#{appImp.appName}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="Implementations" style="font-size: 20pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{!backingBean.userGuest}">
+                                            <p:menuitem value="New" url="/user/create-implementation.xhtml"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Submittable" sortBy="#{appImp.isSubmittable()}" style="width: 100px;">
+                                   <p:outputPanel>
+                                        <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                       width="26"
+                                                       rendered="#{!appImp.isSubmittable()}"
+                                                       style="border-style: none"
+                                                        title="This implementation is not runnable within the SHIWA Simulation Platform"/>
+                                        <p:graphicImage value="/resources/images/play-blue.png"
+                                                        width="26"
+                                                        rendered="#{!backingBean.isSspSession() and appImp.isSubmittable()}"
+                                                        style="border-style: none"
+                                                        title="This implementation is runnable within the SHIWA Simulation Platform"/>
+
+                                        <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and appImp.isSubmittable()}">
+                                            <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
+                                                           title="Click to select workflow implementation for embedding in SSP"
+                                                           ajax="true"
+                                                           update="sspIcons,growl"
+                                                           rendered="#{appImp.isSubmittable() and !backingBean.isImpSelectedForEmbedding(appImp.id)}">
+                                                <p:graphicImage value="/resources/images/play-blue.png"
+                                                            width="26"
+                                                            style="border-style: none"/>
+                                                <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}"/>
+                                            </p:commandLink>
+                                            <p:commandLink action="#{backingBean.removeImpForEmbedding()}"
+                                                           title="Click to remove item from the list of selected workflow implementations for emnedding in SSP"
+                                                           ajax="true"
+                                                           update="sspIcons,growl"
+                                                           rendered="#{appImp.isSubmittable() and backingBean.isImpSelectedForEmbedding(appImp.id)}">
+                                                <p:graphicImage value="/resources/images/play-blue-yellow.png"
+                                                                width="26"
+                                                                style="border-style: none"/>
+                                                <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}"/>
+                                            </p:commandLink>
+                                        </p:outputPanel>
+                                    </p:outputPanel>
+                                </p:column>
+                                <p:column sortBy="#{appImp.platformName} (#{appImp.platformVersion})" filterBy="#{appImp.platformName} (#{appImp.platformVersion})">
+                                    <f:facet name="header">Engine</f:facet>
+                                    <h:outputText value="#{appImp.platformName} (#{appImp.platformVersion})" />
+                                </p:column>
+                                <p:column sortBy="#{appImp.version}" filterBy="#{appImp.version}">
+                                    <f:facet name="header">Version</f:facet>
+                                    <h:outputText value="#{appImp.version}" />
+                                </p:column>
+                                <p:column sortBy="#{backingBean.getImpSummary(appImp).dcis}" filterBy="#{backingBean.getImpSummary(appImp).dcis}">
+                                    <f:facet name="header">DCIs</f:facet>
+                                    <h:outputText value="#{backingBean.getImpSummary(appImp).dcis}" />
+                                </p:column>
+                                <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
+                                    <h:outputText value="#{appImp.statusFriendlyName}" />
+                                </p:column>
+                                <p:column style="width:4%">
+                                    <p:commandButton id="selectButton" immediate="true" actionListener="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(appImp)}" icon="ui-icon-carat-1-e" title="View">
+                                        <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Comments" rendered="false">
+                             <h:outputText value="Under construction" />
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                <h:form id="dialog">
+                    <p:dialog id="deleteAppFilesDialog"
+                              widgetVar="deleteAppFilesDialogWidget"
+                              modal="true"
+                              header="Delete files?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl,appFileTable"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete selected file(s)?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteAppFilesDialogWidget.hide()" action="#{backingBean.deleteAppFiles}" ajax="true" update="growl appFileTable appFileTableNoDownload" />
+                                <p:commandButton value="No" onclick="deleteAppFilesDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="uploadAppFilesDialog"
+                              widgetVar="uploadAppFilesDialogWidget"
+                              modal="true"
+                              header="Upload files"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false"
+                              width="450">
+                        <p:ajax event="close" update="growl,appFileTable"/>
+                        <p:panel>
+                            <p:fileUpload fileUploadListener="#{backingBean.handleAppFileUpload}"
+                                          multiple="true"
+                                          auto="false"
+                                          label="Browse"
+                                          sizeLimit="500000000"
+                                          update="growl,impFileTable"/>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Close" onclick="uploadAppFilesDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="deleteAppDialog"
+                              widgetVar="deleteAppDialogWidget"
+                              modal="true"
+                              header="Delete workflow?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this workflow?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteAppDialogWidget.hide()" action="#{backingBean.deleteApplication}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteAppDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog header="Add Port" showEffect="fade" widgetVar="addPortDialog">
+                                  <p:outputPanel id="addPortPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel value="Port ID: " />
+                                                <h:selectOneMenu value="#{backingBean.appAttrTree.newPort.portId}" >
+                                                    <f:selectItems value="#{backingBean.appAttrTree.portPool}"
+                                                                   var="portId"
+                                                                   itemLabel="#{portId}"
+                                                                   itemValue="#{portId}"/>
+                                                </h:selectOneMenu>
+                                                <h:outputLabel for="title" value="Title: " />
+                                                <h:inputText id="title" style="font-weight:bold"
+                                                              value="#{backingBean.appAttrTree.newPort.title}"  />
+                                                <h:outputLabel for="description" value="Description: " />
+                                                <h:inputTextarea id="description"
+                                                                 value="#{backingBean.appAttrTree.newPort.description}"
+                                                                 style="width: auto"
+                                                                 cols="20"
+                                                                 rows="5"/>
+                                                <h:outputLabel value="DataType: " />
+                                                <h:selectOneMenu value="#{backingBean.appAttrTree.newPort.datatype}" >
+                                                    <f:selectItems value="#{backingBean.appAttrTree.typePool}"
+                                                                   var="typeId"
+                                                                   itemLabel="#{typeId}"
+                                                                   itemValue="#{typeId}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="CollectionDepth: " />
+                                                <h:selectOneMenu value="#{backingBean.appAttrTree.newPort.depth}" >
+                                                    <f:selectItems value="#{backingBean.appAttrTree.depthRange}"
+                                                                   var="typeId"
+                                                                   itemLabel="#{depthId}"
+                                                                   itemValue="#{depthId}" />
+                                                </h:selectOneMenu>
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.appAttrTree.addPort}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Add DataSet" showEffect="fade" widgetVar="addConfigDialog">
+                                  <p:outputPanel id="addConfigPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5" style="width: 100%">
+                                                <h:outputLabel value="DataSet ID: " />
+                                                <h:selectOneMenu value="#{backingBean.appAttrTree.newConfig.configId}" >
+                                                    <f:selectItems value="#{backingBean.appAttrTree.configPool}"
+                                                                   var="configId"
+                                                                   itemValue="#{configId}"
+                                                                   itemLabel="#{backingBean.appAttrTree.getFriendlyName(configId)}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="Description: " />
+                                                <h:inputTextarea id="editConfDescription"
+                                                                 value="#{backingBean.appAttrTree.newConfig.description}"
+                                                                 label="Description"
+                                                                 style="width: 100%"
+                                                                 rows="5"
+                                                                 title="This filed describes the given configuration" />
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.appAttrTree.addConfig}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Add Port to Dataset" showEffect="fade" widgetVar="addPortToConfigDialog">
+                                <p:outputPanel id="addPortToConfigPanel">
+                                    <h:panelGrid  columns="2" cellpadding="5">
+                                        <h:outputLabel value="Port reference: " />
+                                            <h:selectOneMenu value="#{backingBean.appAttrTree.newConfig.portId}">
+                                                <f:selectItems value="#{backingBean.appAttrTree.portPool}"
+                                                               var="portRef"
+                                                               itemLabel="#{portRef}"
+                                                               itemValue="#{portRef}" />
+                                            </h:selectOneMenu>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <div align="right" style="padding-top: 5px">
+                                    <p:commandButton value="Create" action="#{backingBean.appAttrTree.addPortToConfig}" ajax="false" />
+                                    <p:commandButton value="Reset" type="reset" />
+                                </div>
+                            </p:dialog>
+                            <p:dialog header="Remove Item" showEffect="fade" widgetVar="removeItemDialog">
+                                <p:outputPanel id="removeItemPanel">
+                                    <h:outputText value="Are you sure you want to remove '#{backingBean.appAttrTree.selectedNode.longName}'?" />
+                                </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Yes" action="#{backingBean.appAttrTree.removeItem()}" ajax="false" />
+                                    </div>
+
+                            </p:dialog>
+                            <p:dialog header="Edit Datatype" showEffect="fade" widgetVar="editDatatypeDialog" id="editDatatypeContent" modal="true" >
+                                <p:outputPanel id="editDatatypePanel">
+                                    <h:outputText value="Editing: #{backingBean.appAttrTree.dataTypeManager.title}"  />
+                                    <br />
+                                    <h:outputText value="Datatype: "  />
+                                    <h:selectOneMenu value="#{backingBean.appAttrTree.dataTypeManager.datatype}" >
+                                        <f:selectItems value="#{backingBean.appAttrTree.typePool}"
+                                                       var="editTypeId"
+                                                       itemLabel="#{editTypeId}"
+                                                       itemValue="#{editTypeId}" />
+                                    </h:selectOneMenu>
+                                    <br />
+                                    <h:outputLabel value="CollectionDepth: " />
+                                    <h:selectOneMenu value="#{backingBean.appAttrTree.dataTypeManager.depth}" >
+                                        <f:selectItems value="#{backingBean.appAttrTree.depthRange}"
+                                                       var="typeId"
+                                                       itemLabel="#{depthId}"
+                                                       itemValue="#{depthId}" />
+                                    </h:selectOneMenu>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="OK" action="#{backingBean.appAttrTree.updateDataTypeManager()}" ajax="false" />
+                                    </div>
+                                </p:outputPanel>
+                            </p:dialog>
+
+                            <p:dialog header="Edit Value"
+                                      showEffect="fade"
+                                      widgetVar="editValueDialog"
+                                      id="editValueContent"
+                                      modal="true"
+                                      dynamic="true">
+                                <p:outputPanel id="editValuePanel">
+                                    <div align="left" style="padding-top: 5px">
+                                        <h:outputText value="Editing: #{backingBean.appAttrTree.selectedNode.longName}"  />
+                                    </div>
+                                    <p:tabView>
+                                        <p:tab title="Select file" id="fileSelect" rendered="#{backingBean.appAttrTree.selectedNode.canHaveFileValue()}">
+                                            <p:outputPanel id="editConfSelectPanel">
+                                                <h:selectOneMenu value="#{backingBean.appAttrTree.fileSelValue}"
+                                                                 style="width: 90%">
+                                                    <f:selectItems value="#{backingBean.fileNamesOfSelectedAppication}"
+                                                                   var="selectFile"
+                                                                   itemLabel="#{selectFile}"
+                                                                   itemValue="#{selectFile}" />
+                                                </h:selectOneMenu>
+                                                <div align="right" style="padding-top: 5px">
+                                                    <p:commandButton value="OK" action="#{backingBean.appAttrTree.updateValueWithFileSel()}" ajax="false" />
+                                                </div>
+                                            </p:outputPanel>
+                                        </p:tab>
+                                        <p:tab title="Enter value" id="valueEnter">
+                                            <p:outputPanel id="editConfValuePanel">
+                                                <h:inputTextarea id="editTextValue"
+                                                                 value="#{backingBean.appAttrTree.textEditValue}"
+                                                                 style="width: 90%"
+                                                                 rows="5"/>
+                                                <div align="right" style="padding-top: 5px">
+                                                    <p:commandButton value="OK" action="#{backingBean.appAttrTree.updateValueWithTextEdit()}" ajax="false" />
+                                                    <p:commandButton value="Reset" type="reset" />
+                                                </div>
+                                            </p:outputPanel>
+                                        </p:tab>>
+                                    </p:tabView>
+                                </p:outputPanel>
+                            </p:dialog>
+
+                            <p:dialog header="Edit Domain"
+                                      showEffect="fade"
+                                      widgetVar="editDomainDialog"
+                                      id="editDomainContent"
+                                      modal="true">
+                                <p:outputPanel id="editDomainPanel">
+                                    <h:panelGrid columns="2">
+                                        <h:panelGroup>
+                                            Domain:
+                                        </h:panelGroup>
+                                        <h:panelGroup>
+                                            <h:selectOneMenu value="#{backingBean.appAttrTree.selectedDomain}"
+                                                     rendered="#{backingBean.canCreateAppAttributes}"
+                                                     >
+                                                <f:selectItems value="#{backingBean.appAttrTree.domains}"/>
+                                                <p:ajax update="domainsPanel2"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup>Subdomain:</h:panelGroup>
+                                        <h:panelGroup>
+                                            <p:outputPanel id="domainsPanel2">
+                                                <h:selectOneMenu
+                                                    value="#{backingBean.appAttrTree.selectedSubDomain}"
+                                                    rendered="#{backingBean.canCreateAppAttributes}">
+                                                    <f:selectItems
+                                                        value="#{backingBean.appAttrTree.getSubDomains(
+                                                                    backingBean.appAttrTree.selectedDomain)}"/>
+                                                </h:selectOneMenu>
+                                            </p:outputPanel>
+                                        </h:panelGroup>
+                                    </h:panelGrid>
+                                    <p:commandButton value="OK"
+                                                     action="#{backingBean.updateAttributesOfSelectedApplication()}"
+                                                     ajax="false"
+                                                     />
+
+                                    <br/>
+                                    <br/>
+
+                                    <p:panel widgetVar="newDomainPanel"
+                                             toggleable="true"
+                                             collapsed="true"
+                                             header="If you cannot find desired domain/subdomain, please specify!">
+                                        <br/>
+                                        <h:panelGrid columns="2">
+                                            <h:panelGroup>
+                                                Domain:
+                                            </h:panelGroup>
+                                            <h:panelGroup>
+                                                <p:inputText id="newUserDomain"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup>
+                                                Subdomain:
+                                            </h:panelGroup>
+                                            <h:panelGroup>
+                                                <p:inputText id="newUserSubdomain"/>
+                                            </h:panelGroup>
+
+                                        </h:panelGrid>
+
+                                            <a href="" onclick="this.href='mailto:shiwa-repo-admin@cpc.wmin.ac.uk?body=Dear SHIWA Repo admin,%0A%0APlease add the following entries to the repository:%0A%0ADomain: '
+                                                    + jQuery('#newUserDomain').val()
+                                                    +'%0ASubdomain: '+jQuery('#newUserSubdomain').val()
+                                                    +'%0A%0AMy workflow: ' + jQuery('#selectedWorkflowName').html() +
+                                                    '&amp;subject=SHIWA-Repository:%20domainRequest';
+                                                    newDomainPanel.toggle();
+                                                    editDomainDialog.hide();"
+                                           style="text-decoration: underline; cursor: pointer; color: blue">
+                                            Request domain
+                                           </a>
+
+
+                                    </p:panel>
+                                </p:outputPanel>
+                            </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

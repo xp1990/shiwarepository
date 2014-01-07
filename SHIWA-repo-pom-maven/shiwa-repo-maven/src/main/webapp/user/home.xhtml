@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <h:form id="mainForm">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="Home" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="myHome">
+                        <p:tab title="My workflows">
+                            <p:dataTable id="appBrowserTable"
+                                     var="app"
+                                     value="#{backingBean.myApplications}"                                     
+                                     selectionMode="single"
+                                     rowKey="#{app.name}"
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="My workflows" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right">
+                                            <p:menuitem value="New" url="/user/create-application.xhtml" />
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Name" filterBy="#{app.name}">
+                                    <h:outputText value="#{app.name}" />
+                                </p:column>
+                                <p:column headerText="Owner" filterBy="#{app.ownerLoginName}">
+                                    <h:outputText value="#{app.ownerLoginName}" />
+                                </p:column>
+                                <p:column headerText="Group" filterBy="#{app.groupName}">
+                                    <h:outputText value="#{app.groupName}" />
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText value="#{app.shortDescription}" />
+                                </p:column>
+                                <p:column style="width:4%">  
+                                    <p:commandButton id="selectButton3" actionListener="#{backingBean.onApplicationsRowSelectNavigate(app)}" icon="ui-icon-carat-1-e" title="View">  
+                                        <f:setPropertyActionListener value="#{app}" target="#{backingBean.selectedApp}" />                                        
+                                    </p:commandButton>  
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="My groups">
+                            <p:dataTable id="groupBrowserTable"
+                                         var="group"
+                                         value="#{backingBean.myGroups}"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         rows="25"
+                                         rowKey="#{group.name}"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"                                         
+                                         selectionMode="single">                                
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="My groups" style="font-size: 22pt"/>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Group name" sortBy="#{group.name}">
+                                    <h:outputText value="#{group.name}" />
+                                </p:column>
+                                <p:column headerText="Leader">
+                                    <h:outputText value="#{group.leaderLoginName}" />
+                                </p:column>
+                                <p:column style="width:4%">  
+                                    <p:commandButton id="selectButton2" actionListener="#{backingBean.onGroupsRowSelectNavigate(event)}" icon="ui-icon-carat-1-e" title="View">  
+                                        <f:setPropertyActionListener value="#{group}" target="#{backingBean.selectedGroup}" />                                          
+                                    </p:commandButton>  
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>>
+                        <p:tab title="My owned groups">
+                            <p:dataTable id="ownedGroupBrowserTable"
+                                         var="group"
+                                         value="#{backingBean.myOwnedGroups}"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         rows="25"
+                                         rowKey="#{group.name}"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         selectionMode="single">                                
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="My owned groups" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right">
+                                            <p:menuitem value="New"  url="/user/create-group.xhtml"  />
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Group name" filterBy="#{group.name}">
+                                    <h:outputText value="#{group.name}" />
+                                </p:column>
+                                <p:column style="width:4%">  
+                                    <p:commandButton id="selectButton1" actionListener="#{backingBean.onGroupsRowSelectNavigate(event)}" icon="ui-icon-carat-1-e" title="View">  
+                                        <f:setPropertyActionListener value="#{group}" target="#{backingBean.selectedGroup}" />                                          
+                                    </p:commandButton>  
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>>
+                        <p:tab title="My details">
+                            <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Full name:" />
+                                <h:inputText id="editUserFullName" value="#{backingBean.currentUser.fullName}" required="true" label="Full name" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </h:inputText>
+                                <h:outputText value="Organization:" />
+                                <h:inputText id="editUserOrganization" value="#{backingBean.currentUser.organization}" required="true" label="Organization" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </h:inputText>
+                                <h:outputText value="E-mail address:" />
+                                <h:inputText id="editUserEmail" value="#{backingBean.currentUser.email}" required="true" label="E-mail address" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                    <f:validateRegex pattern=".+@.+\..+"/>
+                                </h:inputText>
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save" action="#{backingBean.updateMyDetails}" ajax="false" update="growl,topMenu" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="My password">
+                            <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Password:" />
+                                <p:password value="#{backingBean.password}" minLength="8" feedback="false"/>
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save" action="#{backingBean.changeMyPassword}" ajax="false" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="Workflow Engines">
+                            <p:dataTable id="WEBrowserTable"
+                                     var="workflowEngine"
+                                     value="#{backingBean.myWorkflowEngines}"                                     
+                                     selectionMode="single"
+                                     rowKey="#{workflowEngine.id}"
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">                                                                
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="Workflow Engines" style="font-size: 20pt"/>
+                                        <p:menuButton value="Actions" style="float: right">
+                                            <p:menuitem value="New" url="/user/create-WorkflowEngine.xhtml"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Name" filterBy="#{workflowEngine.name}">
+                                    <h:outputText value="#{workflowEngine.name}" />
+                                </p:column>
+                                <p:column headerText="Version" filterBy="#{workflowEngine.version}">
+                                    <h:outputText value="#{workflowEngine.version}" />
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText value="#{workflowEngine.description}" />
+                                </p:column>
+                                <p:column style="width:4%">  
+                                    <p:commandButton id="selectButton" actionListener="#{backingBean.onWERowSelectNavigate(event)}" icon="ui-icon-carat-1-e" title="View">  
+                                        <f:setPropertyActionListener value="#{workflowEngine}" target="#{backingBean.selectedWorkflowEngine}" />                                        
+                                    </p:commandButton>  
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

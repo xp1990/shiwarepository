@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateImpAttributes}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canCreateImpAttributes}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="#{backingBean.selectedApp.name} / #{backingBean.selectedImp.version} (#{backingBean.selectedImp.platformName}) / New attribute" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                        <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:outputText value="Name:" />
+                            <h:inputText id="newImpAttrName"
+                                         value="#{backingBean.newImpAttribute.name}"
+                                         required="true"
+                                         label="Attribute name"
+                                         readonly="false"
+                                         style="width: auto"
+                                         title="This is a required field and must be at least 3 characters long">
+                                <f:validateLength minimum="3" maximum="32"/>
+                            </h:inputText>
+                            <h:outputText value="Value:" />
+                            <h:inputTextarea id="newImpAttrValue"
+                                                 value="#{backingBean.newImpAttribute.value}"
+                                                 required="true"
+                                                 label="Attribute value"
+                                                 readonly="false"
+                                                 style="width: auto"
+                                                 cols="80"
+                                                 rows="10"
+                                                 title="This is an optional field and must be less than 5000 characters long">
+                                <f:validateLength maximum="5000"/>
+                            </h:inputTextarea>
+                        </h:panelGrid>
+                    </p:panel>
+                    <p:message for="newImpAttrName"/>
+                    <p:message for="newImpAttrValue"/>
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Create" action="#{backingBean.createImpAttribute}" ajax="false" />
+                        <p:commandButton value="Reset" type="reset" />
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

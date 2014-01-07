@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadUser}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadUser}">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="#{backingBean.selectedUser.loginName}" style="font-size: 22pt" />
+                        <p:menuButton value="Actions" style="float: right">
+                            <p:menuitem value="Delete" onclick="deleteUserDialogWidget.show();" />
+                        </p:menuButton>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="editUserDetails">
+                        <p:tab title="Details">
+                            <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Full name:" />
+                                <h:inputText id="editUserFullName" value="#{backingBean.selectedUser.fullName}" required="true" label="Full name" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </h:inputText>
+                                <h:outputText value="Organization:" />
+                                <h:inputText id="editUserOrganization" value="#{backingBean.selectedUser.organization}" required="true" label="Organization" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </h:inputText>
+                                <h:outputText value="E-mail address:" />
+                                <h:inputText id="editUserEmail" value="#{backingBean.selectedUser.email}" required="true" label="E-mail address" readonly="false" style="width: auto">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                    <f:validateRegex pattern=".+@.+\..+"/>
+                                </h:inputText>
+                                <h:outputText value="Active:"  />
+                                <h:selectBooleanCheckbox id="editUserActiveCheckbox" title="activeCheckbox" value="#{backingBean.selectedUser.active}" />
+                                <h:outputText value="Workflow Engine Developer:" />
+                                <h:selectBooleanCheckbox id="editUserWEDevCheckbox" title="WEDevCheckbox" value="#{backingBean.selectedUser.WEDev}" />
+                                <h:outputText value="Administrator:" />
+                                <h:selectBooleanCheckbox id="editUserAdminCheckbox" title="adminCheckbox" value="#{backingBean.selectedUser.admin}" />
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save" action="#{backingBean.updateUserDetails}" ajax="false" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="Password">
+                            <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Password:" />
+                                <p:password value="#{backingBean.password}" minLength="8" feedback="false" />
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Save" action="#{backingBean.changeUserPassword}" ajax="false" />
+                            </div>
+                        </p:tab>
+                        <p:tab title="Groups">
+                            <p:dataTable id="groupsTable"
+                                         var="group"
+                                         value="#{backingBean.groupsOfSelectedUser}"
+                                         selection="#{backingBean.selectedUserGroup}"
+                                         selectionMode="single"
+                                         paginator="true"
+                                         rowKey="#{group.name}"
+                                         paginatorPosition="top"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Groups of user" style="font-size: 22pt"/>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Group name" filterBy="#{group.name}" filterMatchMode="contains">
+                                    <h:outputText value="#{group.name}" />
+                                </p:column>
+                                <p:column headerText="Leader">
+                                    <h:outputText value="#{group.leaderLoginName}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Owned groups">
+                            <p:dataTable id="ledGroupsTable"
+                                         var="ledGroup"
+                                         rowKey="#{ledGroup.name}"
+                                         value="#{backingBean.ownedGroupsOfSelectedUser}"
+                                         selection="#{backingBean.selectedUserLedGroup}"
+                                         selectionMode="single"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Owned groups" style="font-size: 22pt" />
+                                    </div>
+                                </f:facet>lidateMark as ark
+                                <p:column  headerText="Groupnot allowed
+ name" filterBy="#{ledGroup.name}" filterMatchMode="contains">
+                                    <h:outputText value="#{ledGroup.name}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>ace
+                        <p:tab title="Workflows" rendered="false">
+                             <h:outputText value="Under construction" />
+                        </p:tab>
+                        <p:tab title="Validation" rendered="false">
+                             <h:outputText value="Under construction" />
+                        </p:tab>
+                    </p:tabView>
+                    <p:dialog id="deleteUserDialog"
+                              widgetVar="deleteUserDialogWidget"
+                              modal="true"
+                              header="Delete user?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this user?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteUserDialogWidget.hide()" action="#{backingBean.deleteUser}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteUserDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="removeUserGroupFromUserDialog"
+                              widgetVar="removeGroupFromUserDialogWidget"
+                              modal="true"
+                              header="Remove user from group?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl groupsTable"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to remove this user from this group?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="removeGroupFromUserDialogWidget.hide()" action="#{backingBean.removeGroupFromUser}" ajax="true" update="growl,groupsTable" />
+                                <p:commandButton value="No" onclick="removeGroupFromUserDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,598 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm" prependId="false">
+
+                        <p:outputPanel id="graphPanel">
+                            <p:dialog header="Graph of Workflow: #{backingBean.impSummaryOfSelImp.workflowName} | Engine: #{backingBean.impSummaryOfSelImp.engineName}(#{backingBean.impSummaryOfSelImp.engineVersion}) | Implementation version: #{backingBean.impSummaryOfSelImp.version}"  widgetVar="graphDialog" width="700">
+                                <p:graphicImage value="../download?impid=#{backingBean.impSummaryOfSelImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" style="border-style: none"/>
+                                <br/>
+                                <a href="../download?impid=#{backingBean.impSummaryOfSelImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" title="Download full size">
+                                    Download figure
+                                </a>
+                                <p:graphicImage value="/resources/images/wf-default-small.png" width="150" rendered="#{!backingBean.impSummaryOfSelImp.hasGraph()}" style="border-style: none"/>
+                            </p:dialog>
+                        </p:outputPanel>
+
+                        <p:outputPanel id="impDetailsPanel">
+                            <p:dialog header="Implementation details | Workflow: #{backingBean.impSummaryOfSelImp.workflowName} | Engine: #{backingBean.impSummaryOfSelImp.engineName}(#{backingBean.impSummaryOfSelImp.engineVersion}) | Implementation version: #{backingBean.impSummaryOfSelImp.version}"  widgetVar="impDetailsDialog" width="900">
+                                <h:panelGrid columns="2" style="width:100%" columnClasses="valign-top,valign-top">
+                                    <p:outputPanel style="width: 170px">
+                                        <div style="width: 170px">
+                                            <h:outputText style="font-weight:bold" value="Graph" />
+                                            <br/>
+                                            <br/>
+
+                                            <p:commandLink update="graphPanel" oncomplete="graphDialog.show();" title="View full size">
+                                                <p:graphicImage value="../download?impid=#{backingBean.impSummaryOfSelImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" width="150" rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}" style="border-style: none"/>
+                                                <p:graphicImage value="/resources/images/wf-default-small.png" width="150" rendered="#{!backingBean.impSummaryOfSelImp.hasGraph()}" style="border-style: none"/>
+                                                <f:setPropertyActionListener value="#{backingBean.impSummaryOfSelImp.to}" target="#{backingBean.selectedImp}"/>
+                                            </p:commandLink>
+                                        </div>
+                                    </p:outputPanel>
+                                    <p:outputPanel>
+                                        <div align="left" style="width:580px; ">
+
+                                            <h:outputText style="font-weight:bold" value="Implementation summary" />
+                                            <br/>
+                                            <br/>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasTitle()}">
+                                                <h:outputText style="font-weight:bold" value="Title: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.title}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <h:outputText style="font-weight:bold" value="Workflow: "/>
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.workflowName}"/>
+
+                                            <br/>
+
+                                            <h:outputText style="font-weight:bold" value="Engine: " />
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.engineName}(#{backingBean.impSummaryOfSelImp.engineVersion})" />
+                                            <br/>
+
+                                            <h:outputText style="font-weight:bold" value="Version: " />
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.version}" />
+                                            <br/>
+
+                                            <h:outputText style="font-weight:bold" value="Status: " />
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.status}" />
+                                            <br/>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasLanguage()}">
+                                                <h:outputText style="font-weight:bold" value="Language: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.language}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.wf.hasDomain()}">
+                                                <h:outputText style="font-weight:bold" value="Domain: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.wf.domain}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasDCIs()}">
+                                                <h:outputText style="font-weight:bold" value="DCIs: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.dcis}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasLicence()}">
+                                                <h:outputText style="font-weight:bold" value="Licence: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.licence}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasRights()}">
+                                                <h:outputText style="font-weight:bold" value="Copyrights: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.rights}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasDefinition()}">
+                                                <h:outputText style="font-weight:bold" value="Definition: " />
+                                                <p:commandLink rendered="#{backingBean.getCanDownloadImpFiles(backingBean.impSummaryOfSelImp)}"
+                                                               title="click to download definition file">
+                                                    <a href="../download?impid=#{backingBean.impSummaryOfSelImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.definition}">
+                                                        #{backingBean.impSummaryOfSelImp.definition}
+                                                    </a>
+                                                </p:commandLink>
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.definition}" rendered="#{!backingBean.getCanDownloadImpFiles(backingBean.impSummaryOfSelImp)}"/>
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasKeywords()}">
+                                                <h:outputText style="font-weight:bold" value="Keywords: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.keywords}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <h:outputText style="font-weight:bold" value="Created: " />
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.createdShort}, " />
+
+                                            <h:outputText style="font-weight:bold" value="Modified: " />
+                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.updatedShort}" />
+                                            <br/>
+
+                                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasDescription()}">
+                                                <br/>
+                                                <h:outputText style="font-weight:bold" value="Description: " />
+                                                <h:outputText value="#{backingBean.impSummaryOfSelImp.description}" />
+                                                <br/>
+                                            </p:outputPanel>
+
+                                            <p:separator rendered="#{backingBean.impSummaryOfSelImp.hasDeps() or backingBean.impSummaryOfSelImp.hasConfs()}"/>
+
+                                            <p:panel header="Dependencies (#{backingBean.impSummaryOfSelImp.deps.size()})" toggleable="true"  toggleSpeed="0" collapsed="false" rendered="#{backingBean.impSummaryOfSelImp.hasDeps()}">
+                                                <p:dataTable value="#{backingBean.impSummaryOfSelImp.deps}" var="dep" >
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                Name
+                                                            </f:facet>
+                                                            <h:outputText value="#{dep.title}"
+                                                                          title="#{dep.name}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                Type
+                                                            </f:facet>
+                                                            <h:outputText value="#{dep.type}"
+                                                                          title="#{dep.name}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                Description
+                                                            </f:facet>
+                                                            <h:outputText value="#{dep.description}"
+                                                                          title="#{dep.name}"/>
+                                                        </p:column>
+
+                                                </p:dataTable>
+                                            </p:panel>
+
+                                            <p:panel header="Configurations (#{backingBean.impSummaryOfSelImp.confs.size()})" toggleable="true"  toggleSpeed="0" collapsed="false"  rendered="#{backingBean.impSummaryOfSelImp.hasConfs()}">
+                                                <p:dataGrid value="#{backingBean.impSummaryOfSelImp.confs}"
+                                                            var="conf"
+                                                            columns="1"
+                                                            rows="1"
+                                                            paginator="#{backingBean.impSummaryOfSelImp.hasMultipleConfs()}"
+                                                            paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink}"
+                                                            paginatorPosition="top">
+
+                                                    <h:outputText style="font-weight:bold" value="Configuration #{conf.id}"/>
+                                                    <br/>
+                                                    <p:outputPanel rendered="#{conf.description.length()>0}">
+                                                        <h:outputText value="#{conf.description}"/>
+                                                        <br/>
+                                                    </p:outputPanel>
+                                                    <br/>
+
+                                                    <p:dataTable value="#{conf.configurationNodes}" var="node">
+
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                Dependency Name
+                                                            </f:facet>
+                                                            <h:outputText value="#{backingBean.impSummaryOfSelImp.getDepName(node.subjectId)}"
+                                                                          title="#{backingBean.impSummaryOfSelImp.getDepDescription(node.subjectId)}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                Value
+                                                            </f:facet>
+                                                            <p:commandLink rendered="#{backingBean.getCanDownloadImpFiles(backingBean.impSummaryOfSelImp) and backingBean.doesImpFileExist(backingBean.impSummaryOfSelImp, node.value)}"
+                                                                           title="click to download definition file" >
+                                                                <a href="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{node.value}">
+                                                                    #{node.value}
+                                                                </a>
+                                                            </p:commandLink>
+                                                            <h:outputText value="#{node.value}" rendered="#{!backingBean.getCanDownloadImpFiles(backingBean.impSummaryOfSelImp) or !backingBean.doesImpFileExist(backingBean.impSummaryOfSelImp, node.value)}"/>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </p:dataGrid>
+                                            </p:panel>
+                                        </div>
+                                    </p:outputPanel>
+                                </h:panelGrid>
+                            </p:dialog>
+                        </p:outputPanel>
+
+                        <p:outputPanel id="wfSummaryPanel">
+                            <p:outputPanel>
+                                <div align="left" style="vertical-align: middle; min-height: 40px">
+                                    <h:outputText value="Find Workflows" style="font-size: 22pt" />
+                                </div>
+                                <p:separator/>
+                                <h:selectOneMenu value="#{backingBean.selectedWfDomain}"
+                                                 style="width: 150px"
+                                                 title="Select a domain to filter workflows. Currently selected: #{backingBean.selectedWfDomain}">
+                                    <f:selectItems value="#{backingBean.wfDomains}"
+                                                   var="wfApp"
+                                                   itemLabel="#{wfDom}"
+                                                   itemValue="#{wfDom}"/>
+                                </h:selectOneMenu>
+                                &nbsp;
+                                <p:inputText id="keyword" value="#{backingBean.wfSearchStr}" size="50" title="Enter keywords to filter workflows"/>
+                                &nbsp;
+                                <p:commandButton value="Search" actionListener="#{backingBean.filterWfSummaries}" update="wfSummaryPanel" ajax="false" />
+                                <p:commandButton value="Show All" actionListener="#{backingBean.refreshWfSummaries}" update="wfSummaryPanel" ajax="false">
+                                    <f:setPropertyActionListener value="" target="#{backingBean.wfSearchStr}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Refresh" actionListener="#{backingBean.resetCaches()}" update="impSummaryPanel" ajax="false" />
+                                <p:separator/>
+                                <br/>
+                                <br/>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <h:outputText style="font-size: large" value="No item found" rendered="#{backingBean.workflowSummaries.isEmpty()}" />
+                            </p:outputPanel>
+                            <p:dataGrid var="wf"
+                                        value="#{backingBean.workflowSummaries}"
+                                        columns="1"
+                                        rows="5"
+                                        paginator="true"
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="5,10,20,50,100"
+                                        rendered="#{!backingBean.workflowSummaries.isEmpty()}">
+                                <p:column>
+                                    <p:panel>
+                                        <f:facet name="header">
+                                                <h:outputText value="Workflow: #{wf.workflowName}" style="font-size: 16pt"/>
+                                                <p:commandButton action="#{backingBean.onWorkflowSummarySelectNavigate(wf)}"
+                                                                 title="Open workflow on a separate page with all its implementations. (Note that any dialog windows opened on this page will be closed)"
+                                                                 value="Details"
+                                                                 icon="ui-icon ui-icon-search"
+                                                                 style="float: right">
+                                                    <f:setPropertyActionListener value="/public/browse-applications.xhtml?faces-redirect=true" target="#{backingBean.prevPageUrl}"/>
+                                                    <f:setPropertyActionListener value="#{wf.to}" target="#{backingBean.selectedApp}"/>
+                                                </p:commandButton>
+                                                <p:commandButton action="#{backingBean.onApplicationsRowSelectNavigate(wf)}"
+                                                                 title="Open editor view. (Note that any dialog windows opened on this page will be closed)"
+                                                                 value="Edit"
+                                                                 icon="ui-icon ui-icon-wrench"
+                                                                 style="float: right"
+                                                                 rendered="#{backingBean.getCanUpdateApp(wf.to)}">
+                                                    <f:setPropertyActionListener value="/public/browse-applications.xhtml?faces-redirect=true" target="#{backingBean.prevPageUrl}"/>
+                                                    <f:setPropertyActionListener value="#{wf.to}" target="#{backingBean.selectedApp}"/>
+                                                </p:commandButton>
+                                        </f:facet>
+
+                                        <h:panelGrid columns="2" style="width:100%" columnClasses="valign-top,valign-top">
+                                            <p:outputPanel>
+
+                                                <p:panel>
+                                                    <h:outputText value="Workflow Summary" style="font-weight:bold" />
+                                                    <br/> <br/>
+                                                    <div align="left" style="width:440px; vertical-align: top">
+
+                                                        <h:panelGroup rendered="#{not empty wf.domain}">
+                                                            <h:outputText style="font-weight:bold" value="Domain: " />
+                                                            <h:outputText value="#{wf.domain}" />
+                                                            <br/>
+                                                        </h:panelGroup>
+
+                                                        <h:panelGroup rendered="#{not empty wf.subdomain}">
+                                                            <h:outputText style="font-weight:bold" value="Subdomain: " />
+                                                            <h:outputText value="#{wf.subdomain}" />
+                                                            <br/>
+                                                        </h:panelGroup>
+
+                                                        <h:panelGroup rendered="#{not empty wf.domain}">
+                                                            <h:outputText style="font-weight:bold" value="Application: " />
+                                                            <h:outputText value="#{wf.application}" />
+                                                            <br/>
+                                                        </h:panelGroup>
+
+                                                        <h:outputText style="font-weight:bold" value="Owner: " />
+                                                        <h:outputText title="username: #{wf.owner}">
+                                                            <a href="mailto:#{backingBean.loadUser(wf.owner).email}">
+                                                                #{backingBean.loadUser(wf.owner).fullName}
+                                                            </a>
+                                                        </h:outputText>
+                                                        <br/>
+
+                                                        <h:outputText style="font-weight:bold" value="Group: " />
+                                                        <h:outputText value="#{wf.group} "/>
+                                                        <h:outputText title="(#{backingBean.loadUser(backingBean.getGroupByName(wf.group).leaderLoginName).fullName})">
+                                                            <b>Leader:</b> <a href="mailto:#{backingBean.loadUser(backingBean.getGroupByName(wf.group).leaderLoginName).email}?subject=Join Shiwa Repo Group #{wf.group}">
+                                                            #{backingBean.loadUser(backingBean.getGroupByName(wf.group).leaderLoginName).fullName}
+                                                        </a>
+                                                        </h:outputText>
+                                                        <br/>
+
+                                                        <h:outputText style="font-weight:bold" value="Status: " />
+                                                        <h:outputText value="#{wf.status}" />
+                                                        <br/>
+
+                                                        <h:outputText style="font-weight:bold" value="Keywords: " />
+                                                        <h:outputText value="#{wf.keywords}" />
+                                                        <br/>
+
+                                                        <h:outputText style="font-weight:bold" value="Created: " />
+                                                        <h:outputText value="#{wf.createdShort}, " />
+
+                                                        <h:outputText style="font-weight:bold" value="Modified: " />
+                                                        <h:outputText value="#{wf.updatedShort}" />
+                                                        <br/>
+
+
+                                                        <h:outputText style="font-weight:bold" value="Description: " />
+                                                        <ui:repeat value="#{wf.descriptionArray}"
+                                                                   var="string">
+                                                            <h:outputText value="#{string}" rendered="#{!wf.isStringRemote(string)}"/>
+                                                            <h:outputLink value="#{string}" rendered="#{wf.isStringRemote(string)}">
+                                                                <h:outputText value="#{string}" title ="click to open page"/>
+                                                            </h:outputLink>
+                                                            <h:outputText value=" "/>
+                                                        </ui:repeat>
+
+                                                    </div>
+                                                </p:panel>
+
+                                                <p:separator rendered="#{wf.hasInputs() or imp.hasOutputs() or imp.hasConfs()}"/>
+
+                                                <div align="left">
+
+                                                        <p:panel header="Inputs (#{wf.inputs.size()})" toggleable="true"  toggleSpeed="0" collapsed="true"  rendered="#{wf.hasInputs()}">
+                                                            <p:dataTable value="#{wf.inputs}" var="inp">
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Name
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{inp.value}"/>
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Type
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{inp.type}"/>
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Description
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{inp.description}"/>
+                                                                </p:column>
+                                                            </p:dataTable>
+                                                        </p:panel>
+                                                        <p:panel header="Outputs (#{wf.outputs.size()})" toggleable="true"  toggleSpeed="0" collapsed="true"  rendered="#{wf.hasOutputs()}">
+                                                            <p:dataTable value="#{wf.outputs}" var="oup">
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Name
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{oup.value}"/>
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Type
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{oup.type}"/>
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        Description
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{oup.description}"/>
+                                                                </p:column>
+                                                            </p:dataTable>
+                                                        </p:panel>
+                                                        <p:panel header="Data sets (#{wf.confs.size()})" toggleable="true"  toggleSpeed="0" collapsed="true"  rendered="#{wf.hasConfs()}">
+                                                            <p:dataGrid value="#{wf.confs}"
+                                                                        var="conf"
+                                                                        columns="1"
+                                                                        rows="1"
+                                                                        paginator="#{wf.hasMultipleConfs()}"
+                                                                        paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink}"
+                                                                        paginatorPosition="top">
+
+                                                                <h:outputText style="font-weight:bold" value="Data set #{conf.id}"/>
+                                                                <br/>
+                                                                <p:outputPanel rendered="#{conf.description.length()>0}">
+                                                                    <h:outputText value="#{conf.description}"/>
+                                                                    <br/>
+                                                                </p:outputPanel>
+                                                                <br/>
+
+                                                                <p:dataTable value="#{conf.configurationNodes}" var="node">
+
+                                                                    <p:column>
+                                                                        <f:facet name="header">
+                                                                            Direction
+                                                                        </f:facet>
+                                                                        <h:outputText value="input"
+                                                                                      rendered="#{wf.isPortInput(node.subjectId)}"/>
+                                                                        <h:outputText value="output"
+                                                                                      rendered="#{!wf.isPortInput(node.subjectId)}"/>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <f:facet name="header">
+                                                                            Port Name
+                                                                        </f:facet>
+                                                                        <h:outputText value="#{wf.getPortName(node.subjectId)}"
+                                                                                      title="#{wf.getPortDescription(node.subjectId)}"/>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <f:facet name="header">
+                                                                            Value
+                                                                        </f:facet>
+                                                                        <p:commandLink rendered="#{backingBean.getCanDownloadWfFiles(wf) and backingBean.doesWfFileExist(wf,node.value)}"
+                                                                                       title="click to download definition file">
+                                                                            <a href="../download?appid=#{wf.workflowId}&amp;filename=#{node.value}">
+                                                                                #{node.value}
+                                                                            </a>
+                                                                        </p:commandLink>
+                                                                        <h:outputText value="#{node.value}" rendered="#{!backingBean.getCanDownloadWfFiles(wf) or !backingBean.doesWfFileExist(wf, node.value)}"/>
+                                                                    </p:column>
+                                                                </p:dataTable>
+                                                            </p:dataGrid>
+                                                        </p:panel>
+                                                </div>
+                                            </p:outputPanel>
+                                            <p:panel>
+                                                <h:outputText value="Implementation Preview (#{wf.imps.size()})" style="font-weight:bold" rendered="#{wf.hasImps()}"/>
+                                                <h:outputText value="No implementations" style="font-weight:bold" rendered="#{!wf.hasImps()}"/>
+                                                <p:separator/>
+                                                <p:dataGrid var="imp"
+                                                            value="#{wf.imps}"
+                                                            columns="1"
+                                                            paginator="false">
+                                                    <p:column>
+                                                        <h:panelGrid columns="2" style="width:100%" columnClasses="valign-top,valign-top">
+                                                            <p:outputPanel>
+                                                                <div align="left" style="width: 200px">
+                                                                    <h:outputText value="#{imp.title}" title="#{imp.description}" style="font-weight:bold" rendered="#{imp.hasTitle()}"/>
+                                                                    <h:outputText value="#{imp.engineName}(#{imp.engineVersion})-#{imp.version}" title="#{imp.description}" style="font-weight:bold" rendered="#{!imp.hasTitle()}"/>
+                                                                </div>
+                                                            </p:outputPanel>
+
+                                                            <p:outputPanel>
+                                                                <div align="right" style="width: 30px">
+                                                                <p:outputPanel>
+                                                                    <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                                                    width="26"
+                                                                                    rendered="#{!imp.isSubmittable()}"
+                                                                                    style="border-style: none"
+                                                                                    title="This implementation is not runnable within the SHIWA Simulation Platform."/>
+                                                                    <p:graphicImage value="/resources/images/play-blue.png"
+                                                                                    width="26"
+                                                                                    rendered="#{!backingBean.isSspSession() and imp.isSubmittable()}"
+                                                                                    style="border-style: none"
+                                                                                    title="This implementation is runnable within the SHIWA Simulation Platform."/>
+                                                                </p:outputPanel>
+
+                                                                <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and imp.isSubmittable()}">
+                                                                    <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
+                                                                                title="Click to select workflow implementation for embedding in SSP"
+                                                                                ajax="true"
+                                                                                update="sspIcons,sspLinks,growl"
+                                                                                rendered="#{!backingBean.isImpSelectedForEmbedding(imp.id)}">
+                                                                        <p:graphicImage value="/resources/images/play-blue.png"
+                                                                                    width="26"
+                                                                                    style="border-style: none"/>
+                                                                        <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                    </p:commandLink>
+                                                                    <p:commandLink action="#{backingBean.removeImpForEmbedding()}"
+                                                                                    title="Click to remove item from the list of selected workflow implementations for embedding in SSP"
+                                                                                    ajax="true"
+                                                                                    update="sspIcons,sspLinks,growl"
+                                                                                    rendered="#{backingBean.isImpSelectedForEmbedding(imp.id)}">
+                                                                        <p:graphicImage value="/resources/images/play-blue-yellow.png"
+                                                                                        width="26"
+                                                                                        style="border-style: none"/>
+                                                                        <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                    </p:commandLink>
+                                                                </p:outputPanel>
+                                                                </div>
+                                                            </p:outputPanel>
+
+
+
+
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2" style="width:100%" columnClasses="valign-top,valign-top">
+
+                                                            <p:outputPanel>
+                                                                <div style="width: 105px">
+                                                                    <p:commandLink update="impDetailsPanel" oncomplete="impDetailsDialog.show();" title="View implementation details">
+                                                                        <p:graphicImage value="../download?impid=#{imp.id}&amp;filename=#{imp.graph}" width="100" rendered="#{imp.hasGraph()}" style="border-style: none"/>
+                                                                        <p:graphicImage value="/resources/images/wf-default-small.png" width="100" rendered="#{!imp.hasGraph()}" style="border-style: none"/>
+                                                                        <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                    </p:commandLink>
+                                                                </div>
+                                                            </p:outputPanel>
+
+                                                            <p:outputPanel>
+                                                                <div align="left" style="width:130px; ">
+                                                                    <h:outputText style="font-weight:bold" value="Engine: " />
+                                                                    <h:outputText value="#{imp.engineName}(#{imp.engineVersion})" />
+                                                                    <br/>
+
+                                                                    <h:outputText style="font-weight:bold" value="Version: " />
+                                                                    <h:outputText value="#{imp.version}" />
+                                                                    <br/>
+
+                                                                    <p:outputPanel rendered="#{imp.hasDCIs()}">
+                                                                        <h:outputText style="font-weight:bold" value="DCIs: " />
+                                                                        <h:outputText value="#{imp.dcis}" />
+                                                                        <br/>
+                                                                    </p:outputPanel>
+
+                                                                    <p:outputPanel rendered="#{imp.hasKeywords()}">
+                                                                        <h:outputText style="font-weight:bold" value="Keywords: " />
+                                                                        <h:outputText value="#{imp.keywords}" />
+                                                                        <br/>
+                                                                    </p:outputPanel>
+
+                                                                    <p:outputPanel rendered="#{imp.hasDescription()}">
+                                                                        <h:outputText style="font-weight:bold" value="Description: " />
+                                                                        <h:outputText value="#{imp.shortDescription}" />
+                                                                        <br/>
+                                                                    </p:outputPanel>
+
+                                                                    <p:outputPanel >
+                                                                        <h:outputText style="font-weight:bold" value="Status: " />
+                                                                        <h:outputText value="#{imp.status}" />
+                                                                        <br/>
+                                                                    </p:outputPanel>
+
+                                                                    <p:outputPanel id="sspLinks" rendered="#{backingBean.isSspSession()}">
+                                                                        <h:outputText style="font-weight:bold" value="Embedding: "/>
+                                                                        <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
+                                                                                        title="Click to select workflow implementation for embedding in SSP"
+                                                                                        value="Not selected"
+                                                                                        ajax="true"
+                                                                                        update="sspIcons,sspLinks,growl"
+                                                                                        rendered="#{imp.isSubmittable() and !backingBean.isImpSelectedForEmbedding(imp.id)}">
+                                                                            <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                        </p:commandLink>
+                                                                        <p:commandLink action="#{backingBean.removeImpForEmbedding()}"
+                                                                                        title="Click to remove item from the list of selected workflow implementations for emnedding in SSP"
+                                                                                        value="Selected"
+                                                                                        ajax="true"
+                                                                                        update="sspIcons,sspLinks,growl"
+                                                                                        rendered="#{imp.isSubmittable() and backingBean.isImpSelectedForEmbedding(imp.id)}">
+                                                                            <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                        </p:commandLink>
+                                                                        <h:outputText value="cannot be embedded"
+                                                                                      title="Implementation cannot be embedded to SSP"
+                                                                                      rendered="#{!imp.isSubmittable()}"/>
+                                                                    </p:outputPanel>
+
+                                                                    <p:commandLink action="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(event)}"
+                                                                                     title="Open editor view. (Note that any dialog windows opened on this page will be closed)"
+                                                                                     value="Edit"
+                                                                                     rendered="#{backingBean.getCanUpdateImplementation(imp.to)}">
+                                                                        <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
+                                                                    </p:commandLink>
+
+
+
+
+                                                                </div>
+                                                            </p:outputPanel>
+                                                        </h:panelGrid>
+                                                        <p:separator/>
+                                                    </p:column>
+                                                </p:dataGrid>
+                                            </p:panel>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:column>
+
+                            </p:dataGrid>
+                        </p:outputPanel>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

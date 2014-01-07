@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateImplementations}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canCreateImplementations}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="#{backingBean.selectedApp.name} / New implementation" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel id="createPlatformPanel">
+                        <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:outputText value="Engine name:" />
+                            <h:selectOneMenu value="#{backingBean.newImplementation.platformName}"
+                                             style="width: 90%">
+                                <f:selectItem id="defaultVal1" itemLabel="Please Select..." itemValue="0"/>
+                                <f:selectItems value="#{backingBean.workflowEnginesNoDupes}"
+                                               var="we1"
+                                               itemLabel="#{we1}"
+                                               itemValue="#{we1}" />
+                                <p:ajax event="change" listener="#{backingBean.handleImpWEIdString}" update="versionMenu" />
+                            </h:selectOneMenu>                                                
+
+                            <h:outputText value="Engine version:" />
+                            <h:selectOneMenu id="versionMenu"
+                                             value="#{backingBean.newImplementation.platformVersion}"
+                                             style="width: 90%">
+                                <f:selectItem id="defaultVal2" itemLabel="Please Select..." itemValue="0"/>
+                                <f:selectItems value="#{backingBean.workflowEnginesByString}"
+                                               var="we2"
+                                               itemLabel="#{we2.version}"
+                                               itemValue="#{we2.version}" />                                
+                            </h:selectOneMenu>                                                        
+                        
+                            <h:outputText value="Implementation Version:" />
+                            <h:inputText id="newImpVersion"
+                                         value="#{backingBean.newImplementation.version}"
+                                         label="Version"
+                                         readonly="false"
+                                         style="width: auto"
+                                         title="This is a required field and must be at least 3 characters long">
+                            </h:inputText>                            
+
+                        </h:panelGrid>
+                    </p:panel>
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Create" action="#{backingBean.createImplementation}" ajax="false" />
+                        <p:commandButton value="Reset" type="reset" />
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

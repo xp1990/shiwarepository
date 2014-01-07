@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadGroup}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadGroup}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="#{backingBean.selectedGroup.name}" style="font-size: 22pt" />
+                        <p:menuButton value="Actions" style="float: right">
+                            <p:menuitem value="Delete" onclick="deleteGroupDialogWidget.show()" />
+                        </p:menuButton>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="editGroupDetails">
+                        <p:tab title="Details">
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Leader:" />
+                                <p:autoComplete id="leaderName"
+                                                forceSelection="true"
+                                                value="#{backingBean.selectedGroup.leaderLoginName}"
+                                                completeMethod="#{backingBean.completeGroupLeaderName}"
+                                                rendered="#{backingBean.canChangeGroupLeader}"/>
+                                <h:outputText value="#{backingBean.selectedGroup.leaderLoginName}" rendered="#{!backingBean.canChangeGroupLeader}" />
+                            </h:panelGrid>
+                            <p:message for="leaderName" />
+                            <div align="right">
+                                <p:commandButton value="Change leader" 
+                                                 action="#{backingBean.changeGroupLeader}"
+                                                 update="userTable,growl"
+                                                 disabled="#{!backingBean.canChangeGroupLeader}"/>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Users">
+                            <p:dataTable id="usersOfGroupTable"
+                                         widgetVar="usersOfGroupTableWidget"
+                                         var="groupUser"
+                                         value="#{backingBean.usersOfSelectedGroup}"
+                                         selection="#{backingBean.selectedGroupUser}"
+                                         selectionMode="single"
+                                         paginator="true"
+                                         rowKey="#{groupUser.loginName}"
+                                         paginatorPosition="top"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Users of group" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right">
+                                            <p:menuitem value="Add user to group" onclick="addUserToGroupDialogWidget.show()" rendered="#{backingBean.canAddUsersToGroup}" />
+                                            <p:menuitem value="Remove user from group" onclick="removeUserFromGroupDialogWidget.show()" rendered="#{backingBean.canRemoveUsersFromGroup}" />
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Login name" sortBy="#{groupUser.loginName}" filterBy="#{groupUser.loginName}" filterMatchMode="contains">
+                                    <h:outputText value="#{groupUser.loginName}" />
+                                </p:column>
+                                <p:column headerText="Full name" sortBy="#{groupUser.fullName}" filterBy="#{groupUser.fullName}" filterMatchMode="contains">
+                                    <h:outputText value="#{groupUser.fullName}" />
+                                </p:column>
+                                <p:column headerText="Organisation" sortBy="#{groupUser.organization}" filterBy="#{groupUser.organization}" filterMatchMode="contains">
+                                    <h:outputText value="#{groupUser.organization}"/>
+                                </p:column>
+                                <p:column headerText="Roles">
+                                    <h:outputText value="#{groupUser.rolesAsString}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Workflows" rendered="false">
+                             <h:outputText value="Under construction" />
+                        </p:tab>
+                    </p:tabView>
+                    <p:dialog id="deleteGroupDialog"
+                              widgetVar="deleteGroupDialogWidget"
+                              modal="true"
+                              header="Delete group?"
+                              showEffect="fade"
+                              hideEffect="fade"                              
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this group?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteGroupDialogWidget.hide()" action="#{backingBean.deleteGroup}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteGroupDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="addUserToGroupDialog"
+                              widgetVar="addUserToGroupDialogWidget"
+                              modal="true"
+                              header="Add user to group"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl usersOfGroupTable"/>
+                        <p:panel>
+                            <h:outputText value="Login name:" />
+                            <p:autoComplete forceSelection="false"
+                                            value="#{backingBean.userLoginNameToAddToGroup}"
+                                            completeMethod="#{backingBean.completeAddUserToGroupUserLoginName}"/>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Add" action="#{backingBean.addUserToGroup}" onclick="addUserToGroupDialogWidget.hide()" ajax="true" update="growl,UsersOfGroupTable" />
+                                <p:commandButton value="Cancel" onclick="addUserToGroupDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="removeUserFromGroupDialog"
+                              widgetVar="removeUserFromGroupDialogWidget"
+                              modal="true"
+                              header="Remove user?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl,usersOfGroupTable"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to remove selected user from this group?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="removeUserFromGroupDialogWidget.hide()" action="#{backingBean.removeUserFromGroup}" ajax="true" update="growl,usersOfGroupTable" />
+                                <p:commandButton value="No" onclick="removeUserFromGroupDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

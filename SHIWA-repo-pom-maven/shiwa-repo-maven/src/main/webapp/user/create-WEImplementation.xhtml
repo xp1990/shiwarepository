@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateWEImplementations}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canCreateWEImplementations}">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="New Workflow Engine Implementation #{backingBean.selectedWorkflowEngine.name}" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                        <h:panelGrid id="WEIgrid" columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+
+                            <h:outputText value="Name:" />
+                            <h:inputText id="NewWEImplementationName"
+                                         value="#{backingBean.newWEImplementation.nameWEImp}"
+                                         label="Name"
+                                         readonly="false"
+                                         style="width: 90%"
+                                         title="This is a required field and must be between 3 and 50 characters long">
+
+                            </h:inputText>
+
+                            <h:outputText value="Description:" />
+                            <h:inputTextarea id="NewWEImplementationDescription"
+                                             value="#{backingBean.newWEImplementation.descriptionWEImp}"
+
+                                             label="Description"
+                                             readonly="false"
+                                             style="width: 90%"
+                                             rows="10"
+                                             title="This is an optional field and must be less than 5000 characters long">
+                                <f:validateLength minimum="0" maximum="5000"/>
+                            </h:inputTextarea>
+
+                            <h:outputText value="Prefix Data" />
+                            <h:inputText id="NewWEImplementationPreFixData"
+                                         value="#{backingBean.newWEImplementation.prefixData}"
+
+                                        label="Prefix Data"
+                                        readonly="false"
+                                        style="width: 90%"
+                                        title="This is an optional field and must be between 0 and 50 characters long">
+                                <f:validateLength minimum="0" maximum="50"/>
+                            </h:inputText>
+
+                            <h:outputText value="Pre-deployed:" />
+                            <h:selectBooleanCheckbox id="predeployedBoolBox" value="#{backingBean.newWEImplementation.preDeployed}">
+                                <f:ajax event="click" render="engineZip engineZipSelect predeployedBoolBox shellFileText shellFileInput engineExecSelect shellFile"/>
+                            </h:selectBooleanCheckbox>
+
+                            <h:panelGroup id="engineZip">
+                                <h:outputText value="Engine Data:" rendered="#{!backingBean.newWEImplementation.preDeployed}" />
+                            </h:panelGroup>
+                            <h:panelGroup id="engineZipSelect">
+                                <h:selectOneMenu value="#{backingBean.newWEIZipId}" rendered="#{!backingBean.newWEImplementation.preDeployed}"
+                                                         style="width: 90%">
+                                    <p:ajax event="change" listener="#{backingBean.handleEngineZipSelect(false)}"/>
+                                    <f:selectItem id="defaultVal" itemLabel="Please Select..." itemValue="0"/>
+                                    <f:selectItems value="#{backingBean.zipWEFiles}"
+                                                           var="WEFile"
+                                                           itemLabel="#{WEFile.name} #{WEFile.filePath}"
+                                                           itemValue="#{WEFile.idWEFile}" />
+                                </h:selectOneMenu>
+                            </h:panelGroup>
+
+                            <h:panelGroup id="shellFileText">
+                                <h:outputText value="Engine Executable Path:" rendered="#{backingBean.newWEImplementation.preDeployed}"/>
+                            </h:panelGroup>
+                            <h:panelGroup id="shellFileInput">
+                                <h:inputText value="#{backingBean.newWEImplementation.shellPath}" rendered="#{backingBean.newWEImplementation.preDeployed}"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup id="shellFile">
+                                <h:outputText value="Engine Executable:" rendered="#{!backingBean.newWEImplementation.preDeployed}"/>
+                            </h:panelGroup>
+                            <h:panelGroup id="engineExecSelect">
+                                <h:selectOneMenu value="#{backingBean.newShellFileId}" rendered="#{!backingBean.newWEImplementation.preDeployed}"
+                                                         style="width: 90%">
+                                    <p:ajax event="change" listener="#{backingBean.handleShellFileSelect(false)}"/>
+                                    <f:selectItem id="defaultShellVal" itemLabel="Please Select..." itemValue="0"/>
+                                    <f:selectItems value="#{backingBean.shellWEFiles}"
+                                                           var="WEFile"
+                                                           itemLabel="#{WEFile.name} #{WEFile.filePath}"
+                                                           itemValue="#{WEFile.idWEFile}" />
+                                </h:selectOneMenu>
+                            </h:panelGroup>
+
+                            <h:outputText value="Selected Backend Configuration: #{backingBean.newWEImplementation.idBackendInst.backendInstName}"/>
+                            <p:commandButton value="Configure/Change" onclick="BEIwidget.show();"/>
+                        </h:panelGrid>
+                        <h:panelGrid id="BEIDetails" columns="2" cellpadding="4" width="100%" columnClasses="justifyLeft" rendered="#{backingBean.showBEIDetails}">
+
+                            <h:outputText value="Backend Configuration Name:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.backendInstName}"/>
+
+                            <h:outputText value="Backend:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName}"/>
+
+                            <h:outputText value="Resource:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.resource}"/>
+
+                            <h:outputText value="Standard Output:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.backendOutput}"/>
+
+                            <h:outputText value="Error Output:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.backendErrorOut}"/>
+
+                            <h:outputText value="Operating System:"/>
+                            <h:outputText value="#{backingBean.newWEImplementation.idBackendInst.idOS.name}"/>
+
+                            <h:outputText value="Execution Site:" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.displayBEInstance.site}" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+
+                            <h:outputText value="Job Manager:" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.displayBEInstance.jobManager}" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+
+                            <h:outputText value="Job Type:" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.displayBEInstance.jobType.jobTypeName}" rendered="#{backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT4' or backingBean.newWEImplementation.idBackendInst.idBackend.backendName == 'GT2'}" />
+
+                        </h:panelGrid>
+                    </p:panel>
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Create" action="#{backingBean.createWEImplementation}" ajax="false" type="submit" update="growl" />
+                        <p:commandButton type="reset" value="Reset" />
+                    </div>
+                </h:form>
+                <h:form>
+                    <p:dialog id="BEIdialog"
+                              widgetVar="BEIwidget"
+                              minWidth="200"
+                              header="Backend Configuration">
+                        <h:panelGroup id="BEIform">
+                                <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Backend"/>
+                                    <h:selectOneMenu value="#{backingBean.newBEAbstractId}"
+                                                     style="width: 90%">
+                                        <p:ajax event="change" listener="#{backingBean.handleJobManExistBEMenus}" update="growl existingBackendGrid jobManagerBEI GT4GT2"/>
+                                        <f:selectItem id="defaultValAbs" itemLabel="Please Select..." itemValue="0"/>
+                                        <f:selectItems value="#{backingBean.backendAll}"
+                                                       var="backend"
+                                                       itemLabel="#{backend.backendName}"
+                                                       itemValue="#{backend.idBackend}" />
+                                    </h:selectOneMenu>
+
+
+                                    <h:outputText value="Use Existing Backend Instance"/>
+                                    <h:selectBooleanCheckbox id="existingBEI" value="#{backingBean.showExistingBEI}">
+                                        <f:ajax event="click" render="newBackendGrid1 GT4GT2 existingBackendGrid existingBEI configCommand"/>
+                                    </h:selectBooleanCheckbox>
+                                </h:panelGrid>
+                                <h:panelGroup id="existingBackendGrid">
+                                    <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft"
+                                                 rendered="#{backingBean.showExistingBEI}">
+                                        <h:outputText value="Existing Backend Instance: " />
+                                        <h:selectOneMenu value="#{backingBean.selectedBEInstanceId}"
+                                                     style="width: 90%">
+                                            <p:ajax event="change" listener="#{backingBean.handleExistingBEI(false)}"/>
+                                            <f:selectItem id="defaultValBE" itemLabel="Please Select..." itemValue="0"/>
+                                            <f:selectItems value="#{backingBean.newBEInstance.idBackend.beInstanceCollection}"
+                                                       var="bei"
+                                                       itemLabel="#{bei.backendInstName}"
+                                                       itemValue="#{bei.idBackendInst}" />
+                                    </h:selectOneMenu>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Select" onclick="BEIwidget.close();" actionListener="#{backingBean.useExistingBEInstance}" update="BEIDetails growl"/>
+                                    </div>
+                                    </h:panelGrid>
+                                </h:panelGroup>
+                                <h:panelGroup id="newBackendGrid1">
+                                    <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft"
+                                                 rendered="#{!backingBean.showExistingBEI}">
+                                    <h:outputText value="Name:" />
+                                    <h:inputText id="newBEInstanceName"
+                                                 value="#{backingBean.newBEInstance.name}"
+                                                 label="Name"
+                                                 readonly="false"
+                                                 style="width: 90%"
+                                                 title="This is a required field and must be between 3 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Resource" />
+                                    <h:inputText id="newBEInstanceSite"
+                                            value="#{backingBean.newBEInstance.resource}"
+                                            readonly="false"
+                                            style="width: 90%"
+                                            title="This is a required field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Standard Output" />
+                                    <h:inputText id="newBEInstanceStdOutput"
+                                            value="#{backingBean.newBEInstance.backendOutput}"
+
+                                            readonly="false"
+                                            style="width: 90%"
+                                            title="This is an optional field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Error Output" />
+                                    <h:inputText id="newBEInstanceErrOutput"
+                                                 value="#{backingBean.newBEInstance.backendErrorOut}"
+
+                                            readonly="false"
+                                            style="width: 90%"
+                                            title="This is an optional field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Operating System"/>
+                                    <h:selectOneMenu value="#{backingBean.newBEIoperatingSysId}"
+                                                     style="width: 90%">
+                                        <p:ajax event="change" listener="#{backingBean.handleBEIoperatingSystem(false)}"/>
+                                        <f:selectItem id="defaultValOS" itemLabel="Please Select..." itemValue="0"/>
+                                        <f:selectItems value="#{backingBean.osNames}"
+                                                       var="os"
+                                                       itemLabel="#{os.name} #{os.version}"
+                                                       itemValue="#{os.idOS}" />
+                                    </h:selectOneMenu>
+                                    </h:panelGrid>
+                                    <h:panelGroup id="GT4GT2">
+                                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" rendered="#{(backingBean.newBEInstance.idBackend.backendName == 'GT2' or backingBean.newBEInstance.idBackend.backendName == 'GT4') and !backingBean.showExistingBEI}">
+                                                <h:outputText value="Job Manager"/>
+                                                <h:selectOneMenu id="jobManagerBEI"
+                                                                 value="#{backingBean.newBEInstance.jobManager}"
+                                                                 style="width: 90%">
+                                                    <f:selectItem id="defaultValJM" itemLabel="Please Select..." itemValue="0"/>
+                                                    <f:selectItems value="#{backingBean.newBEInstance.idBackend.jobManagerCollection}"
+                                                                   var="jobMan"
+                                                                   itemLabel="#{jobMan.jobManagerName}"
+                                                                   itemValue="#{jobMan.jobManagerName}" />
+                                                </h:selectOneMenu>
+
+                                                <h:outputText value="Job Type"/>
+                                                <h:selectOneMenu id="jobTypeidSelect"
+                                                                    style="width: 90%"
+                                                                    value="#{backingBean.selectedBEIJobTypeId}">
+                                                    <f:selectItem id="defaultValJT" itemLabel="Please Select..." itemValue="0"/>
+                                                    <f:selectItems value="#{backingBean.jobTypes}"
+                                                                   var="jobType"
+                                                                   itemLabel="#{jobType.jobTypeName}"
+                                                                   itemValue="#{jobType.jobTypeId}" />
+                                                    <p:ajax event="change" listener="#{backingBean.jobTypeIdListener(false)}" update="growl resourceText jobTypeidSelect" />
+                                                </h:selectOneMenu>
+
+                                                <h:outputText value="Execution Site"/>
+                                                <h:inputText id="newBEInstanceMaxPar"
+                                                             value="#{backingBean.newBEInstance.site}"
+                                                            readonly="false"
+                                                    style="width: 90%">
+                                                </h:inputText>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton id="configCommand" value="Configure" onclick="BEIwidget.close();" actionListener="#{backingBean.createBEInstance(false)}" rendered="#{!backingBean.showExistingBEI}" update="growl, BEIDetails"/>
+                                    </div>
+                                </h:panelGroup>
+                        </h:panelGroup>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">
+
+                        <p:dataTable id="appBrowserTable"
+                                     var="app"
+                                     value="#{backingBean.applications}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rowKey="#{app.name}"
+                                     rows="25">
+                            <f:facet name="header">
+                                <div align="left" style="vertical-align: middle">
+                                    <h:outputText value="Workflows" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right" rendered="#{!backingBean.userGuest}">
+                                        <p:menuitem value="New" url="/user/create-application.xhtml" />
+                                    </p:menuButton>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}" filterMatchMode="contains">
+                                <h:outputText value="#{app.name}" />
+                            </p:column>
+                            <p:column headerText="Owner" sortBy="#{app.ownerLoginName}" filterBy="#{app.ownerLoginName}" filterMatchMode="contains">
+                                <h:outputText value="#{app.ownerLoginName}" />
+                            </p:column>
+                            <p:column headerText="Group" sortBy="#{app.groupName}" filterBy="#{app.groupName}" filterMatchMode="contains">
+                                <h:outputText value="#{app.groupName}" />
+                            </p:column>
+                            <p:column headerText="Status" sortBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterMatchMode="contains">
+                                <h:outputText value="#{backingBean.getPublishedFriendlyName(app.published)}" />
+                            </p:column>
+                            <p:column headerText="Description" >
+                                <h:outputText value="#{app.shortDescription}" />
+                            </p:column>
+                            <p:column style="width:4%">
+                                    <p:commandButton id="selectButton" actionListener="#{backingBean.onApplicationsRowSelectNavigate(app)}" icon="ui-icon-carat-1-e" title="View">
+                                        <f:setPropertyActionListener value="#{app}" target="#{backingBean.selectedApp}" />
+                                    </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

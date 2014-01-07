@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        
+        <ui:composition template="../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <div align="center" style="padding-top: 10px">
+                    <h:graphicImage value="/resources/images/shiwa-logo-small.png" alt="SHIWA logo" />
+                    <h1>Welcome to the SHIWA Workflow Repository</h1>                </div>
+                <center>
+                <div align="left" style="width: 800px">
+                    The FP7 <a href="http://www.shiwa-workflow.eu/">SHIWA project</a> addresses the challenges of the coarse- and fine-grained workflow interoperability. The project created the SHIWA Simulation Platform which enables users to create and run embedded workflows which incorporate workflows of different workflow systems. The platform consists of the SHIWA Science Gateway and the SHIWA VO. The SHIWA Science Gateway contains the <a href="http://ssp.shiwa-workflow.eu/">SHIWA portal</a>, the SHIWA Workflow Repository, the SHIWA Proxy Server, the GEMLCA Service and the GEMLCA Repository.
+    To find out more about the SHIWA Simulation Platform, and learn about how to get access to execute the workflows deployed in the repository, please go to the <a href="http://www.cpc.wmin.ac.uk/cpcsite/index.php/Other_projects:SHIWA_SSPv2">SHIWA wiki page</a>.
+                    <br/>
+                    The SHIWA Workflow Repository manages workflow descriptions, and implementations and configurations of workflows. The repository can be used by the following types of actors:
+                    <UL TYPE="SQUARE">
+                            <LI><b>E-scientists:</b> They can browse and search the repository to find and download workflows. They can use the repository without registration.</LI> 
+                            <LI><b>Workflow developers:</b> They are the workflow owners who can upload, modify and delete workflows. They should register with the repository.</LI>
+                            <LI><b>Repository administrator:</b> The actor who manages the repository.</LI>                            
+                    </UL>
+                    <br/>
+                    <p>Version: #{backingBean.repoVersion}</p>
+                </div>
+                </center>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

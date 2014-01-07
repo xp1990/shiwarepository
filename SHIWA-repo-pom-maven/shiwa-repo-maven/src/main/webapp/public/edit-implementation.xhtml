@@ -1,0 +1,888 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <f:metadata>
+            <f:viewParam name="impid" value="#{backingBean.implementationID}" required="false"/>
+        </f:metadata>
+
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadImplementation}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadImplementation}" prependId="false">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <table width="100%">
+                            <tr><td>
+                                <h:outputText value="Workflow: " style="font-size: 14pt;" />
+                                <h:link value="#{backingBean.selectedImp.appName}"
+                                        outcome="edit-application"
+                                        style="font-size: 14pt; text-decoration: none; color: blue">
+                                        <f:param name="appid" value="#{backingBean.selectedImp.appId}" />
+                                </h:link>
+                                 <br/>
+                                <h:outputText value="Engine: #{backingBean.selectedImp.platformName}(#{backingBean.selectedImp.platformVersion})" style="font-size: 14pt;" /> <br/>
+                                <h:outputText value="Implementation version: #{backingBean.selectedImp.version} " style="font-size: 14pt;" />
+                            </td><td>
+
+
+                               <p:outputPanel id="submittable" style="float: right">
+                                    <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                   width="26"
+                                                   rendered="#{!backingBean.isSelectedImpRunnable()}"
+                                                   style="border-style: none"
+                                                    title="This implementation is not runnable within the SHIWA Simulation Platform."/>
+                                    <p:graphicImage value="/resources/images/play-blue.png"
+                                                    width="26"
+                                                    rendered="#{!backingBean.isSspSession() and backingBean.isSelectedImpRunnable()}"
+                                                    style="border-style: none"
+                                                    title="This implementation is runnable within the SHIWA Simulation Platform."/>
+
+                                    <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and backingBean.isSelectedImpRunnable()}">
+                                        <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
+                                                       title="Click to select workflow implementation for embedding in SSP"
+                                                       ajax="true"
+                                                       update="sspIcons,growl"
+                                                       rendered="#{backingBean.isSelectedImpRunnable() and !backingBean.isImpSelectedForEmbedding(backingBean.selectedImp.id)}">
+                                            <p:graphicImage value="/resources/images/play-blue.png"
+                                                        width="26"
+                                                        style="border-style: none"/>
+                                        </p:commandLink>
+                                        <p:commandLink action="#{backingBean.removeImpForEmbedding()}"
+                                                       title="Click to remove item from the list of selected workflow implementations for emnedding in SSP"
+                                                       ajax="true"
+                                                       update="sspIcons,growl"
+                                                       rendered="#{backingBean.isSelectedImpRunnable() and backingBean.isImpSelectedForEmbedding(backingBean.selectedImp.id)}">
+                                            <p:graphicImage value="/resources/images/play-blue-yellow.png"
+                                                            width="26"
+                                                            style="border-style: none"/>
+                                        </p:commandLink>
+                                    </p:outputPanel>
+                                </p:outputPanel>
+
+                                <br/>
+                                <br/>
+
+                                <p:menuButton value="Actions" style="float: right"
+                                              rendered="#{backingBean.canSubmitImplementation or
+                                                          backingBean.canMarkImplementationOld or
+                                                          backingBean.canMarkImplementationDeprecated or
+                                                          backingBean.canMarkImplementationCompromised or
+                                                          backingBean.canDeleteImplementation}">
+
+                                    <p:menuitem value="Delete"
+                                                onclick="deleteImpDialogWidget.show();"
+                                                rendered="#{backingBean.canDeleteImplementation}" />
+                                    <p:menuitem value="Duplicate"
+                                                onclick="duplicateImpDialogWidget.show();"
+                                                rendered="#{backingBean.canCreateImplementations}"/>
+                                </p:menuButton>
+                            </td>
+                            </tr>
+                        </table>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="editImpDetails">
+                        <p:tab title="Details">
+                            <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" >
+                            <h:outputText value="ID:"/>
+                            <h:outputText value="#{backingBean.selectedImp.id}"/>
+                            <h:outputText/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" id="createPlatformPanel" rendered="#{!backingBean.userGuest}">
+                            <h:outputText value="Engine name:" />
+                            <h:selectOneMenu value="#{backingBean.selectedImp.platformName}"
+                                             style="width: 90%"
+                                             readonly="#{!backingBean.canUpdateImplementation}"
+                                             disabled="#{!backingBean.canUpdateImplementation}">
+                                <f:selectItems value="#{backingBean.platformNames}"
+                                               var="selectPlatformName"
+                                               itemLabel="#{selectPlatformName}"
+                                               itemValue="#{selectPlatformName}" />
+                            </h:selectOneMenu>
+                            <p:commandButton value="Select" action="#{backingBean.update()}" ajax="false" update="createPlatformPanel createPlatformPanel1" />
+
+                            <h:outputText value="Engine version:" />
+                            <h:selectOneMenu value="#{backingBean.selectedImp.platformVersion}"
+                                             readonly="#{!backingBean.canUpdateImplementation}"
+                                             disabled="#{!backingBean.canUpdateImplementation}"
+                                             style="width: 90%">
+                                <f:selectItems value="#{backingBean.platformVersionsForSelected}"
+                                               var="selectPlatformVersion"
+                                               itemLabel="#{selectPlatformVersion}"
+                                               itemValue="#{selectPlatformVersion}" />
+                            </h:selectOneMenu>
+                            <h:outputText/>
+
+                            <h:outputText value="Version:" />
+                            <h:inputText id="newImpVersion"
+                                         value="#{backingBean.selectedImp.version}"
+                                         label="Version"
+                                         readonly="#{!backingBean.canUpdateImplementation}"
+                                         disabled="#{!backingBean.canUpdateImplementation}"                                        style="width: auto"
+                                         title="This is a required field and must be at least 3 characters long">
+                            </h:inputText>
+                            <h:outputText/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" id="createPlatformPanel1">
+                            <h:outputText value="Workflow graph:" rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}"/>
+                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}">
+                                <a href="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" title="Download full size">
+                                    <p:graphicImage value="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" width="300" style="border-style: none"/>
+                                </a>
+                            </p:outputPanel>
+                            <h:outputText/>
+                        </h:panelGrid>
+
+
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Save" action="#{backingBean.updateImplementation}"
+                                             update="growl"
+                                             rendered="#{backingBean.canUpdateImplementation}" />
+                        </div>
+                        </p:tab>
+                        <p:tab title="Visibility">
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+
+                                <p:column>
+
+                                        <h:outputText value="Public:" />
+                                        <h:selectBooleanCheckbox id="editAppPublished"
+                                                                 title="Public:"
+                                                                 value="#{backingBean.implementationPublic}"
+                                                                 readonly="#{!backingBean.canPublishApp}"
+                                                                 disabled="#{!backingBean.canPublishApp}"
+                                                                 />
+
+                                </p:column>
+
+                                <p:column>
+                                    <p:commandButton value="Save"
+                                                     action="#{backingBean.validateImplementation()}"
+                                                     disabled="#{!backingBean.canUpdateAppAccess}"
+                                                     ajax="true"
+                                                     update="growl"
+                                                     oncomplete="if (args.validationFailed) impDialog.show()"/>
+                                </p:column>
+
+                                <p:dialog
+                                    header="Workflow is private!"
+                                    showEffect="explode"
+                                    hideEffect="drop"
+                                    widgetVar="impDialog"
+                                    modal="true">
+                                    <p:ajax event="close" update="growl"/>
+                                    <h:panelGroup>
+                                        <h:outputText value="Implementation is set to public, but abstract workflow is private. Therefore guests users wont be able to view your implementation."/>
+                                        <br/>
+                                        <h:outputText value="Do you wish to make the workflow public?"/>
+                                        <p:commandButton value="Yes" actionListener="#{backingBean.selectedApp.setPublished(true)}"
+                                                         action="#{backingBean.updateAppAccess()}"
+                                                         oncomplete="impDialog.hide()"
+                                                         update="growl"/>
+                                        <p:commandButton value="No"
+                                                         oncomplete="impDialog.hide()"/>
+                                    </h:panelGroup>
+                                </p:dialog>
+
+                        </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Attributes">
+                            <div align="left" style="vertical-align: middle">
+                                <h:outputText value="Attributes" style="font-size: 22pt"/>
+
+                                <p:menuButton value="Actions" style="float: right">
+                                    <p:menuitem value="Expand/Colapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
+                                    <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadImplementationAttributeTree}"/>
+                                    <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}"/>
+                                    <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes}"/>
+                                </p:menuButton>
+
+                                <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}" style="float: right"/>
+
+                            </div>
+
+                            <p:dialog id="errorLogs" header="Error Logs:" widgetVar="ErrorLogs" modal="true" width="780">
+                                <p:outputPanel id="errorLogsPanel">
+                                    <h:inputTextarea value="#{backingBean.errorLogs}"
+                                                     readonly="true"
+                                                     cols="100"
+                                                     rows="40"/>
+                                </p:outputPanel>
+                            </p:dialog>
+
+                            <p:treeTable id="impAttrTreeTable"
+                                         value="#{backingBean.impAttrTree.root}"
+                                         var="node">
+                                <p:column>
+                                        <f:facet name="header">
+                                                Name
+                                        </f:facet>
+                                        <h:outputText value="#{node.key}" />
+                                </p:column>
+                                <p:column>
+                                        <f:facet name="header">
+                                                Value
+                                        </f:facet>
+                                        <h:outputText value="#{node.value}" />
+                                </p:column>
+                                <p:column rendered="#{backingBean.canCreateImpAttributes or backingBean.canDownloadImpFiles}">
+                                    <f:facet name="header">
+                                            Actions
+                                    </f:facet>
+                                    <p:commandLink rendered="#{backingBean.doesImpFileExist(node) and backingBean.canDownloadImpFiles}"
+                                                   title="click to download item">
+                                        <a href="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{node.value}">
+                                            Download
+                                        </a>
+                                    </p:commandLink>
+
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddDep(node) and backingBean.canCreateImpAttributes}"
+                                                   update="addDepPanel dialog"
+                                                   oncomplete="addDepDialog.show();"
+                                                   title="click to add a dependency"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddExecutionParameters(node)}"
+                                                   update="addDepPanel dialog"
+                                                   oncomplete="AddParameters.show();"
+                                                   title="Add parameters"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddExecutionAttr(node) and backingBean.impAttrTree.doesExecutionExist() and backingBean.canCreateImpAttributes}"
+                                                   update="addDepPanel dialog"
+                                                   oncomplete="addExecutionAttr.show();"
+                                                   title="Click to create the workflow executable in the SSP by deploying it to the Submission Service"
+                                                   value=" Create ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canEdit(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="editValueDialog.show();"
+                                                   title="click to edit value"
+                                                   update="editValuePanel dialog"
+                                                   value=" Edit ">
+                                        <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canEditConf(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="editValueDialog.show();"
+                                                   title="click to edit configuration"
+                                                   update="editValuePanel dialog"
+                                                   value=" Edit ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+
+                                    </p:commandLink>
+
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canEditParameters(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="#{backingBean.impAttrTree.clearEditDialog()}"
+                                                   title="click to edit Parameters"
+                                                   update="newEditPanel,EditParameterPanel dialog"
+                                                   value=" Edit ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.parameterNode}" />
+
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canEditDepType(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="editDepTypeDialog.show();"
+                                                   title="click to edit dependency type"
+                                                   update="editDepTypePanel dialog"
+                                                   value=" Edit ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}"/>
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddConfig(node) and backingBean.canCreateImpAttributes}"
+                                                   update="addConfigPanel dialog"
+                                                   oncomplete="addConfigDialog.show();"
+                                                   title="click to add a configuration"
+                                                   value=" Add ">
+
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddDepToConfig(node) and backingBean.canCreateImpAttributes}"
+                                                   update="addDepToConfigPanel dialog"
+                                                   oncomplete="addDepToConfigDialog.show();"
+                                                   title="click to add a dependency to the configuration"
+                                                   value=" Add ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canRemove(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="removeItemDialog.show();"
+                                                   title="click to remove item"
+                                                   update="removeItemPanel dialog"
+                                                   value=" Remove ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canRemoveExecution(node) and backingBean.canCreateImpAttributes}"
+                                                   oncomplete="removeExecutionDialog.show();"
+                                                   title="click to remove execution"
+                                                   update="removeExecutionPanel dialog"
+                                                   value=" Remove ">
+                                                <f:setPropertyActionListener value="#{node}"
+                                                                             target="#{backingBean.impAttrTree.selectedNode}" />
+                                    </p:commandLink>
+                                </p:column>
+                            </p:treeTable>
+                        </p:tab>
+                        <p:tab title="Files" rendered="#{!backingBean.canDownloadImpFiles}">
+                            <p:dataTable id="impFileTableNoDownload"
+                                         value="#{backingBean.filesOfSelectedImplementation}"
+                                         selection="#{backingBean.selectedImpSelectedFiles}"
+                                         var="impFile"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         rowKey="#{impFile.pathName}"
+                                         paginatorAlwaysVisible="true"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Files" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadImpFile or backingBean.canDeleteImpFiles}">
+                                            <p:menuitem value="Upload"
+                                                        onclick="uploadImpFilesDialogWidget.show()"
+                                                        update="growl,impFileTable"
+                                                        rendered="#{backingBean.canUploadImpFile}"/>
+                                            <p:menuitem value="Delete"
+                                                        oncomplete="deleteImpFilesDialogWidget.show()"
+                                                        rendered="#{backingBean.canDeleteImpFiles}"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column selectionMode="multiple" />
+                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}">
+                                    <h:outputText value="#{impFile.pathName}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Files" rendered="#{backingBean.canDownloadImpFiles}">
+                            <p:dataTable id="impFileTable"
+                                         value="#{backingBean.filesOfSelectedImplementation}"
+                                         selection="#{backingBean.selectedImpSelectedFiles}"
+                                         var="impFile"
+                                         rowKey="#{impFile.pathName}"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         paginatorAlwaysVisible="true"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25"
+                                         rendered="#{backingBean.canDownloadImpFiles}">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Files" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadImpFile or backingBean.canDeleteImpFiles}">
+                                            <p:menuitem value="Upload"
+                                                        onclick="uploadImpFilesDialogWidget.show()"
+                                                        update="growl,impFileTable"
+                                                        rendered="#{backingBean.canUploadImpFile}"/>
+                                            <p:menuitem value="Delete"
+                                                        oncomplete="deleteImpFilesDialogWidget.show()"
+                                                        rendered="#{backingBean.canDeleteImpFiles}"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteImpFiles}"/>
+                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}">
+                                    <a href="../download?impid=#{impFile.impId}&amp;filename=#{impFile.pathName}">
+                                        <h:outputText value="#{impFile.pathName}"/>
+                                    </a>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Comments" rendered="false">
+                             <h:outputText value="Under construction" />
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                <h:form id="dialog">
+                     <p:dialog id="deleteImpDialog"
+                              widgetVar="deleteImpDialogWidget"
+                              modal="true"
+                              header="Delete implementation?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this implementation?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteImpDialogWidget.hide()" action="#{backingBean.deleteImplementation}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteImpDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="duplicateImpDialog"
+                              widgetVar="duplicateImpDialogWidget"
+                              modal="true"
+                              header="Duplicate implementation?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to duplicate this implementation?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="duplicateImpDialogWidget.hide()" action="#{backingBean.duplicateImplementation}" ajax="false" update="mainForm,growl" />
+                                <p:commandButton value="No" onclick="duplicateImpDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="deleteImpFilesDialog"
+                              widgetVar="deleteImpFilesDialogWidget"
+                              modal="true"
+                              header="Delete files?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl impFileTable ImpFileTableNoDownload"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete selected file(s)?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteImpFilesDialogWidget.hide()" action="#{backingBean.deleteImpFiles}" ajax="true" update="growl ImpFileTable ImpFileTableNoDownload" />
+                                <p:commandButton value="No" onclick="deleteImpFilesDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="uploadImpFilesDialog"
+                              widgetVar="uploadImpFilesDialogWidget"
+                              modal="true"
+                              header="Upload files"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false"
+                              width="450">
+                        <p:ajax event="close" update="growl impFileTable ImpFileTableNoDownload"/>
+                        <p:panel>
+                            <p:fileUpload fileUploadListener="#{backingBean.handleImpFileUpload}"
+                                          multiple="true"
+                                          auto="false"
+                                          label="Browse"
+                                          sizeLimit="500000000"
+                                          update="growl impFileTable ImpFileTableNoDownload"/>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Close" onclick="uploadImpFilesDialogWidget.hide()" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog header="Create executable workflow" widgetVar="addExecutionAttr" height="200" width="400"  >
+                                    <p:outputPanel id="ad">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel for="MaxWallTime" value="MaxWallTime: " />
+                                                <h:inputText id="MaxWallTime" style="font-weight:bold"
+                                                             value="#{backingBean.impAttrTree.maxWallTime}"  />
+                                                <h:outputLabel for="maxParallelism" value="MaxParallelism " />
+                                                <h:inputText id="MaxParallelism" style="font-weight:bold"
+                                                             value="#{backingBean.impAttrTree.maxParallelism}"  />
+                                        </h:panelGrid>
+                                     </p:outputPanel>
+                                     <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addExecutionAttr()}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                     </div>
+                            </p:dialog>
+                            <p:dialog header="Editing: Parameter" showEffect="fade" widgetVar="EditParametersDialog" id="EditParameterDialog" modal="true"  height="400" width="450">
+                                 <p:outputPanel id="newEditPanel">
+                                    <div align="left" style="padding-top: 5px">
+                                            <h:outputText value="Editing: #{backingBean.impAttrTree.parameterNode.longName}"  />
+                                    </div>
+                                </p:outputPanel >
+                                <p:outputPanel id="EditParameterPanel" >
+                                    <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel for="type" value="Type: "/>
+                                                <h:selectOneMenu id="EditType" value="#{backingBean.impAttrTree.editParaType}"  disabled="true" title="Select the type of parameter this is" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.editPara.paramterTypes}"
+                                                                   var="editParameterType"
+                                                                   itemLabel="#{parameterType}"
+                                                                   itemValue="#{parameterType}" />
+                                                    <p:ajax listener="#{backingBean.impAttrTree.editPara.handleEditTypeChange()}" update="EditParameterPanel" />
+                                                 </h:selectOneMenu>
+                                                 <h:outputLabel value="Edit portID: " rendered="#{backingBean.impAttrTree.isEditParaTypeInput() or backingBean.impAttrTree.isEditParaTypeOutput()}"/>
+                                                 <h:outputLabel value="Edit depID: " rendered="#{backingBean.impAttrTree.isEditParaTypeDep()}"/>
+                                                 <h:selectOneMenu id="Editids" value="#{backingBean.impAttrTree.editIdOfSelectedType}"
+                                                                  rendered="#{backingBean.impAttrTree.isEditParaTypeInput() or backingBean.impAttrTree.isEditParaTypeOutput() or backingBean.impAttrTree.isEditParaTypeDep()}"
+                                                                  title="Id of port or dependency the parameter represents.">
+                                                     <f:selectItems value="#{backingBean.impAttrTree.editPara.editSelectedIdList}"
+                                                                   var="editIdOfSelectedType"
+                                                                   itemLabel="#{editIdOfSelectedType}"
+                                                                   itemValue="#{editIdOfSelectedType}" />
+                                                 </h:selectOneMenu>
+                                                 <h:outputLabel  value="Edit Title: "  rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}" />
+                                                 <h:inputText style="font-weight:bold"
+                                                              rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"
+                                                              value="#{backingBean.impAttrTree.editTitleCustom}"
+                                                              title="Short description of the parameter"/>
+                                                  <h:outputLabel value="Edit Default Value: " rendered="#{backingBean.impAttrTree.isEditParaTypeInput() or backingBean.impAttrTree.isEditParaTypeOutput() or backingBean.impAttrTree.isEditParaTypeDep()}" />
+                                                  <h:selectOneMenu id="Editdfv" value="#{backingBean.impAttrTree.editDefaultValue}"
+                                                                   rendered="#{backingBean.impAttrTree.isEditParaTypeInput() or backingBean.impAttrTree.isEditParaTypeOutput() or backingBean.impAttrTree.isEditParaTypeDep()}"
+                                                                   title="The default value of the parameter which can be a string or a file.">
+                                                      <f:selectItems value="#{backingBean.impAttrTree.editPara.editDefaultValueList}"
+                                                                   var="eidtDefValueofParameter"
+                                                                   itemLabel="#{eidtDefValueofParameter}"
+                                                                   itemValue="#{eidtDefValueofParameter}" />
+                                                   </h:selectOneMenu>
+                                              <h:outputLabel value="Edit Default Value: "  rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
+                                              <p:outputPanel id="EditCustomPanel" rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}">
+                                                    <h:selectOneRadio id="EditCustomRadio" layout="EditCustom" value="#{backingBean.impAttrTree.editPara.radioButton}"
+                                                                     title="Select a file or Enter a value">
+                                                       <f:selectItems value="#{backingBean.impAttrTree.editPara.radioButtonList}"
+                                                                   var="editRadioButton"
+                                                                   itemLabel="#{editRadioButton}"
+                                                                   itemValue="#{editRadioButton}" />
+                                                       <p:ajax listener="#{backingBean.impAttrTree.editPara.handleRadioOptionChange()}" update="EditParameterPanel"/>
+                                                    </h:selectOneRadio>
+                                                <h:panelGrid  columns="2">
+                                                      <h:inputText id="editDefaultValue"
+                                                                   value="#{backingBean.impAttrTree.editDefaultValueCustom}" disabled="#{backingBean.impAttrTree.editPara.radioOptionFile}"/>
+                                                      <h:selectOneMenu id="EditDefaultValueFile" value="#{backingBean.impAttrTree.editPara.defaultValueCustomFile}" disabled="#{backingBean.impAttrTree.editPara.radioOptionText}">
+                                                         <f:selectItems value="#{backingBean.fileNamesOfSelectedImplementation}"
+                                                                   var="editDefaultValue"
+                                                                   itemLabel="#{editDefaultValue}"
+                                                                   itemValue="#{editDefaultValue}" />
+                                                      </h:selectOneMenu>
+                                                </h:panelGrid>
+                                             </p:outputPanel>
+                                              <h:outputLabel for="editFile" value="Edit File: " rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
+                                             <h:selectBooleanCheckbox id="ediFile"
+                                                             title="whether the parameter is a file."
+                                                             value="#{backingBean.impAttrTree.editFileCustom}" rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
+                                              <h:outputLabel for="input" value="Edit Input: " rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
+                                             <h:selectBooleanCheckbox id="editInput"
+                                                             title="whether the parameter is an input."
+                                                             value="#{backingBean.impAttrTree.editInputCustom}" rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
+                                             <h:outputLabel for="editCmdLine" value="Edit Command Line: " />
+                                             <h:selectBooleanCheckbox id="editCmdline"
+                                                             title="whether the parameter should be passed as a command line argument."
+                                                             value="#{backingBean.impAttrTree.editCmdLine}"/>
+                                             <h:outputLabel for="editSwitchName" value="Edit Switch Name: " />
+                                             <h:inputText id="editSwitchName" style="font-weight:bold"
+                                                          value="#{backingBean.impAttrTree.editSwitchName}"
+                                                          title="what should appear before the parameter in the command line"/>
+                                             <h:outputLabel for="editFixedout" value="Edit Fixed: " />
+                                             <h:selectBooleanCheckbox id="editFixedId"
+                                                             title="whether the parameter is fixed"
+                                                             value="#{backingBean.impAttrTree.editFixed}"/>
+                                  </h:panelGrid>
+
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="OK" action="#{backingBean.impAttrTree.updateWithEditedValues()}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                               </p:outputPanel>
+                            </p:dialog>
+                            <p:dialog header="Add Parameters" widgetVar="AddParameters"  height="400" width="450">
+                                <p:outputPanel id="newPanel">
+                                    <h:panelGrid  columns="2" cellpadding="5">
+                                    <h:outputLabel value="Parameter ID: " />
+                                              <h:selectOneMenu value="#{backingBean.impAttrTree.newPara.paraID}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.paraTypePool}"
+                                                                   var="defaultValue"
+                                                                   itemLabel="#{paraId}"
+                                                                   itemValue="#{paraId}" />
+                                               </h:selectOneMenu>
+                                   </h:panelGrid>
+                                </p:outputPanel >
+                                <p:outputPanel id="addParaPanel">
+                                  <h:panelGrid  columns="2" cellpadding="5">
+
+                                              <h:outputLabel for="addType" value="Type: "/>
+                                              <h:selectOneMenu  id="addType" value="#{backingBean.impAttrTree.newPara.paramterType}"  title="select the type of parameter this is" >
+                                                  <f:selectItems value="#{backingBean.impAttrTree.newPara.paramterTypes}"
+                                                                   var="parameterType"
+                                                                   itemLabel="#{parameterType}"
+                                                                   itemValue="#{parameterType}" />
+
+                                                      <p:ajax listener="#{backingBean.impAttrTree.newPara.handleTypeChange()}" update="addParaPanel"/>
+                                               </h:selectOneMenu>
+
+                                               <h:outputLabel  value="Title: "  rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                               <h:inputText style="font-weight:bold"
+                                                             rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"
+                                                             value="#{backingBean.impAttrTree.newPara.titleOfCustom}"
+                                                             title="Short description of the parameter"/>
+                                               <h:outputLabel value="portID: " rendered="#{backingBean.impAttrTree.isParameterTypeInput() or backingBean.impAttrTree.isParameterTypeOutput()}"/>
+                                               <h:outputLabel value="depID: " rendered="#{backingBean.impAttrTree.isParameterTypeDep()}"/>
+                                               <h:selectOneMenu id="ids" value="#{backingBean.impAttrTree.newPara.idOfSelectedType}" rendered="#{backingBean.impAttrTree.isParameterTypeInput() or backingBean.impAttrTree.isParameterTypeOutput() or backingBean.impAttrTree.isParameterTypeDep()}"
+                                                                  title="Id of port or dependency the parameter represents.">
+                                                   <f:selectItems value="#{backingBean.impAttrTree.newPara.IDList}"
+                                                                   var="portId"
+                                                                   itemLabel="#{idOfSelectedType}"
+                                                                   itemValue="#{idOfSelectedType}" />
+                                                   <p:ajax listener="#{backingBean.impAttrTree.newPara.handleDefaultValueChange()}" update="addParaPanel,dfv"/>
+                                               </h:selectOneMenu>
+                                               <h:outputLabel value="Default Value: "  rendered="#{backingBean.impAttrTree.isParameterTypeInput() or backingBean.impAttrTree.isParameterTypeOutput() or backingBean.impAttrTree.isParameterTypeDep()}"/>
+                                               <h:selectOneMenu id="dfv" value="#{backingBean.impAttrTree.newPara.defValueofParameter}"
+                                                                  rendered="#{backingBean.impAttrTree.isParameterTypeInput() or backingBean.impAttrTree.isParameterTypeOutput() or backingBean.impAttrTree.isParameterTypeDep()}"
+                                                                  title="The default value of the parameter which can be a string or a file.">
+                                                     <f:selectItems value="#{backingBean.impAttrTree.newPara.defValueList}"
+                                                                   var="depId"
+                                                                   itemLabel="#{defValueofParameter}"
+                                                                   itemValue="#{defValueofParameter}" />
+                                               </h:selectOneMenu>
+                                               <h:outputLabel value="Default Value: "  rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                               <p:outputPanel id="customPanel" rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}">
+                                                   <h:selectOneRadio id="customRadio" layout="custom" value="#{backingBean.impAttrTree.newPara.radioButton}"
+                                                                     title="Select a file or Enter a value">
+                                                       <f:selectItems value="#{backingBean.impAttrTree.newPara.radioButtonList}"
+                                                                   var="radioButton"
+                                                                   itemLabel="#{radioButton}"
+                                                                   itemValue="#{radioButton}" />
+                                                       <p:ajax listener="#{backingBean.impAttrTree.newPara.handleRadioOptionChange()}" update="addParaPanel,file"/>
+                                                    </h:selectOneRadio>
+                                                <h:panelGrid  columns="2">
+                                                     <h:inputText id="defaultValueText"
+                                                                  value="#{backingBean.impAttrTree.newPara.defaultValueCustomText}" disabled="#{backingBean.impAttrTree.newPara.radioOptionFile}"/>
+                                                     <h:selectOneMenu  id="defaultValueFile" value="#{backingBean.impAttrTree.newPara.defaultValueCustomFile}" disabled="#{backingBean.impAttrTree.newPara.radioOptionText}">
+                                                         <f:selectItems value="#{backingBean.fileNamesOfSelectedImplementation}"
+                                                                   var="defaultValueCustomFile"
+                                                                   itemLabel="#{defaultValueCustomFile}"
+                                                                   itemValue="#{defaultValueCustomFile}" />
+                                                     </h:selectOneMenu>
+                                                </h:panelGrid>
+                                             </p:outputPanel>
+                                             <h:outputLabel for="file" value="File: " rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                             <h:selectBooleanCheckbox id="file"
+                                                             title="whether the parameter is a file."
+                                                             value="#{backingBean.impAttrTree.newPara.fileCustom}" rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                              <h:outputLabel for="input" value="Input: " rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                             <h:selectBooleanCheckbox id="input"
+                                                             title="whether the parameter is an input."
+                                                             value="#{backingBean.impAttrTree.newPara.isCustomInput}" rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
+                                             <h:outputLabel for="cmdLine" value="Command Line: " />
+                                             <h:selectBooleanCheckbox id="cmdline"
+                                                             title="whether the parameter should be passed as a command line argument."
+                                                             value="#{backingBean.impAttrTree.newPara.cmdLine}"/>
+                                             <h:outputLabel for="switchName" value="Switch Name: " />
+                                             <h:inputText id="switchName" style="font-weight:bold"
+                                                          value="#{backingBean.impAttrTree.newPara.switchName}"
+                                                          title="what should appear before the parameter in the command line"/>
+                                             <h:outputLabel for="fixed" value="Fixed: " />
+                                             <h:selectBooleanCheckbox id="fixed"
+                                                             title="whether the parameter is fixed"
+                                                             value="#{backingBean.impAttrTree.newPara.fixed}"  />
+                                            </h:panelGrid>
+                                          </p:outputPanel>
+                                        <div align="right" style="padding-top: 5px">
+                                            <p:commandButton value="Create" action="#{backingBean.impAttrTree.addExecuParametre()}" ajax="false" />
+                                            <p:commandButton value="Reset" type="reset" />
+                                        </div>
+                           </p:dialog>
+
+                            <p:dialog id="deployDialog" header="Workflow deployment" widgetVar="WorkflowDeployment">
+                                <h:outputText value="Deploying workflow. Depending on the number and size of files, this can take a few minutes." style="font-weight:bold" />
+                            </p:dialog>
+                            <p:dialog id="reDeployDialog" header="Workflow deployment" widgetVar="WorkflowReDeployment">
+                                <h:outputText value="Re-deploying workflow. Depending on the number and size of files, this can take a few minutes." style="font-weight:bold" />
+                            </p:dialog>
+                            <p:dialog id="undeployDialog" header="Workflow undeployment" widgetVar="WorkflowUndeployment">
+                                <h:outputText value="Workflow is being undeployed." style="font-weight:bold"/>
+                            </p:dialog>
+                            <p:dialog id="deployErrorDialog" header="Workflow deployment error" widgetVar="workflowDeployErrorDialog">
+                                <h:outputText value="Workflow is undeploying" style="font-weight:bold"/>
+                            </p:dialog>
+                            <p:dialog header="Add Dependency" showEffect="fade" widgetVar="addDepDialog">
+                                  <p:outputPanel id="addDepPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel value="Dependency ID: " />
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.newDep.depId}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.depPool}"
+                                                                   var="depId"
+                                                                   itemLabel="#{depId}"
+                                                                   itemValue="#{depId}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel for="title" value="Title: " />
+                                                <h:inputText id="title" style="font-weight:bold"
+                                                             value="#{backingBean.impAttrTree.newDep.title}"  />
+                                                <h:outputLabel value="Dependency Type: " />
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.newDep.type}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.depTypePool}"
+                                                                   var="depType"
+                                                                   itemLabel="#{depType}"
+                                                                   itemValue="#{depType}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel for="description" value="Description: " />
+                                                <h:inputTextarea id="description"
+                                                                 value="#{backingBean.impAttrTree.newDep.description}"
+                                                                 style="width: auto"
+                                                                 cols="20"
+                                                                 rows="5"/>
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addDependency}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Edit Dependency Type" showEffect="fade" widgetVar="editDepTypeDialog" id="editDepTypeContent" modal="true" >
+                                <p:outputPanel id="editDepTypePanel">
+                                    <h:outputText value="Editing: #{backingBean.impAttrTree.selectedNode.longKey}"  />
+                                    <h:selectOneMenu value="#{backingBean.impAttrTree.depTypeValue}" >
+                                        <f:selectItems value="#{backingBean.impAttrTree.depTypePool}"
+                                                       var="editTypeId"
+                                                       itemLabel="#{editDepType}"
+                                                       itemValue="#{editDepType}" />
+                                    </h:selectOneMenu>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="OK" action="#{backingBean.impAttrTree.updateValueWithDepType()}" ajax="false" />
+                                    </div>
+                                </p:outputPanel>
+                            </p:dialog>
+                            <p:dialog header="Add Configuration" showEffect="fade" widgetVar="addConfigDialog">
+                                  <p:outputPanel id="addConfigPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel value="Configuration ID: " />
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.newConfig.configId}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.configPool}"
+                                                                   var="configId"
+                                                                   itemLabel="#{configId}"
+                                                                   itemValue="#{configId}" />
+                                                </h:selectOneMenu>
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addConfig}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Add Dependency to Configuration" showEffect="fade" widgetVar="addDepToConfigDialog">
+                                  <p:outputPanel id="addDepToConfigPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel value="Dependency reference: " />
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.newConfig.depRef}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.depPool}"
+                                                                   var="depRef"
+                                                                   itemLabel="#{depRef}"
+                                                                   itemValue="#{depRef}" />
+                                                </h:selectOneMenu>
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addDepToConfig}" ajax="false" />
+                                        <p:commandButton value="Reset" type="reset" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Add Child Dependency" showEffect="fade" widgetVar="addChildDepDialog">
+                                  <p:outputPanel id="addChildDepPanel">
+                                        <h:panelGrid  columns="2" cellpadding="5">
+                                                <h:outputLabel value="Dependency reference: " />
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.newDep.childDep}" >
+                                                    <f:selectItems value="#{backingBean.impAttrTree.depPool}"
+                                                                   var="depRef"
+                                                                   itemLabel="#{depRef}"
+                                                                   itemValue="#{depRef}" />
+                                                </h:selectOneMenu>
+                                        </h:panelGrid>
+                                    </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addChildDependency}" ajax="false" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Remove Item" showEffect="fade" widgetVar="removeItemDialog">
+                                <p:outputPanel id="removeItemPanel">
+                                    <h:outputText value="Are you sure you want to remove '#{backingBean.impAttrTree.selectedNode.longKey}'?" />
+                                </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Yes" action="#{backingBean.impAttrTree.removeItem()}" ajax="false" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Remove Execution" showEffect="fade" widgetVar="removeExecutionDialog">
+                                <p:outputPanel id="removeExecutionPanel">
+                                    <h:outputText value="Are you sure you want to remove '#{backingBean.impAttrTree.selectedNode.longKey}'?" />
+                                </p:outputPanel>
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Yes" action="#{backingBean.impAttrTree.removeExecution()}" ajax="false" />
+                                    </div>
+                            </p:dialog>
+                            <p:dialog header="Edit Value"
+                                      showEffect="fade"
+                                      widgetVar="editValueDialog"
+                                      id="editValueContent"
+                                      modal="true"
+                                      dynamic="true"
+                                      width="700">
+                                <p:outputPanel id="editValuePanel">
+                                    <div align="left" style="padding-top: 5px">
+                                        <h:outputText value="Editing: #{backingBean.impAttrTree.selectedNode.longKey}"/>
+                                    </div>
+                                    <p:tabView>
+                                        <p:tab title="Select file" id="fileSelect" rendered="#{backingBean.impAttrTree.selectedNode.canHaveFileValue()}">
+                                            <p:outputPanel id="editConfSelectPanel">
+                                                <h:selectOneMenu value="#{backingBean.impAttrTree.fileSelValue}"
+                                                                 style="width: 90%">
+                                                    <f:selectItems value="#{backingBean.fileNamesOfSelectedImplementation}"
+                                                                   var="selectFile"
+                                                                   itemLabel="#{selectFile}"
+                                                                   itemValue="#{selectFile}" />
+                                                </h:selectOneMenu>
+                                                <div align="right" style="padding-top: 5px">
+                                                    <p:commandButton value="OK" action="#{backingBean.impAttrTree.updateValueWithFileSel()}" ajax="false" />
+                                                </div>
+                                            </p:outputPanel>
+                                        </p:tab>
+                                        <p:tab title="Select workflow" id="wfSelect" rendered="#{backingBean.impAttrTree.selectedNode.canHaveWfImpValue()}">
+                                            <p:outputPanel id="editConfSelectWfPanel">
+                                                <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft,justifyLeft" id="editConfSelectWfPanelGrid">
+
+                                                    <h:outputText value="Workflow: "/>
+                                                    <h:selectOneMenu value="#{backingBean.impAttrTree.wfSelValue}"
+                                                                     style="width: 90%">
+                                                        <f:selectItems value="#{backingBean.workflowSummaries}"
+                                                                       var="selectWf"
+                                                                       itemLabel="#{selectWf.workflowName}"
+                                                                       itemValue="#{selectWf.workflowName}" />
+                                                    </h:selectOneMenu>
+                                                    <p:commandButton value="Select" action="#{backingBean.update()}" ajax="true" update="editConfSelectWfPanel" />
+
+                                                    <h:outputText value="Implementation: "/>
+                                                    <h:selectOneMenu value="#{backingBean.impAttrTree.impSelValue}"
+                                                                     style="width: 90%">
+                                                        <f:selectItems value="#{backingBean.getImplementationFullNames(backingBean.impAttrTree.wfSelValue)}"
+                                                                       var="selectImp"
+                                                                       itemLabel="#{selectImp}"
+                                                                       itemValue="#{selectImp}" />
+                                                    </h:selectOneMenu>
+                                                    <p:commandButton value="OK" action="#{backingBean.impAttrTree.updateValueWithWfSel()}" ajax="false" />
+
+                                                </h:panelGrid>
+                                            </p:outputPanel>
+                                        </p:tab>
+                                        <p:tab title="Enter value" id="valueEnter">
+                                            <p:outputPanel id="editConfValuePanel">
+                                                <h:inputTextarea id="editTextValue"
+                                                                 value="#{backingBean.impAttrTree.textEditValue}"
+                                                                 style="width: 90%"
+                                                                 rows="5"/>
+                                                <div align="right" style="padding-top: 5px">
+                                                    <p:commandButton value="OK" action="#{backingBean.impAttrTree.updateValueWithTextEdit()}" ajax="false" />
+                                                    <p:commandButton value="Reset" type="reset" />
+                                                </div>
+                                            </p:outputPanel>
+                                        </p:tab>>
+                                    </p:tabView>
+                                </p:outputPanel>
+                            </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

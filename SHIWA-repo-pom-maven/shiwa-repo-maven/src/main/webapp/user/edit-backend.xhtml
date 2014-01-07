@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateBackend}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>                
+                <h:form id="mainForm" rendered="#{backingBean.canCreateBackend}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="Edit Backend #{backingBean.selectedBackend.backendName}" style="font-size: 22pt" />
+                         <p:menuButton value="Actions" style="float: right">
+                            <p:menuitem value="Delete" onclick="deleteBackendDialogWidget.show();" />
+                        </p:menuButton>
+                        <hr size="3" noshade="true"/>
+                    </div>                                        
+                    <p:panel>
+                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+
+                            <h:outputText value="Name:"/>
+                            <h:inputText id="EditNameBE"
+                                         value="#{backingBean.selectedBackend.backendName}"
+                                         required="true"
+                                         label="Name"
+                                         readonly="false"
+                                         style="width: 90%"
+                                         title="This is a required field it must be between 3 and 50 characters and must be unique">
+                                <f:validateLength minimum="3" maximum="250"/>
+                            </h:inputText>                          
+                            
+                            <h:outputText value="Description:" />
+                            <h:inputTextarea id="EditDescBE"
+                                             value="#{backingBean.selectedBackend.backendDesc}"
+                                             required="false"
+                                             label="Description"
+                                             readonly="false"
+                                             style="width: 100%"
+                                             rows="10"
+                                             title="This is an optional field and must be less than 5000 characters long">
+                                <f:validateLength minimum="0" maximum="5000"/>
+                            </h:inputTextarea>                            
+                            
+                            <h:outputText value="Supported Job Managers" />
+                                <h:selectManyListbox id="editJobManagers"
+                                                   value="#{backingBean.selectedJobManagers}"                                                   
+                                                   style="width: 90%"                                                   
+                                                   title="Use Ctrl + click to select more than one supported Job Manager">
+                                    <f:selectItems value="#{backingBean.jobManagers}"
+                                                   var="j"
+                                                   itemLabel="#{j.jobManagerName}"                                                  
+                                                   itemValue="#{j.jobManagerName}" />
+                                </h:selectManyListbox>
+                            
+                        </h:panelGrid>
+                    </p:panel>                    
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Update" action="#{backingBean.updateBackend()}" ajax="false" />                        
+                    </div>
+                    
+                    <p:dialog id="deleteBackendDialog"
+                              widgetVar="deleteBackendDialogWidget"
+                              modal="true"
+                              header="Delete backend?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this Backend? All the corresponding Backend Instances and therefore Workflow Engine Implementations will be destroyed also." />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteBackendDialogWidget.hide();" action="#{backingBean.deleteBackend()}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteBackendDialogWidget.hide();"/>
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">
+                            <p:dataTable id="impBrowserTable"
+                                     var="appImp"
+                                     value="#{backingBean.implementations}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rowKey="#{appImp.appName}"
+                                     rows="25">
+                                <f:facet name="header">
+                                    <div align="right">
+                                        <h:outputText value="Implementations" style="font-size: 20pt"/>
+                                    </div>
+                                </f:facet>
+                                <p:column headerText="Submittable" sortBy="#{appImp.isSubmittable()}" style="width: 100px;">
+                                   <p:outputPanel>
+                                        <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                       width="26"
+                                                       rendered="#{!appImp.isSubmittable()}"
+                                                       style="border-style: none"
+                                                        title="This implementation is not runnable within the SHIWA Simulation Platform, because it has not been deployed to GEMLCA."/>
+                                        <p:graphicImage value="/resources/images/play-blue.png"
+                                                        width="26"
+                                                        rendered="#{!backingBean.isSspSession() and appImp.isSubmittable()}"
+                                                        style="border-style: none"
+                                                        title="This implementation is runnable within the SHIWA Simulation Platform, it has been deployed to GEMLCA."/>
+
+                                        <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and appImp.isSubmittable()}">
+                                            <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
+                                                           title="Click to select workflow implementation for embedding in SSP"
+                                                           ajax="true"
+                                                           update="sspIcons,growl"
+                                                           rendered="#{appImp.isSubmittable() and !backingBean.isImpSelectedForEmbedding(appImp.id)}">
+                                                <p:graphicImage value="/resources/images/play-blue.png"
+                                                            width="26"
+                                                            style="border-style: none"/>
+                                                <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}"/>
+                                            </p:commandLink>
+                                            <p:commandLink action="#{backingBean.removeImpForEmbedding()}"
+                                                           title="Click to remove item from the list of selected workflow implementations for emnedding in SSP"
+                                                           ajax="true"
+                                                           update="sspIcons,growl"
+                                                           rendered="#{appImp.isSubmittable() and backingBean.isImpSelectedForEmbedding(appImp.id)}">
+                                                <p:graphicImage value="/resources/images/play-blue-yellow.png"
+                                                                width="26"
+                                                                style="border-style: none"/>
+                                                <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}"/>
+                                            </p:commandLink>
+                                        </p:outputPanel>
+                                    </p:outputPanel>
+                                </p:column>
+                                <p:column sortBy="#{appImp.appName}" filterBy="#{appImp.appName}" filterMatchMode="contains">
+                                    <f:facet name="header">Workflow</f:facet>
+                                    <h:outputText value="#{appImp.appName}" />
+                                </p:column>
+                                <p:column sortBy="#{appImp.platformName} (#{appImp.platformVersion})" filterBy="#{appImp.platformName} (#{appImp.platformVersion})" filterMatchMode="contains">
+                                    <f:facet name="header">Engine</f:facet>
+                                    <h:outputText value="#{appImp.platformName} (#{appImp.platformVersion})" />
+                                </p:column>
+                                <p:column sortBy="#{appImp.version}" filterBy="#{appImp.version}" filterMatchMode="contains">
+                                    <f:facet name="header">Version</f:facet>
+                                    <h:outputText value="#{appImp.version}" />
+                                </p:column>
+                                <p:column sortBy="#{backingBean.getImpSummary(appImp).dcis}" filterBy="#{backingBean.getImpSummary(appImp).dcis}" filterMatchMode="contains">
+                                    <f:facet name="header">DCIs</f:facet>
+                                    <h:outputText value="#{backingBean.getImpSummary(appImp).dcis}" />
+                                </p:column>
+                                <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
+                                    <h:outputText value="#{appImp.statusFriendlyName}" />
+                                </p:column>
+                                <p:column style="width:4%">
+                                    <p:commandButton id="selectButton" immediate="true" actionListener="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(appImp)}" icon="ui-icon-carat-1-e" title="View">
+                                        <f:setPropertyActionListener value="#{appImp}" target="#{backingBean.selectedImp}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

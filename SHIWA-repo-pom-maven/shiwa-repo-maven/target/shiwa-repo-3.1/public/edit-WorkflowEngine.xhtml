@@ -1,0 +1,586 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canReadWorkflowEngine}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canReadWorkflowEngine}" prependId="false">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <table width="100%">
+                            <tr><td>
+                                <h:outputText value="Selected workflow engine: #{backingBean.selectedWorkflowEngine.name}" style="font-size: 14pt" />
+                            </td></tr>
+                        </table>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:tabView id ="editWEDetails">
+                        <p:tab title="Details">
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="ID:"/>
+                                <h:outputText value="#{backingBean.selectedWorkflowEngine.id}"/>
+                                <h:outputText value="Name:" />
+                                <h:outputText value="#{backingBean.selectedWorkflowEngine.name}" />
+                                <h:outputText value="Version" />
+                                <h:outputText value="#{backingBean.selectedWorkflowEngine.version}" />
+                                <h:outputText value="Description:" style="width: 13ex"/>
+                                <h:outputText value="#{backingBean.selectedWorkflowEngine.description}" />
+                            </h:panelGrid>
+                            <p:commandButton value="Delete" onclick="deleteWEDialogWidget.show();" rendered="#{backingBean.canCreateWorkflowEngine}"/>
+                        </p:tab>
+                        <p:tab title="Implementations">
+                            <p:dataTable id="WEImpBrowserTable"
+                                     var="WEImp"
+                                     value="#{backingBean.getMyImplementations()}"
+                                     paginator="true"
+                                     rowKey="#{WEImp.idWEImp}"
+                                     selection="#{backingBean.selectedWEImp}"
+                                     paginatorPosition="top"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">
+                                <f:facet name="header">
+                                    <div align="left">
+                                        <h:outputText value="Implementations" style="font-size: 20pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canCreateWEImplementations}">
+                                            <p:menuitem value="New" url="/user/create-WEImplementation.xhtml"/>
+                                            <p:menuitem value="Duplicate" onclick="dupeWEImpDialogWidget.show();"/>
+                                            <p:menuitem value="Delete" onclick="deleteWEImpDialogWidget.show();" rendered="#{backingBean.canDeleteWEImplementation}"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:2%">
+                                    <p:rowToggler />
+                                </p:column>
+                                <p:column sortBy="#{WEImp.nameWEImp}" filterBy="#{WEImp.nameWEImp}">
+                                    <f:facet name="header">Name</f:facet>
+                                    <h:outputText value="#{WEImp.nameWEImp}" />
+                                </p:column>
+                                <p:column style="width:50%">
+                                    <f:facet name="header">Description</f:facet>
+                                    <h:outputText value="#{WEImp.descriptionWEImp}" />
+                                </p:column>
+                                <p:column headerText="Backend Configuration" sortBy="#{WEImp.idBackendInst.backendInstName}" filterBy="#{WEImp.idBackendInst.backendInstName}" filterMatchMode="contains">
+                                    <h:outputText value="#{WEImp.idBackendInst.backendInstName}" />
+                                </p:column>
+
+                                <p:column selectionMode="single" style="width:5%" rendered="#{backingBean.canCreateWEImplementations}"/>
+
+                                <p:rowExpansion>
+                                    <h:panelGrid id="display" columns="3" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+
+                                        <h:outputText value="ID"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.idWEImp}"/>
+                                        <h:outputText/>
+
+                                        <h:outputText value="Name"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.nameWEImp}"/>
+                                        <h:outputText/>
+
+                                        <h:outputText value="Description"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.descriptionWEImp}"/>
+                                        <p:commandButton oncomplete="editDescriptionWidget.show();"
+                                                               title="Edit Description"
+                                                               immediate="true"
+                                                               icon="ui-icon-pencil"
+                                                               update="editDescriptionForm"
+                                                               actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"
+                                                               disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"/>
+
+
+                                        <h:outputText value="Pre-Deployed"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.preDeployed}"/>
+                                        <p:commandButton oncomplete="PredeployedEditWidget.show();"
+                                                                   title="Edit PreDeployed or On-The-Fly Status"
+                                                                   immediate="true"
+                                                                   icon="ui-icon-pencil"
+                                                                   update="editPredeployedEditForm"
+                                                                   actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"
+                                                                   disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"/>
+
+
+                                        <h:outputText value="Prefix Data"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.prefixData}"/>
+                                        <p:commandButton oncomplete="PrefixDataEditWidget.show();"
+                                                           title="Edit Prefix Data"
+                                                           immediate="true"
+                                                           tabindex=""
+                                                           icon="ui-icon-pencil"
+                                                           update="editPrefixDataForm"
+                                                           actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"
+                                                           disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"/>
+
+                                        <h:outputText value="Backend Configuration"/>
+                                        <p:commandLink oncomplete="viewBEIDetailsWidget.show();"
+                                                           title="View Backend Configuration Details"
+                                                           value="#{WEImp.idBackendInst.backendInstName}"
+                                                           immediate="true"
+                                                           update="viewBEIDetails"
+                                                           actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"/>
+                                        <p:commandButton oncomplete="BEIwidgetEdit.show();"
+                                                           title="Edit Backend Configuration Details"
+                                                           icon="ui-icon-pencil"
+                                                           immediate="true"
+                                                           update="editBEIDetailsForm BEIdialog1"
+                                                           actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"
+                                                           disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"/>
+
+
+                                        <h:outputText value="Executable Path" rendered="#{WEImp.preDeployed}" />
+                                        <h:outputText style="left:1px;" value="#{WEImp.shellPath}" rendered="#{WEImp.preDeployed}"/>
+                                        <p:commandButton oncomplete="editExecPathWidget.show();"
+                                                             title="Edit Executable Path"
+                                                             immediate="true"
+                                                             rendered="#{WEImp.preDeployed}"
+                                                             disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"
+                                                             icon="ui-icon-pencil"
+                                                             update="editExecPathForm"
+                                                             actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"/>
+
+
+                                        <h:outputText value="Shell File" rendered="#{!WEImp.preDeployed}"/>
+                                        <h:outputText style="left:1px;" value="#{WEImp.shellWEFileId.name} #{WEImp.shellWEFileId.filePath}" rendered="#{!WEImp.preDeployed}"/>
+                                        <p:commandButton oncomplete="PredeployedEditWidget.show();"
+                                                           title="Edit Engine Executable File"
+                                                           immediate="true"
+                                                           rendered="#{!WEImp.preDeployed}"
+                                                           disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"
+                                                           icon="ui-icon-pencil"
+                                                           update="editPredeployedEditForm"
+                                                           actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"/>
+
+
+                                        <h:outputText value="Engine Data File" rendered="#{!WEImp.preDeployed}" />
+                                        <h:outputText style="left:1px;" value="#{WEImp.zipWEFileId.name} #{WEImp.zipWEFileId.filePath}" rendered="#{!WEImp.preDeployed}"/>
+
+                                            <p:commandButton oncomplete="PredeployedEditWidget.show();"
+                                                           title="Edit Engine Data File"
+                                                           immediate="true"
+                                                           icon="ui-icon-pencil"
+                                                           rendered="#{!WEImp.preDeployed}"
+                                                           disabled="#{!backingBean.getCanModifyWEImplementations(WEImp)}"
+                                                           update="editPredeployedEditForm"
+                                                           actionListener="#{backingBean.initWEImpUpdateVars(WEImp)}"/>
+
+                                        <h:outputText value="Workflow Engine Developer" />
+                                        <h:outputText style="left:1px;">
+                                            <a href="mailto:#{WEImp.WEDev.email}">#{WEImp.WEDev.fullName}</a>
+                                        </h:outputText>
+
+                                    </h:panelGrid>
+                                </p:rowExpansion>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Workflow Engine Files">
+                            <p:dataTable id="WEFileTable"
+                                         value="#{backingBean.filesForWE}"
+                                         selection="#{backingBean.selectedWEFile}"
+                                         var="WEFile"
+                                         paginator="true"
+                                         paginatorPosition="top"
+                                         rowKey="#{WEFile.name}"
+                                         paginatorAlwaysVisible="true"
+                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         rowsPerPageTemplate="25,50,100"
+                                         rows="25"
+                                         rendered="#{!backingBean.userGuest}">
+                                <f:facet name="header">
+                                    <div align="left" style="vertical-align: middle">
+                                        <h:outputText value="Files" style="font-size: 22pt"/>
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canModifyWEFiles}">
+                                            <p:menuitem value="Upload"
+                                                        url="/user/create-wefile.xhtml"
+                                                        rendered="#{backingBean.canModifyWEFiles}"/>
+                                            <p:menuitem value="Delete"
+                                                        onclick="deleteWEFilesDialogWidget.show();"
+                                                        rendered="#{backingBean.canModifyWEFiles}"
+                                                        update="affectedFilesText"/>
+                                        </p:menuButton>
+                                    </div>
+                                </f:facet>
+                                <p:column selectionMode="single" rendered="#{backingBean.canModifyWEFiles}"/>
+                                <p:column headerText="Name" sortBy="#{WEFile.name}" filterBy="#{WEFile.name}">
+                                    <h:outputText value="#{WEFile.name}"/>
+                                </p:column>
+                                <p:column headerText="File" sortBy="#{WEFile.filePath}" filterBy="#{WEFile.filePath}" rendered="#{!backingBean.canDownloadWEFiles}">
+                                    <h:outputText value="#{WEFile.filePath}"/>
+                                </p:column>
+                                <p:column headerText="File" sortBy="#{WEFile.filePath}" filterBy="#{WEFile.filePath}" rendered="#{backingBean.canDownloadWEFiles}">
+                                    <a href="../download?idWE=#{backingBean.selectedWorkflowEngine.id}&amp;filename=#{WEFile.filePath}">
+                                        <h:outputText value="#{WEFile.filePath}"/>
+                                    </a>
+                                </p:column>
+                                <p:column headerText="Description" >
+                                    <h:outputText value="#{WEFile.description}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    <p:dialog id="deleteWEImpDialog"
+                              widgetVar="deleteWEImpDialogWidget"
+                              modal="true"
+                              header="Delete Workflow Engine Implementation?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete this Workflow Engine Implementation?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteWEImpDialogWidget.hide();" action="#{backingBean.deleteWEImplementation()}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteWEImpDialogWidget.hide();"/>
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="dupeWEImpDialog"
+                              widgetVar="dupeWEImpDialogWidget"
+                              modal="true"
+                              header="Dupe Workflow Engine Implementation?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:outputText value="Name: " />
+                            <h:inputText value="#{backingBean.newWEImplementation.nameWEImp}"/>
+                        </h:panelGrid>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to duplicate this Workflow Engine Implementation?" />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="dupeWEImpDialogWidget.hide();" action="#{backingBean.dupeWEImp()}" ajax="false" update="growl WEImpBrowserTable" />
+                                <p:commandButton value="No" onclick="dupeWEImpDialogWidget.hide();"/>
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="deleteWEDialog"
+                              widgetVar="deleteWEDialogWidget"
+                              modal="true"
+                              header="Delete Workflow Engine?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl"/>
+                        <p:panel>
+                            <h:outputText value="Are you sure you want to delete current Workflow Engine? All implementations that use this Workflow Engine and any files associated with it will be deleted." />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteWEDialogWidget.hide();" action="#{backingBean.deleteWE}" ajax="false" update="growl" />
+                                <p:commandButton value="No" onclick="deleteWEDialogWidget.hide();" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="deleteWEFilesDialog"
+                              widgetVar="deleteWEFilesDialogWidget"
+                              modal="true"
+                              header="Delete file?"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                        <p:ajax event="close" update="growl WEFileTable"/>
+                        <p:panel>
+                            <h:outputText id="affectedFilesText" value="Are you sure you want to delete selected file? All Workflow Engine Implementations that use this file will be deleted! This applies to #{backingBean.affectedEnginesByFiles} engine implementations." />
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.handleWEFileDeletion}" ajax="false" update="growl @all WEFileTable"/>
+                                <p:commandButton value="No" onclick="deleteWEFilesDialogWidget.hide();" type="button" />
+                            </div>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="viewBEIDetails"
+                              widgetVar="viewBEIDetailsWidget"
+                              modal="true"
+                              header="#{backingBean.selectedBEInstance.backendInstName} Details"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid id="viewBEIDisplay" columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="Backend Configuration Name:"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.backendInstName}"/>
+
+                            <h:outputText value="Backend:"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.idBackend.backendName}"/>
+
+                            <h:outputText value="Resource"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.resource}"/>
+
+                            <h:outputText value="Standard Output:"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.backendOutput}"/>
+
+                            <h:outputText value="Error Output:"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.backendErrorOut}"/>
+
+                            <h:outputText value="Operating System:"/>
+                            <h:outputText value="#{backingBean.selectedBEInstance.idOS.name}"/>
+
+                            <h:outputText value="Job Manager:" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.selectedBEInstance.jobManager}" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+
+                            <h:outputText value="Job Type:" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.selectedBEInstance.jobTypeId.jobTypeName}" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+
+                            <h:outputText value="Execution Site:" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+                            <h:outputText value="#{backingBean.selectedBEInstance.site}" rendered="#{backingBean.selectedBEInstance.idBackend.backendName == 'GT4' or backingBean.selectedBEInstance.idBackend.backendName == 'GT2'}" />
+
+                            <h:outputText value="Workflow Engine Developer:"/>
+                            <h:outputText>
+                                <a href="mailto:#{backingBean.selectedBEInstance.WEDev.email}">#{backingBean.selectedBEInstance.WEDev.fullName}</a>
+                            </h:outputText>
+                        </h:panelGrid>
+                    </p:dialog>
+
+                </h:form>
+                <h:form id="editBEIDetailsForm">
+                    <p:dialog id="BEIdialog1"
+                              widgetVar="BEIwidgetEdit"
+                              minWidth="200"
+                              header="Backend Configuration">
+                        <h:panelGroup id="BEIform">
+                                <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Backend"/>
+                                    <h:selectOneMenu value="#{backingBean.newBEAbstractId}"
+                                                     style="width: 90%">
+                                        <p:ajax event="click" listener="#{backingBean.handleJobManExistBEMenus}" update="growl existingBackendGrid jobManagerBEI GT4GT2"/>
+                                        <f:selectItem id="defaultValAbs" itemLabel="Please Select..." itemValue="0"/>
+                                        <f:selectItems value="#{backingBean.backendAll}"
+                                                       var="backend"
+                                                       itemLabel="#{backend.backendName}"
+                                                       itemValue="#{backend.idBackend}" />
+                                    </h:selectOneMenu>
+
+
+                                    <h:outputText value="Use Existing Backend Instance"/>
+                                    <h:selectBooleanCheckbox id="existingBEI" value="#{backingBean.showExistingBEI}">
+                                        <f:ajax event="click" render="newBackendGrid1 GT4GT2 existingBackendGrid existingBEI configCommand"/>
+                                    </h:selectBooleanCheckbox>
+                                </h:panelGrid>
+                                <h:panelGroup id="existingBackendGrid">
+                                    <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft"
+                                                 rendered="#{backingBean.showExistingBEI}">
+                                        <h:outputText value="Existing Backend Instance: " />
+                                        <h:selectOneMenu value="#{backingBean.selectedBEInstanceId}"
+                                                     style="width: 90%">
+                                            <p:ajax event="click" listener="#{backingBean.handleExistingBEI(true)}"/>
+                                            <f:selectItem id="defaultValBE" itemLabel="Please Select..." itemValue="0"/>
+                                            <f:selectItems value="#{backingBean.newBEInstance.idBackend.beInstanceCollection}"
+                                                       var="bei"
+                                                       itemLabel="#{bei.backendInstName}"
+                                                       itemValue="#{bei.idBackendInst}" />
+                                        </h:selectOneMenu>
+                                        <div align="right" style="padding-top: 5px">
+                                            <p:commandButton value="Select" onclick="BEIwidget.close();" actionListener="#{backingBean.useExistingBEInstance}" update="mainForm:WEImpBrowserTable growl"/>
+                                        </div>
+                                    </h:panelGrid>
+                                </h:panelGroup>
+                                <h:panelGroup id="newBackendGrid1">
+                                    <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft"
+                                                 rendered="#{!backingBean.showExistingBEI}">
+                                    <h:outputText value="Name:" />
+                                    <h:inputText id="newBEInstanceName"
+                                                 value="#{backingBean.newBEInstance.name}"
+                                                 label="Name"
+                                                 style="width: 90%"
+                                                 title="This is a required field and must be between 3 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Resource" />
+                                    <h:inputText id="newBEInstanceSite"
+                                            value="#{backingBean.newBEInstance.resource}"
+                                            style="width: 90%"
+                                            title="This is a required field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Standard Output" />
+                                    <h:inputText id="newBEInstanceStdOutput"
+                                            value="#{backingBean.newBEInstance.backendOutput}"
+                                            style="width: 90%"
+                                            title="This is an optional field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Error Output" />
+                                    <h:inputText id="newBEInstanceErrOutput"
+                                                 value="#{backingBean.newBEInstance.backendErrorOut}"
+                                            style="width: 90%"
+                                            title="This is an optional field and must be between 0 and 50 characters long">
+                                    </h:inputText>
+
+                                    <h:outputText value="Operating System"/>
+                                    <h:selectOneMenu value="#{backingBean.newBEIoperatingSysId}"
+                                                     style="width: 90%">
+                                        <p:ajax event="change" listener="#{backingBean.handleBEIoperatingSystem(false)}"/>
+                                        <f:selectItem id="defaultValOS" itemLabel="Please Select..." itemValue="0"/>
+                                        <f:selectItems value="#{backingBean.osNames}"
+                                                       var="os"
+                                                       itemLabel="#{os.name} #{os.version}"
+                                                       itemValue="#{os.idOS}" />
+                                    </h:selectOneMenu>
+                                    </h:panelGrid>
+                                    <h:panelGroup id="GT4GT2">
+                                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" rendered="#{(backingBean.newBEInstance.idBackend.backendName == 'GT2' or backingBean.newBEInstance.idBackend.backendName == 'GT4') and !backingBean.showExistingBEI}">
+                                                <h:outputText value="Job Manager"/>
+                                                <h:selectOneMenu id="jobManagerBEI"
+                                                                 value="#{backingBean.newBEInstance.jobManager}"
+                                                                 style="width: 90%">
+                                                    <f:selectItem id="defaultValJM" itemLabel="Please Select..." itemValue="0"/>
+                                                    <f:selectItems value="#{backingBean.newBEInstance.idBackend.jobManagerCollection}"
+                                                                   var="jobMan"
+                                                                   itemLabel="#{jobMan.jobManagerName}"
+                                                                   itemValue="#{jobMan.jobManagerName}" />
+                                                </h:selectOneMenu>
+
+                                                <h:outputText value="Job Type"/>
+                                                <h:selectOneMenu id="jobTypeidSelect"
+                                                                    style="width: 90%"
+                                                                    value="#{backingBean.selectedBEIJobTypeId}">
+                                                    <f:selectItem id="defaultValJT" itemLabel="Please Select..." itemValue="0"/>
+                                                    <f:selectItems value="#{backingBean.jobTypes}"
+                                                                   var="jobType"
+                                                                   itemLabel="#{jobType.jobTypeName}"
+                                                                   itemValue="#{jobType.jobTypeId}" />
+                                                    <p:ajax event="change" listener="#{backingBean.jobTypeIdListener(false)}" update="growl resourceText jobTypeidSelect" />
+                                                </h:selectOneMenu>
+
+                                                <h:outputText value="Execution Site"/>
+                                                <h:inputText id="newBEInstanceMaxPar"
+                                                             value="#{backingBean.newBEInstance.site}"
+                                                            readonly="false"
+                                                    style="width: 90%">
+                                                </h:inputText>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+
+                                    <div align="right" style="padding-top: 5px">
+                                        <p:commandButton id="configCommand" value="Configure" onclick="BEIwidget.close();" actionListener="#{backingBean.createBEInstance(true)}" rendered="#{!backingBean.showExistingBEI}" update="growl, WEImpBrowserTable"/>
+                                    </div>
+                                </h:panelGroup>
+                        </h:panelGroup>
+                    </p:dialog>
+                </h:form>
+                <h:form id="editPrefixDataForm">
+                    <p:dialog id="prefixDataEdit"
+                              widgetVar="PrefixDataEditWidget"
+                              modal="true"
+                              header="#{backingBean.selectedWEImp.nameWEImp} Prefix Data"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid id="prefixDataEditDisplay" columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="New Value:"/>
+                            <h:inputText value="#{backingBean.selectedWEImp.prefixData}"/>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Update" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+
+                        </div>
+                    </p:dialog>
+                </h:form>
+                <h:form id="editExecPathForm">
+                    <p:dialog id="ExecPathEdit"
+                              widgetVar="editExecPathWidget"
+                              modal="true"
+                              header="#{backingBean.selectedWEImp.nameWEImp} Exec Path"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid id="execPathEditDisplay" columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="New Value:"/>
+                            <h:inputText value="#{backingBean.selectedWEImp.shellPath}"/>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Update" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+
+                        </div>
+                    </p:dialog>
+                </h:form>
+                <h:form id="editDescriptionForm">
+                    <p:dialog id="editDescription"
+                              widgetVar="editDescriptionWidget"
+                              modal="true"
+                              header="#{backingBean.selectedWEImp.nameWEImp} Description"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid id="descriptionEditDisplay" columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="New Value:"/>
+                            <h:inputTextarea value="#{backingBean.selectedWEImp.descriptionWEImp}" rows="5"/>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Update" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+
+                        </div>
+                    </p:dialog>
+                </h:form>
+                <h:form id="editPredeployedEditForm">
+                    <p:dialog id="predeployedEdit"
+                              widgetVar="PredeployedEditWidget"
+                              modal="true"
+                              header="#{backingBean.selectedWEImp.nameWEImp} PreDeployed Status and Files or Path Data"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid id="predeployedEditDisplay" columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="Pre-deployed:" />
+                            <h:selectBooleanCheckbox id="predeployedBoolBox" value="#{backingBean.selectedWEImp.preDeployed}">
+                                <f:ajax event="click" render="engineZip engineZipSelect predeployedBoolBox shellFileText shellFileInput engineExecSelect shellFile"/>
+                            </h:selectBooleanCheckbox>
+
+                            <h:panelGroup id="engineZip">
+                                <h:outputText value="Engine Data:" rendered="#{!backingBean.selectedWEImp.preDeployed}" />
+                            </h:panelGroup>
+                            <h:panelGroup id="engineZipSelect">
+                                <h:selectOneMenu value="#{backingBean.newWEIZipId}" rendered="#{!backingBean.selectedWEImp.preDeployed}"
+                                                 style="width: 90%">
+                                    <p:ajax event="change" listener="#{backingBean.handleEngineZipSelect(true)}"/>
+                                    <f:selectItem id="defaultVal" itemLabel="Please Select..." itemValue="0"/>
+                                    <f:selectItems value="#{backingBean.zipWEFiles}"
+                                                           var="WEFile"
+                                                           itemLabel="#{WEFile.name} #{WEFile.filePath}"
+                                                           itemValue="#{WEFile.idWEFile}" />
+                                </h:selectOneMenu>
+                            </h:panelGroup>
+
+                            <h:panelGroup id="shellFileText">
+                                <h:outputText value="Engine Executable Path:" rendered="#{backingBean.selectedWEImp.preDeployed}"/>
+                            </h:panelGroup>
+                            <h:panelGroup id="shellFileInput">
+                                <h:inputText value="#{backingBean.selectedWEImp.shellPath}" rendered="#{backingBean.selectedWEImp.preDeployed}"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup id="shellFile">
+                                <h:outputText value="Engine Executable:" rendered="#{!backingBean.selectedWEImp.preDeployed}"/>
+                            </h:panelGroup>
+                            <h:panelGroup id="engineExecSelect">
+                                <h:selectOneMenu value="#{backingBean.newShellFileId}" rendered="#{!backingBean.selectedWEImp.preDeployed}"
+                                                 style="width: 90%">
+                                    <p:ajax event="change" listener="#{backingBean.handleShellFileSelect(true)}"/>
+                                    <f:selectItem id="defaultShellVal" itemLabel="Please Select..." itemValue="0"/>
+                                    <f:selectItems value="#{backingBean.shellWEFiles}"
+                                                           var="WEFile"
+                                                           itemLabel="#{WEFile.name} #{WEFile.filePath}"
+                                                           itemValue="#{WEFile.idWEFile}" />
+                                </h:selectOneMenu>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Update" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+
+                        </div>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

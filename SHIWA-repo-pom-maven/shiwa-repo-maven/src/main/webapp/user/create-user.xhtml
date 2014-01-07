@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateUser}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canCreateUser}">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="New user" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                    <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                        <h:outputText value="Login name:" />
+                        <h:inputText id="newUserLoginName"
+                                     value="#{backingBean.newUser.loginName}"
+                                     required="true" label="Login name"
+                                     readonly="false"
+                                     style="width: auto"
+                                     title="This is a required field and must be at least 3 characters long">
+                            <f:validateLength minimum="3" maximum="32"/>
+                        </h:inputText>
+                        <h:outputText value="Password:" />
+                        <h:inputSecret id="newUserPassword" value="#{backingBean.newUser.password}" required="true" label="Password" readonly="false" style="width: auto">
+                            <f:validateLength minimum="8" maximum="32"/>
+                        </h:inputSecret>
+                        <h:outputText value="Full name:" />
+                        <h:inputText id="newUserFullName" value="#{backingBean.newUser.fullName}" required="true" label="Full name" readonly="false" style="width: auto">
+                            <f:validateLength minimum="3" maximum="100"/>
+                        </h:inputText>
+                        <h:outputText value="Organization:" />
+                        <h:inputText id="newUserOrganization" value="#{backingBean.newUser.organization}" required="true" label="Organization" readonly="false" style="width: auto">
+                            <f:validateLength minimum="3" maximum="100"/>
+                        </h:inputText>
+                        <h:outputText value="E-mail address:" />
+                        <h:inputText id="newUserEmail" value="#{backingBean.newUser.emailAddr}" required="true" label="Email address" readonly="false" style="width: auto">
+                            <f:validateLength minimum="3" maximum="100"/>
+                            <f:validateRegex pattern=".+@.+\..+" />
+                        </h:inputText>
+                        <h:outputText value="Active:" />
+                        <h:selectBooleanCheckbox id="newUserActive" title="userCheckbox" value="#{backingBean.newUser.active}" />
+                        <h:outputText value="Workflow Engine Developer:" />
+                        <h:selectBooleanCheckbox id="editUserWEDevCheckbox" title="WEDevCheckbox" value="#{backingBean.newUser.WEDev}" />
+                        <h:outputText value="Administrator:" />
+                        <h:selectBooleanCheckbox id="newUserAdmin" title="adminCheckbox" value="#{backingBean.newUser.admin}" />
+                    </h:panelGrid>
+                    </p:panel>
+                    <p:message for="newUserLoginName" />
+                    <p:message for="newUserPassword" />
+                    <p:message for="newUserFullName" />
+                    <p:message for="newUserOrganization" />
+                    <p:message for="newUserEmail" />
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Create" action="#{backingBean.createUser}" ajax="false" />
+                        <p:commandButton type="reset" value="Reset" />
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

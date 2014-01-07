@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="../resources/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="../resources/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="../resources/css/skin.css" />
+        <title>SHIWA Workflow Repository</title>
+    </h:head>
+
+    <h:body>
+        <center>
+        <div id="body" style="width: 800px">
+        <f:view contentType="text/html">
+            <div id="topMenu" class="top">
+                <ui:insert name="top">
+                    <div style="width: 100%; left: 0px; right: 0px">
+                        <div style="float: left; font-size: 12px">
+                            <h:outputText value="#{backingBean.initBackingBean()}"/>
+                            <h:outputText value="#{backingBean.currentUser.fullName} [#{backingBean.currentUser.rolesAsString}]" rendered="${request.isUserInRole('user-role')}" />
+                        </div>
+                        <div style="float: right">
+                            <p:ajaxStatus style="float: right">
+                                <f:facet name="start">
+                                    <h:outputText value="Loading..." />
+                                </f:facet>
+                                <f:facet name="complete">
+                                    <h:outputText value="" />
+                                </f:facet>
+                            </p:ajaxStatus>
+                        </div>
+                    </div>
+                    <br/>
+                    <h:form id="mainMenu">
+                        <p:menubar>
+                            <p:menuitem value="About"
+                                        url="/public/welcome.xhtml"
+                                        icon="ui-icon ui-icon-star"
+                                        rendered="${!request.isUserInRole('user-role')}"
+                                        action="#{backingBean.resetWEVars()}"/>
+                            <p:menuitem value="About"
+                                        icon="ui-icon ui-icon-star"
+                                        url="/user/welcome.xhtml"
+                                        rendered="${request.isUserInRole('user-role')}"
+                                        action="#{backingBean.resetWEVars()}"/>
+                            <p:menuitem value="Home"
+                                        icon="ui-icon ui-icon-home"
+                                        url="/user/home.xhtml"
+                                        rendered="${request.isUserInRole('user-role')}"
+                                        action="#{backingBean.resetWEVars()}"/>
+                            <p:submenu label="Workflows"
+                                       icon="ui-icon ui-icon-document">
+                                <p:menuitem value="Browse view"
+                                            icon="ui-icon ui-icon-document"
+                                            url="/public/browse-applications.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Table view"
+                                            icon="ui-icon ui-icon-document"
+                                            url="/public/table-applications.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Create workflow"
+                                            icon="ui-icon ui-icon-document"
+                                            rendered="${request.isUserInRole('user-role')}"
+                                            action="#{backingBean.resetWEVars()}"
+                                            url="/user/create-application.xhtml"/>
+                            </p:submenu>
+                            <p:submenu label="Implementations"
+                                       icon="ui-icon ui-icon-gear">
+                                <p:menuitem value="Browse view"
+                                            icon="ui-icon ui-icon-gear"
+                                            url="/public/browse-implementations.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Table view"
+                                            icon="ui-icon ui-icon-gear"
+                                            url="/public/table-implementations.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                            </p:submenu>
+                            <p:submenu label="Administration"
+                                       icon="ui-icon ui-icon-pencil"
+                                       rendered="${request.isUserInRole('admin-role')}">
+                                <p:menuitem value="Users"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/browse-users.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Groups"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/browse-groups.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Domains"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/domains.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                            </p:submenu>
+                            <p:submenu label="Workflow Engine Management"
+                                       icon="ui-icon ui-icon-pencil"
+                                       rendered="${request.isUserInRole('admin-role') or request.isUserInRole('we_dev-role') or backingBean.isUserWEDev()}">
+                                <p:menuitem value="Backends"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/browse-backends.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Backend Configurations"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/browse-beinstances.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                                <p:menuitem value="Operating Systems"
+                                            icon="ui-icon ui-icon-pencil"
+                                            url="/user/browse-os.xhtml"
+                                            action="#{backingBean.resetWEVars()}"/>
+                            </p:submenu>
+                            <p:submenu label="Documentation"
+                                       icon="ui-icon ui-icon-help">
+                                <p:submenu label="Manuals"
+                                           icon="ui-icon ui-icon-help">
+                                    <p:menuitem value="User Manual (pdf)"
+                                                url="https://www.cpc.wmin.ac.uk/cpcsite/images/8/8b/User_Manual.pdf"/>
+                                    <p:menuitem value="Workflow Export Manual (pdf)"
+                                                url="/resources/exporting_manual.pdf"/>
+                                    <p:menuitem value="WF Developer, Validator and Admin Manual (pdf)"
+                                                rendered="${request.isUserInRole('user-role')}"
+                                                url="/resources/admin_manual.pdf"/>
+                                    <p:menuitem value="Workflow Export Manaual (pdf)"
+                                                url="/resources/exporting_manual.pdf"/>
+                                    <p:menuitem value="WF Engine Interface Guide (pdf)"
+                                                rendered="${request.isUserInRole('user-role')}"
+                                                url="/resources/workflow_engines.pdf"/>
+                                </p:submenu>
+                                <p:menuitem value="Usage Policy (pdf)"
+                                            icon="ui-icon ui-icon-help"
+                                            url="https://www.cpc.wmin.ac.uk/cpcsite/images/3/31/Usage_Policy.pdf"/>
+                            </p:submenu>
+                            <p:menuitem value="SHIWA User Forum"
+                                        icon="ui-icon ui-icon-signal-diag"
+                                        onclick="shiwaForumWidget.show();"
+                                        update="shiwaForum"/>
+                            <p:menuitem value="myExperiment"
+                                        icon="ui-icon ui-icon-document"
+                                        url="/user/import-myExperiment.xhtml"
+                                        rendered="${request.isUserInRole('user-role')}"/>
+                            <p:menuitem value="Log in"
+                                        url="/user/home.xhtml"
+                                        style="color: #db4865; float: right"
+                                        rendered="${!request.isUserInRole('user-role')}"/>
+                            <p:menuitem value="Log out"
+                                        url="/logout.jsp"
+                                        icon="ui-icon ui-icon-close"
+                                        rendered="${request.isUserInRole('user-role')}"
+                                        action="#{backingBean.resetWEVars()}"/>
+                        </p:menubar>
+                        <br/>
+                    </h:form>
+                </ui:insert>
+                <p:growl id="growl" />
+            </div>
+
+            <div id="content" class="center_content" style="font-size: 12px">
+                <ui:insert name="content">
+                </ui:insert>
+            </div>
+            <h:form>
+                <p:dialog id="shiwaForum"
+                          widgetVar="shiwaForumWidget"
+                          width="927"
+                          height="721"
+                          header="SHIWA User Forum"
+                          closable="true"
+                          modal="true"
+                          draggable="false">
+                    <iframe id="forum_embed"
+                            src="javascript:void(0)"
+                            scrolling="no"
+                            frameborder="0"
+                            width="900"
+                            height="700"/>
+                    <script type="text/javascript">
+                        document.getElementById("forum_embed").src ="https://groups.google.com/forum/embed/?place=forum/shiwa-user-forum&amp;showsearch=true&amp;showpopout=true&amp;parenturl=" + encodeURIComponent(window.location.href);
+                    </script>
+                </p:dialog>
+            </h:form>
+        </f:view>
+        </div>
+            </center>
+    </h:body>
+
+</html>

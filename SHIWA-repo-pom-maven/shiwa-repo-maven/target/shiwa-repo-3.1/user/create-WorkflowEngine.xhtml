@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel rendered="#{!backingBean.canCreateWorkflowEngine}" >
+                    <h:outputText value="#{backingBean.errorMessage}"/>
+                </p:outputPanel>                
+                <h:form id="mainForm" rendered="#{backingBean.canCreateWorkflowEngine}">                    
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <h:outputText value="New workflow Engine" style="font-size: 22pt" />
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+
+                            <h:outputText value="Name:"/>
+                            <h:inputText id="NewNameWE"
+                                            value="#{backingBean.newWorkflowEngine.name}"
+                                            required="true"
+                                            label="Name"
+                                            readonly="false"
+                                            style="width: 90%"
+                                            title="This is a required field it must be between 3 and 50 characters and must be unique">
+                                <f:validateLength minimum="3" maximum="250"/>
+                            </h:inputText>                          
+                            
+                            <h:outputText value="Description:" />
+                            <h:inputTextarea id="NewDescWE"
+                                             value="#{backingBean.newWorkflowEngine.description}"
+                                             required="false"
+                                             label="Description"
+                                             readonly="false"
+                                             style="width: 100%"
+                                             rows="10"
+                                             title="This is an optional field and must be less than 5000 characters long">
+                                <f:validateLength minimum="0" maximum="5000"/>
+                            </h:inputTextarea>
+                            
+                            <h:outputText value="Version:" />
+                                <h:inputText id="NewVersionWE"
+                                            value="#{backingBean.newWorkflowEngine.version}"
+                                            required="true"
+                                            label="Version"
+                                            readonly="false"
+                                            style="width: 90%"
+                                            title="This is a required field and must be between 1 and 50 characters long">
+                                    <f:validateLength minimum="1" maximum="50"/>
+                                </h:inputText>                                                                                         
+                        </h:panelGrid>
+                    </p:panel>                    
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Create" action="#{backingBean.createWorkflowEngine()}" ajax="false" />
+                        <p:commandButton type="reset" value="Reset" />
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

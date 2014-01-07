@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        
+        <ui:composition template="../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                <div align="center" style="padding-top: 10px">
+                    <h:graphicImage value="/resources/images/myexperiment-logo.png" alt="myExperiment logo" />
+                    <br/>
+                    <br/>
+                    <h1>Import workflows from myExperiment Repository</h1>                </div>
+                <center>
+                    <br/>
+                    <br/>
+                    
+                    <div align="left" style="width: 800px">
+                    You can use <a href="http://www.myexperiment.org/workflows?filter=TYPE_ID%28%221%22+OR+%222%22%29" target="_blank">http://www.myExperiment.org</a>  to find publicly shared workflows on the myExperiment workflow repository. If you want to download a workflow from the myExperiemnt repository to the SHIWA repository, please enter ID of the workflow (ID of a workflow on the myExperiment can be found from its URL, for example the ID of a workflow with the URL;  http://www.myexperiment.org/workflows/90.html  is 90) into the box below and click the Import button.
+
+                </div>
+                    <br/>
+                </center>
+                <p:outputPanel rendered="#{!backingBean.canCreateApplications}" >
+                </p:outputPanel>
+                <h:form id="mainForm" rendered="#{backingBean.canCreateApplications}">
+                    <div align="left" style="vertical-align: middle; min-height: 40px">
+                        <br/>
+                        <h:outputText value="Import workflow" style="font-size: 22pt" />
+                        <br/>
+                        <hr size="3" noshade="true"/>
+                    </div>
+                    <p:panel>
+                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:outputText value="Workflow ID:" />
+                            <h:inputText id="WorkflowID"
+                                             value="#{backingBean.myExpWorkflowID}"
+                                             label="Workflow ID"
+                                             readonly="false"
+                                             style="width: auto"
+                                             title="Enter ID of the workflow">
+                                <f:validateLength minimum="1" maximum="4"/>
+                            </h:inputText>                    
+                        </h:panelGrid>
+                        </p:panel>
+                    <div align="right" style="padding-top: 5px">
+                        <p:commandButton value="Import"  action="#{backingBean.currentWorkflowName()}" oncomplete="workflowNameDialog.show()" update="name" />
+                    </div>
+                    <p:dialog id="workflowName" header="Editing Workflow Name" widgetVar="workflowNameDialog"  height="120" width="400"> 
+                        <h:panelGrid  columns="2" cellpadding="4" >
+                                 <h:outputLabel for="Workflow Name" value="Enter Workflow Name: " />
+                                 <h:inputText  id="name" style="font-weight:bold"
+                                               value="#{backingBean.myExpWorkflowName}"  /> 
+                        </h:panelGrid>
+                     <div align="right" style="padding-top: 5px">
+                          <p:commandButton value="OK" action="#{backingBean.createMyExpApplicationAndImplementation()}" ajax="false" />
+                     </div>
+                    </p:dialog> 
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

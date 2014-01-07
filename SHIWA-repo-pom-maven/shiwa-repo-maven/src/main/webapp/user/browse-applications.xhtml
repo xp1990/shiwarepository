@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">                        
+                        <div align="left">
+                            <p:panel header="Filters" toggleable="true" collapsed="true" >
+                                <div style="max-width: 400px" align="right">
+                                    <h:panelGrid columns="3" cellpadding="4" style="width:100%" columnClasses="justifyRight,justifyLeft" >
+                                        <h:outputText value="Attribute name:"/>
+                                        <p:autoComplete id="editAppOwner"
+                                                        value="#{backingBean.appAttrNameFilter}"
+                                                        title="Use this field to filter workflows based on their attribute names"
+                                                        completeMethod="#{backingBean.completeAppAttrName}" />
+                                        <h:outputText value=" "/>
+                                        <h:outputText value="Attribute value:"/>
+                                        <h:inputText id="AttributeValueFilter"
+                                                     value="#{backingBean.appAttrValueFilter}"
+                                                     required="false"
+                                                     label="Name"
+                                                     readonly="false"
+                                                     style="width: auto"
+                                                     title="Use this field to filter workflows based on their attribute values">
+                                            <f:validateLength maximum="500"/>
+                                        </h:inputText>
+                                        <p:commandButton update="appBrowserTable" value="update"/>
+                                    </h:panelGrid>
+                                </div>
+                            </p:panel>
+                        </div>
+                        <p:dataTable id="appBrowserTable"
+                                     var="app"
+                                     value="#{backingBean.applications}"
+                                     selection="#{backingBean.selectedApp}"
+                                     rowKey="#{app.name}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rows="25">
+                            <p:ajax event="rowSelect" listener="#{backingBean.onApplicationsRowSelectNavigate}"/>
+                            <f:facet name="header">
+                                <div align="left" style="vertical-align: middle">
+                                    <h:outputText value="Workflows" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right">
+                                        <p:menuitem value="New" url="/user/create-application.xhtml" />
+                                    </p:menuButton>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}" filterMatchMode="contains">
+                                <h:outputText value="#{app.name}" />
+                            </p:column>
+                            <p:column headerText="Owner" sortBy="#{app.ownerLoginName}" filterBy="#{app.ownerLoginName}" filterMatchMode="contains">
+                                <h:outputText value="#{app.ownerLoginName}" />
+                            </p:column>
+                            <p:column headerText="Group" sortBy="#{app.groupName}" filterBy="#{app.groupName}" filterMatchMode="contains">
+                                <h:outputText value="#{app.groupName}" />
+                            </p:column>
+                            <p:column headerText="Description" >
+                                <h:outputText value="#{app.shortDescription}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

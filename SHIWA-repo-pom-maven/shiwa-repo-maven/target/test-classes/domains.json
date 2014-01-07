@@ -1,0 +1,36 @@
+{
+	"domains": [
+		{"domain"   : "Astrophysics", 
+                 "subdomain": [
+                        "Cosmology", 
+			"Computational cosmology", 
+			"Meteors dynamics", 
+			"Comet dynamics", 
+			"Stellar evolution", 
+			"Stellar Astrophysics", 
+			"Astrophysical visualization"]},
+                
+                {"domain"   : "Computational Chemistry",
+                 "subdomain": [ 
+                        "Docking", 
+			"Molecular Dynamic", 
+			"Quantum Chemistry"]},
+                            
+		{"domain":"Heliophysics", 
+                 "subdomain": [
+			 "Solar Physics", 
+                         "Propagation Models", 
+                         "Solar Cycle"]},
+                            
+		{"domain":"Life Sciences", 
+                 "subdomain" : [
+                        "Neuroimaging", 
+			"Next Generation Sequencing", 
+			"Mass Spectrometry"]},
+                
+		{"domain": "Multimedia"},
+		{"domain": "Test"},
+		{"domain": "Demo"},
+		{"domain": "SCI-BUS"}]
+            
+}

@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+            <ui:define name="content">
+                    <h:form id="mainForm">                        
+                        <div align="left" style="vertical-align: middle; min-height: 40px">
+                            <h:outputText value="Operating Systems" style="font-size: 22pt" />
+                            <hr size="3" noshade="true"/>
+                        </div>
+                        <p:dataTable id="OSBrowserTable"
+                                     var="os"
+                                     value="#{backingBean.osNames}"
+                                     selection="#{backingBean.selectedOS}"
+                                     rowKey="#{os.name}"
+                                     selectionMode="single"                                                                                                                                              
+                                     paginator="true"
+                                     paginatorPosition="top"
+                                     rows="25"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100">
+                            <p:ajax event="rowSelect" listener="#{backingBean.onOSRowSelectNavigate}"/>
+                            <f:facet name="header">
+                                <div align="left" style="vertical-align: middle">
+                                    <h:outputText value="Operating Systems" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right">
+                                        <p:menuitem value="New" url="/user/create-os.xhtml" />
+                                    </p:menuButton>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name"
+                                      filterBy="#{os.name}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{os.name}" />
+                            </p:column>
+                            <p:column headerText="Version"
+                                      filterBy="#{os.version}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{os.version}" />
+                            </p:column>    
+                        </p:dataTable>
+                    </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
