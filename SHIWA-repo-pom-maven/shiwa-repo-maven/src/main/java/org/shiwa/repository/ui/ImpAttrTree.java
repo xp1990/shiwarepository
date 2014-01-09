@@ -22,7 +22,7 @@ import uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO;
  * @author kukla
  */
 public class ImpAttrTree extends AttrTree{
-  
+
     TreeNode dependencies;
     TreeNode configurations;
     TreeNode title;
@@ -50,7 +50,7 @@ public class ImpAttrTree extends AttrTree{
     AppAttrTree aTree=null;
     Node newParameterIdNode= new Node("","");
     Node newParameterTypeNode= new Node("","");
-   
+
     @Override
     public void setItemID(Integer itemID) {
         super.setItemID(itemID);
@@ -59,15 +59,15 @@ public class ImpAttrTree extends AttrTree{
     public void setItem(ImplementationTO selectedImp) {
          this.selectedImp=selectedImp;
     }
-   
+
     public void setApplication(ApplicationTO selectedApp) {
         this.selectedApp = selectedApp;
     }
-    
+
     public void setUser(UserTO currentUser) {
         this.currentUser = currentUser;
     }
-    
+
     public void setApThree(AppAttrTree aTree) {
         this.aTree = aTree;
     }
@@ -79,11 +79,11 @@ public class ImpAttrTree extends AttrTree{
     public void setWfSelValue(String wfSelValue) {
         this.wfSelValue = wfSelValue;
     }
-    
+
     String wfDefinition;
     public String getWfDefinition(){
        TreeNode item;
-     
+
        Iterator<TreeNode> iterator = root.getChildren().iterator();
             while(iterator.hasNext()){
                 item = iterator.next();
@@ -93,11 +93,11 @@ public class ImpAttrTree extends AttrTree{
                  }
        return wfDefinition;
     }
-    
+
     String wfDescription;
     public String getWfDescription(){
        TreeNode item;
-     
+
        Iterator<TreeNode> iterator = root.getChildren().iterator();
             while(iterator.hasNext()){
                 item = iterator.next();
@@ -115,15 +115,15 @@ public class ImpAttrTree extends AttrTree{
     public void setImpSelValue(String impSelValue) {
         this.impSelValue = impSelValue;
     }
-    
+
     public void setWfDescription(String wfDescription) {
         this.wfDescription = wfDescription;
     }
-    
+
     public void setWfDefinition(String wfDefinition) {
         this.wfDefinition = wfDefinition;
-    }   
-    
+    }
+
     String executionMaxWallTime;
     public String getExecutionMaxWallTime(){
        TreeNode item;
@@ -140,7 +140,7 @@ public class ImpAttrTree extends AttrTree{
     String executionMaxParallelism;
     public String getExecutionMaxParallelism(){
        TreeNode item;
-      
+
        Iterator<TreeNode> iterator = execution.getChildren().iterator();
           while(iterator.hasNext()){
                 item = iterator.next();
@@ -148,35 +148,35 @@ public class ImpAttrTree extends AttrTree{
                     executionMaxParallelism=((Node) item.getData()).getValue();
                    }
                }
-      return executionMaxParallelism; 
+      return executionMaxParallelism;
     }
-    
+
     public void setExecutionMaxParallelism(String executionMaxParallelism){
             this.executionMaxParallelism=executionMaxParallelism;
     }
-    
-    public List<String> getParameterIDList() { 
+
+    public List<String> getParameterIDList() {
           TreeNode item1;
           TreeNode item2;
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
-          
-          List<String> parameterIDList = new ArrayList<String>();          
+
+          List<String> parameterIDList = new ArrayList<String>();
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-                if(((Node) item1.getData()).getKey().equals("parameters")){              
+                if(((Node) item1.getData()).getKey().equals("parameters")){
                    while(iterator2.hasNext()){
                          item2=iterator2.next();
                          parameterIDList.add(((Node) item2.getData()).getName());
                         }
                     }
                  }
-        return parameterIDList;  
+        return parameterIDList;
     }
-    String order; 
-    public String getOrder(String paraID) { 
+    String order;
+    public String getOrder(String paraID) {
           TreeNode item1;
           TreeNode item2;
           Iterator<TreeNode> iterator1;
@@ -279,10 +279,10 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                    }
-      return order;  
+      return order;
     }
-    
-    public boolean doesParameterExist() { 
+
+    public boolean doesParameterExist() {
           TreeNode item1;
           TreeNode item2;
           Iterator<TreeNode> iterator1;
@@ -297,20 +297,20 @@ public class ImpAttrTree extends AttrTree{
                         if (iterator2 !=null){
                             while(iterator2.hasNext()){
                                 item2=iterator2.next();
-                                if (item2!=null 
-                                    && ((Node) item2.getData())!=null 
+                                if (item2!=null
+                                    && ((Node) item2.getData())!=null
                                     &&((Node) item2.getData()).getKey().equals("para0001")){
-                                    return true;   
+                                    return true;
                                  }
                              }
-                         } 
+                         }
                       }
                   }
                }
             }
-      return false;  
+      return false;
     }
-    
+
     String orderCmdLine;
     public String getOrderCmdLine(String paraID){
           TreeNode item1;
@@ -319,7 +319,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-       
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -327,25 +327,25 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                             while(iterator3.hasNext()){
                                  item3=iterator3.next();
                                  if(((Node) item3.getData()).getKey().equals("cmdLine")){
                                              orderCmdLine=((Node) item3.getData()).getValue();
                                    }
-                               }   
+                               }
                            }
                        }
-                  }   
-      return orderCmdLine;  
+                  }
+      return orderCmdLine;
     }
-    
+
     String editParaType="";
     public String getEditParaType(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -353,21 +353,21 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("type")){
                    editParaType=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editParaType;  
+      return editParaType;
     }
-    
+
     public void setEditParaType(String editParaType){
           this.editParaType=editParaType;
     }
-    
+
     String editIdOfSelectedType="";
     public String getEditIdOfSelectedType(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -375,21 +375,21 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("portId")){
                    editIdOfSelectedType=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editIdOfSelectedType;  
+      return editIdOfSelectedType;
     }
-    
+
     public void setEditIdOfSelectedType(String editIdOfSelectedType){
           this.editIdOfSelectedType=editIdOfSelectedType;
     }
-    
+
     String editSwitchName="";
     public String getEditSwitchName(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -397,40 +397,40 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("switchName")){
                    editSwitchName=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editSwitchName;  
+      return editSwitchName;
     }
-    
+
     public void setEditSwitchName(String editSwitchName){
           this.editSwitchName=editSwitchName;
     }
-    
+
     String fillDefaultValue="";
     public String getFillDefaultValue(){
-        
+
             if (getEditParaType().equals("INPUT_PORT")
                         ||getEditParaType().equals("OUTPUT_PORT")
                         ||getEditParaType().equals("DEPENDENCY")){
 		fillDefaultValue = editDefaultValue;
-              } 
+              }
             else if (getEditParaType().equals("CUSTOM")){
                 fillDefaultValue = editPara.getFillDefaultValueCustom();
               }
-         return fillDefaultValue;  
-         
+         return fillDefaultValue;
+
     }
-    
+
     public void setFillDefaultValue(String fillDefaultValue){
           this.fillDefaultValue=fillDefaultValue;
     }
-    
+
     String editDefaultValueCustom="";
     public String getEditDefaultValueCustom(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -438,21 +438,21 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("defaultValue")){
                    editDefaultValueCustom=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editDefaultValueCustom;  
+      return editDefaultValueCustom;
     }
-    
+
     public void setEditDefaultValueCustom(String editDefaultValueCustom){
           this.editDefaultValueCustom=editDefaultValueCustom;
     }
-    
+
     String editDefaultValue="";
     public String getEditDefaultValue(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -460,24 +460,24 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("defaultValue")){
                    editDefaultValue=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editDefaultValue;  
+      return editDefaultValue;
     }
-    
+
     public void setEditDefaultValue(String editDefaultValue){
           this.editDefaultValue=editDefaultValue;
     }
-    
+
     String editTitle="";
     public String getEditTitle(){
-        
-          
+
+
           if (getEditParaType().equals("INPUT_PORT")){
           editTitle=editPara.getEditInPortTitle();
           }
-          else if (getEditParaType().equals("INPUT_PORT")){
-          editTitle=editPara.getEditInPortTitle();
+          else if (getEditParaType().equals("OUTPUT_PORT")){
+          editTitle=editPara.getEditOutPortTitle();
           }
           else if (getEditParaType().equals("DEPENDENCY")){
           editTitle=editPara.getEditDependencyTitle();
@@ -485,20 +485,20 @@ public class ImpAttrTree extends AttrTree{
           else if (getEditParaType().equals("CUSTOM")){
           editTitle=editTitleCustom;
           }
-          
-      return editTitle;  
+
+      return editTitle;
     }
-    
+
     public void setEditTitle(String editTitle){
           this.editTitle=editTitle;
     }
-    
+
     String editTitleCustom="";
     public String getEditTitleCustom(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -506,21 +506,21 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("title")){
                    editTitleCustom=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editTitleCustom;  
+      return editTitleCustom;
     }
-    
+
     public void setEditTitleCustom(String editTitleCustom){
           this.editTitleCustom=editTitleCustom;
     }
- 
+
     String editFixed="";
     public String getEditFixed(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -528,21 +528,21 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("fixed")){
                    editFixed=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editFixed;  
+      return editFixed;
     }
-    
+
     public void setEditFixed(String editFixed){
           this.editFixed=editFixed;
     }
-    
+
     String editCmdLine="";
     public String getEditCmdLine(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -550,18 +550,18 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("cmdLine")){
                    editCmdLine=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editCmdLine;  
+      return editCmdLine;
     }
-    
+
     public void setEditCmdLine(String editCmdLine){
           this.editCmdLine=editCmdLine;
     }
-    
+
     String editFile="";
     public String getEditFile(){
-        
+
         if(getEditParaType().equals("INPUT_PORT")||getEditParaType().equals("OUTPUT_PORT"))
          {
              editFile=editPara.getIsEditPortFile().toString();
@@ -574,19 +574,19 @@ public class ImpAttrTree extends AttrTree{
          {
              editFile=editFileCustom;
          }
-      return editFile;  
+      return editFile;
     }
-    
+
     public void setEditFile(String editFile){
           this.editFile=editFile;
     }
-    
+
     String editFileCustom="";
     public String getEditFileCustom(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -594,42 +594,42 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("file")){
                    editFileCustom=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editFileCustom;  
+      return editFileCustom;
     }
-    
+
     public void setEditFileCustom(String editFileCustom){
           this.editFileCustom=editFileCustom;
     }
-    
+
     String editInput="";
     public String getEditInput(){
-        
+
          if(getEditParaType().equals("INPUT_PORT")
                  ||getEditParaType().equals("DEPENDENCY")
                  ||getEditParaType().equals("OUTPUT_PORT"))
          {
              editInput=editPara.getIsEditInput().toString();
          }
-         
+
          if(getEditParaType().equals("CUSTOM"))
          {
              editInput=editInputCustom;
          }
-      return editInput;  
+      return editInput;
     }
-    
+
     public void setEditInput(String editInput){
           this.editInput=editInput;
     }
-    
+
     String editInputCustom="";
     public String getEditInputCustom(){
-        
+
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -637,19 +637,19 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("input")){
                    editInputCustom=((Node) item1.getData()).getValue();
                 }
-             } 
+             }
           }
-      return editInputCustom;  
+      return editInputCustom;
     }
-    
+
     public void setEditInputCustom(String editInputCustom){
           this.editInputCustom=editInputCustom;
     }
-    
+
     public void updateWithEditedValues(){
           TreeNode item1;
           Iterator<TreeNode> iterator1;
-          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null 
+          if (newParameterIdNode!=null && newParameterIdNode.getTreeNode()!=null
                  && newParameterIdNode.getTreeNode().getChildren()!=null){
           iterator1 = newParameterIdNode.getTreeNode().getChildren().iterator();
           while(iterator1.hasNext()){
@@ -681,12 +681,12 @@ public class ImpAttrTree extends AttrTree{
                 if(item1!=null && item1.getData()!=null && ((Node) item1.getData()).getKey().equals("input")){
                    ((Node) item1.getData()).setValue(getEditInput());
                 }
-                
-             } 
+
+             }
           }
         selectedNode.setValue(fileSelValue);
     }
-    
+
     String orderSwitchName;
     public String getOrderSwitchName(String paraID){
           TreeNode item1;
@@ -695,7 +695,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-       
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -703,19 +703,19 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                              while(iterator3.hasNext()){
                                  item3=iterator3.next();
                                  if(((Node) item3.getData()).getKey().equals("switchName")){
                                       orderSwitchName=((Node) item3.getData()).getValue();
-                                    }                   
-                                }   
+                                    }
+                                }
                             }
-                        }      
-                   }   
-      return orderSwitchName;     
+                        }
+                   }
+      return orderSwitchName;
     }
-    
+
     String orderDefaultValue;
     public String getOrderDefaultValue(String paraID){
           TreeNode item1;
@@ -724,28 +724,28 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-       
+
             iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-               
+
                  while(iterator2.hasNext()){
                      item2=iterator2.next();
                      iterator3 = item2.getChildren().iterator();
-                     if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                     if(((Node) item2.getData()).getKey().equals(paraID)){
                         while(iterator3.hasNext()){
                             item3=iterator3.next();
                             if(((Node) item3.getData()).getKey().equals("defaultValue")){
                                 orderDefaultValue=((Node) item3.getData()).getValue();
                                }
-                           }   
+                           }
                        }
-                    }     
-                }   
-      return orderDefaultValue;  
+                    }
+                }
+      return orderDefaultValue;
     }
-    
+
     String orderTitle;
     public String getOrderTitle(String paraID){
           TreeNode item1;
@@ -754,7 +754,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-          
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -762,19 +762,19 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                             while(iterator3.hasNext()){
                                 item3=iterator3.next();
                                 if(((Node) item3.getData()).getKey().equals("title")){
                                     orderTitle=((Node) item3.getData()).getValue();
                                  }
-                              }   
+                              }
                          }
-                    } 
-               }   
-      return orderTitle;    
+                    }
+               }
+      return orderTitle;
     }
-    
+
      String orderFixed;
      public String getOrderFixed(String paraID){
           TreeNode item1;
@@ -783,7 +783,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-      
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -791,19 +791,19 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                             while(iterator3.hasNext()){
                                 item3=iterator3.next();
                                 if(((Node) item3.getData()).getKey().equals("fixed")){
                                      orderFixed=((Node) item3.getData()).getValue();
                                  }
-                            }   
+                            }
                        }
                   }
-             }   
-      return orderFixed;  
+             }
+      return orderFixed;
     }
-    
+
     String orderFile;
     public String getOrderFile(String paraID){
           TreeNode item1;
@@ -812,7 +812,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-      
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -820,19 +820,19 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                            while(iterator3.hasNext()){
                                item3=iterator3.next();
                                if(((Node) item3.getData()).getKey().equals("file")){
                                     orderFile=((Node) item3.getData()).getValue();
                                 }
-                            }   
+                            }
                        }
-                   }   
-              }   
-      return orderFile;  
+                   }
+              }
+      return orderFile;
     }
-     
+
     String orderInput;
     public String getOrderInput(String paraID){
           TreeNode item1;
@@ -841,7 +841,7 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-       
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -849,36 +849,36 @@ public class ImpAttrTree extends AttrTree{
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
-                        if(((Node) item2.getData()).getKey().equals(paraID)){ 
+                        if(((Node) item2.getData()).getKey().equals(paraID)){
                             while(iterator3.hasNext()){
                                 item3=iterator3.next();
                                 if(((Node) item3.getData()).getKey().equals("input")){
                                     orderInput=((Node) item3.getData()).getValue();
                                  }
-                             }   
+                             }
                          }
-                     }     
-                }   
-      return orderInput;      
+                     }
+                }
+      return orderInput;
     }
-    
-    String userName; 
-    public String getUserName() {    
-       userName=currentUser.getLoginName();  
-      return userName;  
+
+    String userName;
+    public String getUserName() {
+       userName=currentUser.getLoginName();
+      return userName;
     }
-    
+
     String userEmail;
     public String getUserEmail(){
        userEmail=currentUser.getEmail();
        return userEmail;
     }
-    
+
     public void setDep(String depTypeValue) {
         this.depTypeValue = depTypeValue;
     }
- 
-            
+
+
     public String getDepTypeValue() {
         depTypeValue = selectedNode.getValue();
         return depTypeValue;
@@ -889,24 +889,24 @@ public class ImpAttrTree extends AttrTree{
     }
     String maxWallTime ="1000";
     public String getMaxWallTime() {
-        
+
         return maxWallTime;
     }
 
     public void setMaxWallTime(String maxWallTime) {
         this.maxWallTime = maxWallTime;
     }
-    
+
     String maxParallelism="100";
     public String getMaxParallelism() {
-        
+
         return maxParallelism;
     }
 
     public void setMaxParallelism(String maxParallelism) {
         this.maxParallelism = maxParallelism;
     }
-      
+
     public String getFileSelValue() {
         fileSelValue = selectedNode.getValue();
         return fileSelValue;
@@ -923,31 +923,31 @@ public class ImpAttrTree extends AttrTree{
 
     public void setTextEditValue(String textEditValue) {
         this.textEditValue = textEditValue;
-    }    
-    
+    }
+
     public void updateValueWithTextEdit(){
         selectedNode.setValue(textEditValue);
     }
-    
+
     public void updateUserName(){
         selectedNode.setValue(getWfDefinition());
-        
+
     }
     public void updateUserEmail(){
         selectedNode.setValue(fileSelValue);
-    }  
-    
+    }
+
      public void updateValueWithFileSel(){
         selectedNode.setValue(fileSelValue);
     }
 
      public void updateValueWithWfSel(){
         selectedNode.setValue(impSelValue);
-    }     
-     
+    }
+
     public void updateValueWithDepType(){
         selectedNode.setValue(depTypeValue);
-    } 
+    }
 
     public Config getNewConfig() {
         return newConfig;
@@ -971,7 +971,7 @@ public class ImpAttrTree extends AttrTree{
     public void setNewPara(Parameter newPara) {
         this.newPara = newPara;
     }
-    
+
     public Parameter getEditPara() {
         return editPara;
     }
@@ -983,7 +983,7 @@ public class ImpAttrTree extends AttrTree{
     String[] depPool;
     String[] depTypePool;
     String[] paraPool;
-    
+
     public String[] getConfigPool() {
         return configPool;
     }
@@ -1017,7 +1017,7 @@ public class ImpAttrTree extends AttrTree{
             return confNode;
         }
         return super.addChildren(tNode, node);
-    }  
+    }
 
     ImpAttrTree() {
         super();
@@ -1049,7 +1049,7 @@ public class ImpAttrTree extends AttrTree{
         depPool = generatePool("dep",100);
         configPool = generatePool("conf",100);
         paraPool = generatePool("para",30);
-      
+
         depTypePool = new String[7];
         depTypePool[0] = "Binary";
         depTypePool[1] = "Data Resource";
@@ -1058,13 +1058,13 @@ public class ImpAttrTree extends AttrTree{
         depTypePool[4] = "Service";
         depTypePool[5] = "Sub Workflow";
         depTypePool[6] = "Other";
-      
+
     }
- 
+
     public ImpAttrTree(List<AttributeTO> aList)
     {
         this();
-        super.setAttrTree(aList);       
+        super.setAttrTree(aList);
     }
 
     public String[] getDepTypePool() {
@@ -1074,7 +1074,7 @@ public class ImpAttrTree extends AttrTree{
     public void setDepTypePool(String[] depTypePool) {
         this.depTypePool = depTypePool;
     }
-    
+
     public String[] getParaTypePool() {
         return paraPool;
     }
@@ -1082,9 +1082,9 @@ public class ImpAttrTree extends AttrTree{
     public void setParaTypePool(String[] paraPool) {
         this.paraPool = paraPool;
     }
-    
-    
-    public void addExecutionAttr(){                                        
+
+
+    public void addExecutionAttr(){
                 TreeNode newMaxWallTime = (TreeNode) new DefaultTreeNode(new Node("maxWallTime",getMaxWallTime()), execution);
                 ( (Node) newMaxWallTime.getData()).setTreeNode(newMaxWallTime);
                 TreeNode newMaxParallelism = (TreeNode) new DefaultTreeNode(new Node("maxParallelism",getMaxParallelism()), execution);
@@ -1093,9 +1093,9 @@ public class ImpAttrTree extends AttrTree{
                 ( (Node) newParameters.getData()).setTreeNode(newParameters);
                 selectedNode.setValue("");
 
-                
-    }     
-      
+
+    }
+
     public void addDeployer(){
         TreeNode newDeployer = (TreeNode) new DefaultTreeNode(new Node("deployer"),execution);
                 ( (Node) newDeployer.getData()).setTreeNode(newDeployer);
@@ -1106,35 +1106,35 @@ public class ImpAttrTree extends AttrTree{
                  System.out.println("Deployer is created.......................");
                 selectedNode.setValue("");
     }
-    
-    public void removeDeployer() { 
+
+    public void removeDeployer() {
         TreeNode item;
 
         Iterator<TreeNode> iterator = execution.getChildren().iterator();
         List<TreeNode> itemsToRemove = new ArrayList<TreeNode>();
         while(iterator.hasNext()){
             item = iterator.next();
-            if(item!=null 
-                && item.getData()!=null 
+            if(item!=null
+                && item.getData()!=null
                 && (((Node) item.getData()).getKey().equals("deployer")))
             {
                 itemsToRemove.add(item);
                 //item.getParent().getChildren().remove(item);
             }
-        }    
+        }
         execution.getChildren().removeAll(itemsToRemove);
     }
-    
+
     public void clearEditedData() {
-    editParaType="";    
+    editParaType="";
     }
-        
+
     public String clearEditDialog(){
         String clearDialog;
         clearDialog="EditParametersDialog.show();";
       return clearDialog;
     }
-    
+
     public Node getParameterNode() {
         return newParameterIdNode;
     }
@@ -1142,7 +1142,7 @@ public class ImpAttrTree extends AttrTree{
     public void setParameterNode(Node newParameterIdNode) {
         this.newParameterIdNode = newParameterIdNode;
     }
-    
+
     public Node getParameterTypeNode() {
         return newParameterTypeNode;
     }
@@ -1150,34 +1150,34 @@ public class ImpAttrTree extends AttrTree{
     public void setParameterTypeNode(Node newParameterTypeNode) {
         this.newParameterTypeNode = newParameterTypeNode;
     }
-    
+
     public boolean canRemoveExecution(Node node){
-        
+
        if(node.getKey().equals("execution")&& !doesExecutionExist()) {
             return true;
          }
       return false;
     }
-    
-    public void removeExecution() { 
+
+    public void removeExecution() {
 
          execution.getParent().getChildren().remove(execution);
          execution = (TreeNode) new DefaultTreeNode(new Node("execution"), root);
-        ( (Node) execution.getData()).setTreeNode(execution); 
+        ( (Node) execution.getData()).setTreeNode(execution);
     }
-    
+
     public boolean doesExecutionExist() {
           TreeNode item;
-    
+
           Iterator<TreeNode> iterator = execution.getChildren().iterator();
           while(iterator.hasNext()){
               item = iterator.next();
               return false;
           }
-          
+
           return true;
     }
-    
+
     public void addDependency(){
         if(selectedNode!=null){
             String depId = newDep.getDepId();
@@ -1221,10 +1221,10 @@ public class ImpAttrTree extends AttrTree{
         }
     }
     public void addExecuParametre(){
- 
+
         if(selectedNode!=null){
             String paraId = newPara.getParaID();
-           
+
            if(canAddParaId(paraId))
             {
                 if (canAddType())
@@ -1255,7 +1255,7 @@ public class ImpAttrTree extends AttrTree{
                     ( (Node) newInput.getData()).setTreeNode(newInput);
 
                     selectedNode.setValue("");
-                
+
                 }else
                     {
                    addMessage(null, FacesMessage.SEVERITY_ERROR, "Cannot create new parameter! Select parameter type", null);
@@ -1265,31 +1265,31 @@ public class ImpAttrTree extends AttrTree{
             }
          }
     }
-    
+
    public Boolean canAddType(){
         if(newPara.getParamterType().equals("INPUT_PORT")
                 ||newPara.getParamterType().equals("OUTPUT_PORT")
                 ||newPara.getParamterType().equals("DEPENDENCY")
                 ||newPara.getParamterType().equals("CUSTOM"))
         {
-          return true;  
+          return true;
         }
-        
+
         return false;
     }
-   
+
    public Boolean canEditType(){
         if(editPara.getParamterType().equals("INPUT_PORT")
                 ||editPara.getParamterType().equals("OUTPUT_PORT")
                 ||editPara.getParamterType().equals("DEPENDENCY")
                 ||editPara.getParamterType().equals("CUSTOM"))
         {
-          return true;  
+          return true;
         }
-        
+
         return false;
     }
-   
+
     public void addDepToConfig()
     {
         if(selectedNode!=null && selectedNode.getTreeNode()!=null){
@@ -1335,8 +1335,8 @@ public class ImpAttrTree extends AttrTree{
           TreeNode item2;
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
-          
-       
+
+
           iterator1 = execution.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
@@ -1348,7 +1348,7 @@ public class ImpAttrTree extends AttrTree{
                   }
                }
            }
-      return true;  
+      return true;
     }
 
     public Boolean canAddConfId(String confId){
@@ -1365,7 +1365,7 @@ public class ImpAttrTree extends AttrTree{
         }
         return true;
     }
-    
+
 
     public Boolean canAddDepIdToConf(String depId, Node node){
         if(node!=null
@@ -1424,7 +1424,7 @@ public class ImpAttrTree extends AttrTree{
         }
         return false;
     }
-    
+
     public Boolean canEditExecutionParameters(Node node) {
         if(node!=null
                 && node.getTreeNode()!=null
@@ -1439,7 +1439,7 @@ public class ImpAttrTree extends AttrTree{
         return false;
     }
     public Boolean canEditDeployer(Node node) {
-  
+
         if(node.getKey().equals("username")) {
             return true;
         }
@@ -1447,15 +1447,15 @@ public class ImpAttrTree extends AttrTree{
             return true;
         }
         return false;
-    }  
-    
+    }
+
     public Boolean canAddExecutionParameters(Node node){
        if (node.getKey().equals("parameters")) {
            return true;
        }
         return false;
     }
-  
+
     public Boolean canAddExecutionAttr(Node node){
         if(node.getKey().equals("execution")) {
             return true;
@@ -1471,22 +1471,22 @@ public class ImpAttrTree extends AttrTree{
             if(( (Node) node.getTreeNode().getParent().getData()).getKey().equals("parameters"))
             {
                 return true;
-            } 
+            }
         }
         return false;
     }
-   
+
     public Boolean canEdit(Node node) {
-        if(node.getTreeNode()!=null 
-                &&  node.getTreeNode().isLeaf() 
-                && !canAddDep(node) 
-                && !canAddConfig(node) 
+        if(node.getTreeNode()!=null
+                &&  node.getTreeNode().isLeaf()
+                && !canAddDep(node)
+                && !canAddConfig(node)
                 && !canAddDepToConfig(node)
                 && !canEditConf(node)
                 && !canEditDepType(node)
                 && !canAddExecutionParameters(node)
                 && !canAddExecutionAttr(node)
-                && !canEditExecutionParameters(node)                
+                && !canEditExecutionParameters(node)
                 && !canEditParameters(node)
                 && !canEditDeployer(node))
         {
@@ -1494,7 +1494,7 @@ public class ImpAttrTree extends AttrTree{
         }
         return false;
     }
-    
+
     public Boolean canEditConf(Node node) {
         if(node!=null
                 && node.getTreeNode()!=null
@@ -1507,7 +1507,7 @@ public class ImpAttrTree extends AttrTree{
             return true;
         }
         return false;
-    }    
+    }
 
     public Boolean canEditDepType(Node node) {
         if(node!=null
@@ -1521,11 +1521,11 @@ public class ImpAttrTree extends AttrTree{
             return true;
         }
         return false;
-    }    
-    
-    
+    }
+
+
     public Boolean canRemove(Node node) {
-        
+
         if(node!=null && node.getTreeNode()!=null
                 && node.getTreeNode().getParent()!=null
                 && node.getTreeNode().getParent().getData()!=null
@@ -1561,7 +1561,7 @@ public class ImpAttrTree extends AttrTree{
     public class Dependency {
         String depId="";
         String type="";
-        
+
         public String getType() {
             return type;
         }
@@ -1587,7 +1587,7 @@ public class ImpAttrTree extends AttrTree{
             this.depId = depId;
         }
 
-        public String getDescription() { 
+        public String getDescription() {
             return description;
         }
 
@@ -1609,7 +1609,7 @@ public class ImpAttrTree extends AttrTree{
     public class Config{
         String configId="";
         String depRef="";
-        String value;        
+        String value;
 
         public String getConfigId() {
             return configId;
@@ -1637,11 +1637,11 @@ public class ImpAttrTree extends AttrTree{
 
 
   }
-    
+
    public class Parameter {
-       List<String> idList= new ArrayList<String>(); 
+       List<String> idList= new ArrayList<String>();
        List<String> defValueList= new ArrayList<String>();
-            
+
         public List<String> getDefValueListOfInputPort(){
             List<String> defaultValueListOfInputPort=new ArrayList<String>();
             TreeNode item1;
@@ -1652,11 +1652,11 @@ public class ImpAttrTree extends AttrTree{
             Iterator<TreeNode> iterator3;
 
                 iterator1 = aTree.root.getChildren().iterator();
-                while(iterator1.hasNext()){      
+                while(iterator1.hasNext()){
                     item1 = iterator1.next();
                     iterator2 = item1.getChildren().iterator();
                     if(((Node) item1.getData()).getKey().equals("configurations")){
-                        while(iterator2.hasNext()){ 
+                        while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
                             while(iterator3.hasNext()){
@@ -1665,16 +1665,16 @@ public class ImpAttrTree extends AttrTree{
                                 if((getInPortList().get(i) !=null
                                 && getInPortList().get(i).equals(((Node) item3.getData()).getName()))){
                                     defaultValueListOfInputPort.add(((Node) item3.getData()).getValue());
-                                }  
-                              }       
+                                }
+                              }
                             }
                          }
                      }
                   }
 
-        return defaultValueListOfInputPort;  
+        return defaultValueListOfInputPort;
         }
-        
+
         public List<String> getDefValueListOfSinglePort(String selectedId){
             List<String> defaultValueListOfSingleInputPort=new ArrayList<String>();
             TreeNode item1;
@@ -1685,11 +1685,11 @@ public class ImpAttrTree extends AttrTree{
             Iterator<TreeNode> iterator3;
 
                 iterator1 = aTree.root.getChildren().iterator();
-                while(iterator1.hasNext()){      
+                while(iterator1.hasNext()){
                     item1 = iterator1.next();
                     iterator2 = item1.getChildren().iterator();
                     if(((Node) item1.getData()).getKey().equals("configurations")){
-                        while(iterator2.hasNext()){ 
+                        while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
                         while(iterator3.hasNext()){
@@ -1697,13 +1697,13 @@ public class ImpAttrTree extends AttrTree{
                             if((selectedId !=null
                             && selectedId.equals(((Node) item3.getData()).getName()))){
                                 defaultValueListOfSingleInputPort.add(((Node) item3.getData()).getValue());
-                              }       
+                              }
                             }
                          }
                      }
                   }
 
-        return defaultValueListOfSingleInputPort;  
+        return defaultValueListOfSingleInputPort;
         }
 
         public List<String> getDefValueListOfOutPort(){
@@ -1716,11 +1716,11 @@ public class ImpAttrTree extends AttrTree{
             Iterator<TreeNode> iterator3;
 
                 iterator1 = aTree.root.getChildren().iterator();
-                while(iterator1.hasNext()){      
+                while(iterator1.hasNext()){
                     item1 = iterator1.next();
                     iterator2 = item1.getChildren().iterator();
                     if(((Node) item1.getData()).getKey().equals("configurations")){
-                        while(iterator2.hasNext()){ 
+                        while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
                             while(iterator3.hasNext()){
@@ -1729,14 +1729,14 @@ public class ImpAttrTree extends AttrTree{
                                 if((getOutPortList().get(i) !=null
                                 && getOutPortList().get(i).equals(((Node) item3.getData()).getName()))){
                                     defaultValueListOfOutPort.add(((Node) item3.getData()).getValue());
-                                 } 
-                              }       
+                                 }
+                              }
                            }
                         }
                      }
                  }
 
-        return defaultValueListOfOutPort;  
+        return defaultValueListOfOutPort;
         }
 
         String inPortTitle;
@@ -1755,19 +1755,19 @@ public class ImpAttrTree extends AttrTree{
                         while(iterator2.hasNext()){
                             item2=iterator2.next();
                             iterator3 = item2.getChildren().iterator();
-                            if(((Node) item2.getData()).getKey().equals(newPara.getIdOfSelectedType())){ 
+                            if(((Node) item2.getData()).getKey().equals(newPara.getIdOfSelectedType())){
                                 while(iterator3.hasNext()){
                                     item3=iterator3.next();
                                     if(((Node) item3.getData()).getKey().equals("title")){
                                         inPortTitle=((Node) item3.getData()).getValue();
                                     }
-                                  }   
+                                  }
                                 }
-                              }     
-                            }   
-        return inPortTitle;    
+                              }
+                            }
+        return inPortTitle;
         }
-        
+
         String editInPortTitle;
         public String getEditInPortTitle(){
             TreeNode item1;
@@ -1784,20 +1784,52 @@ public class ImpAttrTree extends AttrTree{
                         while(iterator2.hasNext()){
                             item2=iterator2.next();
                             iterator3 = item2.getChildren().iterator();
-                            if(((Node) item2.getData()).getKey().equals(getEditIdOfSelectedType())){ 
+                            if(((Node) item2.getData()).getKey().equals(getEditIdOfSelectedType())){
                                 while(iterator3.hasNext()){
                                     item3=iterator3.next();
                                     if(((Node) item3.getData()).getKey().equals("title")){
                                         editInPortTitle=((Node) item3.getData()).getValue();
                                     }
-                                  }   
+                                  }
                                 }
-                              }     
-                            }   
-        return editInPortTitle;    
+                              }
+                            }
+        return editInPortTitle;
         }
         public void setInPortTitle(String inPortTitle) {
             this.inPortTitle = inPortTitle;
+        }
+
+        String editOutPortTitle;
+        public String getEditOutPortTitle(){
+            TreeNode item1;
+            TreeNode item2;
+            TreeNode item3;
+            Iterator<TreeNode> iterator1;
+            Iterator<TreeNode> iterator2;
+            Iterator<TreeNode> iterator3;
+
+            iterator1 = aTree.root.getChildren().iterator();
+            while(iterator1.hasNext()){
+                    item1 = iterator1.next();
+                    iterator2 = item1.getChildren().iterator();
+                        while(iterator2.hasNext()){
+                            item2=iterator2.next();
+                            iterator3 = item2.getChildren().iterator();
+                            if(((Node) item2.getData()).getKey().equals(getEditIdOfSelectedType())){
+                                while(iterator3.hasNext()){
+                                    item3=iterator3.next();
+                                    if(((Node) item3.getData()).getKey().equals("title")){
+                                        editOutPortTitle=((Node) item3.getData()).getValue();
+                                    }
+                                  }
+                                }
+                              }
+                            }
+        return editOutPortTitle;
+        }
+        public void setOutPortTitle(String outPortTitle) {
+            this.outPortTitle = outPortTitle;
         }
 
         String outPortTitle;
@@ -1812,7 +1844,7 @@ public class ImpAttrTree extends AttrTree{
             iterator1 = aTree.root.getChildren().iterator();
                 while(iterator1.hasNext()){
                 item1 = iterator1.next();
-                iterator2 = item1.getChildren().iterator();  
+                iterator2 = item1.getChildren().iterator();
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
@@ -1824,12 +1856,12 @@ public class ImpAttrTree extends AttrTree{
                                 }
                             }
                         }
-                    }  
-                }   
-        return outPortTitle;      
+                    }
+                }
+        return outPortTitle;
         }
 
-        public List<String> getInPortList() { 
+        public List<String> getInPortList() {
             List<String> inputPortList=new ArrayList<String>();
             TreeNode item1;
             TreeNode item2;
@@ -1847,10 +1879,10 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                     }
-        return inputPortList;  
+        return inputPortList;
         }
 
-        public List<String> getOutPortList() { 
+        public List<String> getOutPortList() {
             List<String> outputPortList= new ArrayList<String>();
             TreeNode item1;
             TreeNode item2;
@@ -1868,11 +1900,11 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                     }
-        return outputPortList;  
-        
+        return outputPortList;
+
         }
 
-        public List<String> getDefValueListOfDependency() { 
+        public List<String> getDefValueListOfDependency() {
             List<String> defValueListOfDependency= new ArrayList<String>();
             TreeNode item1;
             TreeNode item2;
@@ -1888,10 +1920,10 @@ public class ImpAttrTree extends AttrTree{
                             defValueListOfDependency.add(((Node) item2.getData()).getValue());
                             }
                         }
-        return defValueListOfDependency;  
+        return defValueListOfDependency;
         }
-        
-        public List<String> getDefValueListOfSingleDependency(String selectedId) { 
+
+        public List<String> getDefValueListOfSingleDependency(String selectedId) {
             List<String> defValueListOfSingleDependency= new ArrayList<String>();
             TreeNode item1;
             TreeNode item2;
@@ -1910,11 +1942,11 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                    }
-        return defValueListOfSingleDependency;  
+        return defValueListOfSingleDependency;
         }
 
-        public List<String> getDependencyList() { 
-            List<String> dependencyList=new ArrayList<String>(); 
+        public List<String> getDependencyList() {
+            List<String> dependencyList=new ArrayList<String>();
             TreeNode item1;
             Iterator<TreeNode> iterator1;
 
@@ -1923,11 +1955,11 @@ public class ImpAttrTree extends AttrTree{
                     item1 = iterator1.next();
                     dependencyList.add(((Node) item1.getData()).getName());
                     }
-        return dependencyList;  
-        } 
+        return dependencyList;
+        }
 
-        String dependencyTitle; 
-        public String getDependencyTitle() { 
+        String dependencyTitle;
+        public String getDependencyTitle() {
             TreeNode item1;
             TreeNode item2;
             Iterator<TreeNode> iterator1;
@@ -1946,11 +1978,11 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                     }
-        return dependencyTitle;  
+        return dependencyTitle;
         }
-        
-        String editDependencyTitle; 
-        public String getEditDependencyTitle() { 
+
+        String editDependencyTitle;
+        public String getEditDependencyTitle() {
             TreeNode item1;
             TreeNode item2;
             Iterator<TreeNode> iterator1;
@@ -1969,9 +2001,9 @@ public class ImpAttrTree extends AttrTree{
                             }
                         }
                     }
-        return editDependencyTitle;  
+        return editDependencyTitle;
         }
-        
+
         String paraId;
         public String getParaID() {
             return paraId;
@@ -1980,42 +2012,42 @@ public class ImpAttrTree extends AttrTree{
         public void setParaID(String paraId) {
             this.paraId = paraId;
         }
-            
-        String parameter; 
-        public void setParamter(String parameter) { 
-              this.parameter=parameter; 
-          } 
-        
-        
+
+        String parameter;
+        public void setParamter(String parameter) {
+              this.parameter=parameter;
+          }
+
+
         public String getParamter() {
             //parameterType=type.toString();
             return parameter;
         }
-        
+
         String idOfSelectedType;
         public String getIdOfSelectedType() {
-         
+
             return idOfSelectedType;
         }
 
         public void setIdOfSelectedType(String idOfSelectedType) {
             this.idOfSelectedType = idOfSelectedType;
         }
-        
+
         String title;
-        public String getTitle() {    
+        public String getTitle() {
         if(getParamterType().equals("DEPENDENCY")){
 			title = getDependencyTitle();
                 }
                 else if (getParamterType().equals("INPUT_PORT")
                         ||getParamterType().equals("OUTPUT_PORT")){
 			title = getInPortTitle();
-                } 
+                }
                 else if (getParamterType().equals("CUSTOM")){
                        title = getTitleOfCustom();
                 }
-       return title;  
-     
+       return title;
+
        }
        String titleOfCustom="";
        public String getTitleOfCustom() {
@@ -2025,39 +2057,39 @@ public class ImpAttrTree extends AttrTree{
        public void setTitleOfCustom(String titleOfCustom) {
             this.titleOfCustom = titleOfCustom;
        }
-        
+
        public void setTitle(String title) {
           this.title = title;
        }
-       
+
        String defValueofParameter;
        public String getDefValueofParameter() {
-           
+
             return defValueofParameter;
        }
 
        public void setDefValueofParameter(String defValueofParameter) {
             this.defValueofParameter = defValueofParameter;
        }
-        
+
        String defaultValueCustomFile;
        public String getDefaultValueCustomFile() {
            return defaultValueCustomFile;
       }
-       
+
       public void setDefaultValueCustomFile(String defaultValueCustomFile) {
             this.defaultValueCustomFile = defaultValueCustomFile;
       }
-       
+
       String defaultValueCustomText;
       public String getDefaultValueCustomText(){
         return defaultValueCustomText;
       }
-      
+
       public void setDefaultValueCustomText(String defaultValueCustomText) {
             this.defaultValueCustomText = defaultValueCustomText;
       }
-        
+
       String defaultValueCustom;
       public String getDefaultValueCustom(){
           if( getRadioButton().equals("Select File")){
@@ -2069,11 +2101,11 @@ public class ImpAttrTree extends AttrTree{
            }
           return defaultValueCustom;
       }
-      
+
       public void setDefaultValueCustom(String defaultValueCustom) {
             this.defaultValueCustom = defaultValueCustom;
       }
-      
+
       public String getParameterOutputFile(){
             TreeNode item1;
             TreeNode item2;
@@ -2086,7 +2118,7 @@ public class ImpAttrTree extends AttrTree{
                 while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-                if(((Node) item1.getData()).getKey().equals("parameters")){   
+                if(((Node) item1.getData()).getKey().equals("parameters")){
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
@@ -2097,11 +2129,11 @@ public class ImpAttrTree extends AttrTree{
                                 }
                             }
                         }
-                    }  
-                }   
-        return file;      
+                    }
+                }
+        return file;
       }
-      
+
       public String getParameterOutputType(){
             TreeNode item1;
             TreeNode item2;
@@ -2114,7 +2146,7 @@ public class ImpAttrTree extends AttrTree{
                 while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-                if(((Node) item1.getData()).getKey().equals("parameters")){   
+                if(((Node) item1.getData()).getKey().equals("parameters")){
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         iterator3 = item2.getChildren().iterator();
@@ -2125,11 +2157,11 @@ public class ImpAttrTree extends AttrTree{
                                 }
                             }
                         }
-                    }  
-                }   
-        return type;      
+                    }
+                }
+        return type;
       }
-      
+
       public boolean isOutputFile(){
           if (getParameterOutputType().equals("OUTPUT_PORT")&&
                   getParameterOutputFile().equals("true")){
@@ -2137,7 +2169,7 @@ public class ImpAttrTree extends AttrTree{
           }
           return false;
       }
-      
+
       String fillDefaultValueCustom;
       public String getFillDefaultValueCustom(){
           if( getRadioButton().equals("Select File")){
@@ -2148,93 +2180,93 @@ public class ImpAttrTree extends AttrTree{
            }
           return fillDefaultValueCustom;
       }
-      
+
       public void setFillDefaultValueCustom(String fillDefaultValueCustom) {
             this.fillDefaultValueCustom = fillDefaultValueCustom;
       }
-      
+
       public List<String> getRadioButtonList() {
            List<String> radioBulttonOption= new ArrayList<String>();
            radioBulttonOption.add("Enter Value");
            radioBulttonOption.add("Select File");
-           
-           
+
+
          return radioBulttonOption;
       }
-      
+
       String radioButtons="Enter Value";
       public String getRadioButton() {
          return radioButtons;
       }
-      
+
       public void setRadioButton(String radioButtons) {
          this.radioButtons=radioButtons;
       }
-      
+
       public void handleRadioOptionChange() {
-            
+
 	  if( getRadioButton().equals("Select File")){
               defaultValueCustom=getDefaultValueCustomFile();
            }
            else if(getRadioButton().equals("Enter Value")){
               defaultValueCustom=getDefaultValueCustomText();
            }
-      } 
-        
+      }
+
       public boolean isRadioOptionFile(){
            if(getRadioButton()!=null && getRadioButton().equals("Select File")){
                return true;
            }
            return false;
       }
-    
+
       public boolean isRadioOptionText(){
            if(getRadioButton()!=null && getRadioButton().equals("Enter Value")){
                return true;
            }
            return false;
       }
-     
+
       String defaultValue;
-      public String getDefaultValue() {    
+      public String getDefaultValue() {
             if (getParamterType().equals("INPUT_PORT")
                         ||getParamterType().equals("OUTPUT_PORT")
                         ||getParamterType().equals("DEPENDENCY")){
 		defaultValue = getDefValueofParameter();
-              } 
+              }
             else if (getParamterType().equals("CUSTOM")){
                 defaultValue = getDefaultValueCustom();
-                
+
               }
-         return defaultValue;  
+         return defaultValue;
        }
-  
+
        public void setDefaultValue(String defaultValue) {
             this.defaultValue = defaultValue;
        }
-        
+
         String cmdLine;
         String switchName=" ";
-        public String getCmdLine() { 
+        public String getCmdLine() {
             return cmdLine;
         }
-        
+
         public void setCmdLine(String cmdLine) {
             this.cmdLine = cmdLine;
         }
-        
+
         String fileCustom="";
-        public String getFileCustom() { 
+        public String getFileCustom() {
             if(getRadioButton()!=null && getRadioButton().equals("Select File")){
                 fileCustom="true";
             }
             return fileCustom;
         }
-        
+
         public void setFileCustom(String fileCustom) {
             this.fileCustom = fileCustom;
         }
-        
+
         public String getSwitchName() {
             return switchName;
         }
@@ -2244,20 +2276,20 @@ public class ImpAttrTree extends AttrTree{
         }
 
         String fixed;
-        public String getFixed() { 
+        public String getFixed() {
             return fixed;
         }
-        
+
         public void setFixed(String fixed) {
             this.fixed = fixed;
         }
-        
+
         String nullToEmpty;
         public String nullToEmpty(String text) {
         return nullToEmpty == null ? "" : text;
         }
 
-        
+
         public Boolean getIsDepFile() {
             String fileName="";
 
@@ -2282,9 +2314,9 @@ public class ImpAttrTree extends AttrTree{
            if (fileName.equals("file")) {
               return true;
           }
-         return false; 
+         return false;
         }
-        
+
         public Boolean getIsEditDepFile() {
             String fileName="";
 
@@ -2309,9 +2341,9 @@ public class ImpAttrTree extends AttrTree{
            if (fileName.equals("file")) {
               return true;
           }
-         return false; 
+         return false;
         }
-        
+
         public Boolean getIsPortFile() {
           String fileName="";
           TreeNode item1;
@@ -2320,12 +2352,12 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-  
+
           iterator1 = aTree.root.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-                   
+
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         if(((Node) item2.getData()).getKey().equals(newPara.getIdOfSelectedType())){
@@ -2334,10 +2366,10 @@ public class ImpAttrTree extends AttrTree{
                                 item3=iterator3.next();
                                 if(((Node) item3.getData()).getKey().equals("datatype")){
                                       fileName=((Node) item3.getData()).getValue();
-                  
+
                                     }
-                 
-                                }        
+
+                                }
                              }
                           }
 
@@ -2345,9 +2377,9 @@ public class ImpAttrTree extends AttrTree{
          if (fileName.equals("file")) {
            return true;
         }
-         return false; 
+         return false;
      }
-        
+
      public Boolean getIsEditPortFile() {
           String fileName="";
           TreeNode item1;
@@ -2356,12 +2388,12 @@ public class ImpAttrTree extends AttrTree{
           Iterator<TreeNode> iterator1;
           Iterator<TreeNode> iterator2;
           Iterator<TreeNode> iterator3;
-  
+
           iterator1 = aTree.root.getChildren().iterator();
             while(iterator1.hasNext()){
                 item1 = iterator1.next();
                 iterator2 = item1.getChildren().iterator();
-                   
+
                     while(iterator2.hasNext()){
                         item2=iterator2.next();
                         if(((Node) item2.getData()).getKey().equals(getEditIdOfSelectedType())){
@@ -2370,10 +2402,10 @@ public class ImpAttrTree extends AttrTree{
                                 item3=iterator3.next();
                                 if(((Node) item3.getData()).getKey().equals("datatype")){
                                       fileName=((Node) item3.getData()).getValue();
-                  
+
                                     }
-                 
-                                }        
+
+                                }
                              }
                           }
 
@@ -2381,10 +2413,10 @@ public class ImpAttrTree extends AttrTree{
          if (fileName.equals("file")) {
            return true;
         }
-         return false; 
+         return false;
      }
-    
-     String asStringIsFile; 
+
+     String asStringIsFile;
      public String getAsStringIsFile(){
          if(getParamterType().equals("INPUT_PORT")||getParamterType().equals("OUTPUT_PORT"))
          {
@@ -2400,74 +2432,74 @@ public class ImpAttrTree extends AttrTree{
          }
       return asStringIsFile;
     }
-        
+
     public void setAsStringIsFile(String asStringIsFile) {
             this.asStringIsFile = asStringIsFile;
     }
-    
+
     String input;
-    public Boolean getIsInput() { 
+    public Boolean getIsInput() {
          if(getParamterType().equals("INPUT_PORT")||getParamterType().equals("DEPENDENCY")){
-             return true;           
+             return true;
             }
-         else return false;    
+         else return false;
     }
-    
-    public Boolean getIsEditInput() { 
+
+    public Boolean getIsEditInput() {
          if(getEditParaType().equals("INPUT_PORT")||getEditParaType().equals("DEPENDENCY")){
-             return true;           
+             return true;
             }
-         else return false;    
+         else return false;
     }
-        
+
     public String getAsStringIsInput() {
             return getIsInput().toString();
     }
-    
+
     public void setAsStringIsInput(String input) {
             this.input = input;
     }
-    
+
     String isCustomInput;
     public String getIsCustomInput() {
             return isCustomInput;
     }
-    
+
     public void setIsCustomInput(String isCustomInput) {
             this.isCustomInput = isCustomInput;
     }
-    
+
     String isParameterInput;
-    public String getIsParameterInput() {    
+    public String getIsParameterInput() {
         if (getParamterType().equals("INPUT_PORT")
                         ||getParamterType().equals("OUTPUT_PORT")
                         ||getParamterType().equals("DEPENDENCY")){
 		isParameterInput = getAsStringIsInput();
-           } 
+           }
          else if (getParamterType().equals("CUSTOM")){
                 isParameterInput = getIsCustomInput();
            }
-       return isParameterInput;  
+       return isParameterInput;
      }
-  
+
     public void setIsParameterInput(String isParameterInput) {
             this.isParameterInput = isParameterInput;
     }
-    
-    public void setParamterType(String parameterType) { 
-              this.parameterType=parameterType; 
-    } 
-        
-    String parameterType; 
+
+    public void setParamterType(String parameterType) {
+              this.parameterType=parameterType;
+    }
+
+    String parameterType;
     public String getParamterType() {
             return parameterType;
     }
-       
+
     public void handleTypeChange() {
             String emptySpace="";
             List<String> emptyList=new ArrayList<String>();
             emptyList.add(emptySpace);
-            
+
 	       if(getParamterType().equals("INPUT_PORT")){
 			idList = getInPortList();
                         defValueList =getDefValueListOfSinglePort(getInPortList().get(0));
@@ -2482,18 +2514,18 @@ public class ImpAttrTree extends AttrTree{
                 }
                 else if(getParamterType().equals("CUSTOM")){
 			//String s=newPara.getIdOfSelectedType();
-                    idList= emptyList;   
+                    idList= emptyList;
                 }
-    } 
-    
+    }
+
     public void handleEditTypeChange() {
             String emptySpace="";
             List<String> emptyList=new ArrayList<String>();
             emptyList.add(emptySpace);
                //editSelectedIdList.clear();
-	       
+
                if( editParaType.equals("INPUT_PORT")){
-                    
+
 			editSelectedIdList = getInPortList();
                         defValueList = getDefValueListOfInputPort();
                 }
@@ -2508,18 +2540,18 @@ public class ImpAttrTree extends AttrTree{
                         defValueList= getDefValueListOfDependency();
                 }
                 else if(editParaType.equals("CUSTOM")){
-                    
-                        editSelectedIdList= emptyList;   
-                } 
-               
-    } 
-    
+
+                        editSelectedIdList= emptyList;
+                }
+
+    }
+
     public void handleDefaultValueChange() {
 
-              
+
             if( getParamterType().equals("INPUT_PORT")&&
                     newPara.getIdOfSelectedType()!=null){
-                    defValueList= getDefValueListOfSinglePort(newPara.getIdOfSelectedType());  
+                    defValueList= getDefValueListOfSinglePort(newPara.getIdOfSelectedType());
             }
             else if(getParamterType().equals("OUTPUT_PORT")&&
                     newPara.getIdOfSelectedType()!=null){
@@ -2529,8 +2561,8 @@ public class ImpAttrTree extends AttrTree{
                     newPara.getIdOfSelectedType()!=null){
                     defValueList= getDefValueListOfSingleDependency(newPara.getIdOfSelectedType());
             }
-    } 
-    
+    }
+
     List<String> editSelectedIdList=new ArrayList<String>();
     public List<String> getEditSelectedIdList() {
             String emptySpace="";
@@ -2544,10 +2576,10 @@ public class ImpAttrTree extends AttrTree{
                 else if(getEditParaType().equals("DEPENDENCY")){
 			editSelectedIdList = getDependencyList();
                 }
-      
-         return editSelectedIdList;      
+
+         return editSelectedIdList;
     }
-    
+
     public List<String> getEditDefaultValueList() {
             List<String> editDefaultValueList=new ArrayList<String>();
             //emptyList.add(emptySpace);
@@ -2561,19 +2593,19 @@ public class ImpAttrTree extends AttrTree{
                 else if(getEditParaType().equals("DEPENDENCY")){
                         editDefaultValueList= getDefValueListOfDependency();
                 }
-      
-         return editDefaultValueList;      
-    }
-    
-    public List<String> getParamterTypes() {  
-           List<String> items = new ArrayList<String>();  
 
-           for (ParamterType typ: ParamterType.values()) {  
-                items.add(typ.toString()); 
-                    }  
-                return items;  
+         return editDefaultValueList;
+    }
+
+    public List<String> getParamterTypes() {
+           List<String> items = new ArrayList<String>();
+
+           for (ParamterType typ: ParamterType.values()) {
+                items.add(typ.toString());
+                    }
+                return items;
      }
-    
+
      public List<String> getDefValueList(){
             return defValueList;
      }
@@ -2581,10 +2613,10 @@ public class ImpAttrTree extends AttrTree{
      public List<String> getIDList(){
             return idList;
      }
-  
+
   }
-        
-    ParamterType type; 
+
+    ParamterType type;
 
     public boolean isParameterTypeCustom(){
            if(newPara.getParamterType()!=null && newPara.getParamterType().equals("CUSTOM")){
@@ -2592,56 +2624,56 @@ public class ImpAttrTree extends AttrTree{
          }
         return false;
     }
-    
+
     public boolean isParameterTypeInput(){
            if(newPara.getParamterType()!=null && newPara.getParamterType().equals("INPUT_PORT")){
                return true;
            }
            return false;
        }
-    
+
     public boolean isParameterTypeOutput(){
            if(newPara.getParamterType()!=null && newPara.getParamterType().equals("OUTPUT_PORT")){
                return true;
            }
            return false;
     }
-    
+
     public boolean isParameterTypeDep(){
            if(newPara.getParamterType()!=null && newPara.getParamterType().equals("DEPENDENCY")){
                return true;
            }
            return false;
     }
-    
+
     public boolean isEditParameterTypeCustom(){
            if(getEditParaType()!=null && getEditParaType().equals("CUSTOM")){
                return true;
          }
         return false;
     }
-   
+
     public boolean isEditParameterTypeInput(){
            if(getEditParaType()!=null && getEditParaType().equals("INPUT_PORT")){
                return true;
            }
            return false;
        }
-    
+
     public boolean isEditParameterTypeOutput(){
            if(getEditParaType()!=null && getEditParaType().equals("OUTPUT_PORT")){
                return true;
            }
            return false;
     }
-    
+
     public boolean isEditParameterTypeDep(){
            if(getEditParaType()!=null && getEditParaType().equals("DEPENDENCY")){
                return true;
            }
            return false;
     }
-    
+
     public boolean isEditParaTypeCustom(){
            if(getEditParaType()!=null && getEditParaType().equals("CUSTOM")){
                return true;
@@ -2654,29 +2686,29 @@ public class ImpAttrTree extends AttrTree{
            }
            return false;
        }
-    
+
     public boolean isEditParaTypeOutput(){
            if(getEditParaType()!=null && getEditParaType().equals("OUTPUT_PORT")){
                return true;
            }
            return false;
     }
-    
+
     public boolean isEditParaTypeDep(){
            if(getEditParaType()!=null && getEditParaType().equals("DEPENDENCY")){
                return true;
            }
            return false;
     }
-   
-    public enum ParamterType  
 
-          {  
+    public enum ParamterType
+
+          {
             Please_Select_One,
-             INPUT_PORT,  
-             OUTPUT_PORT,  
-             DEPENDENCY,  
-             CUSTOM;  
-          } 
-         
+             INPUT_PORT,
+             OUTPUT_PORT,
+             DEPENDENCY,
+             CUSTOM;
+          }
+
 }
