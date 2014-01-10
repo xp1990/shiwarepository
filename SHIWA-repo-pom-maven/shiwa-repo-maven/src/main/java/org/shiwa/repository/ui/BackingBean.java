@@ -275,6 +275,18 @@ public class BackingBean implements Serializable {
         }
     }
 
+    class ImpSort implements Comparator<ImplementationTO> {
+
+        @Override
+        public int compare(ImplementationTO one, ImplementationTO two){
+            if (one == null || two == null) {
+                return 0;
+            }
+            return 0;
+        }
+
+    }
+
     public void resetCachesIfUserChanged() {
         if (prevUser != currentUser) {
             resetCaches();
@@ -2417,7 +2429,13 @@ public class BackingBean implements Serializable {
             impListCache = newImpListCache;
         }
 
+        Collections.sort(impListCache, new ImpSort());
+
         return impListCache;
+    }
+
+    public int sortByString(String a, String b){
+        return a.compareTo(b);
     }
 
     public List<ImplementationSummary> getImplementationSummaries() {

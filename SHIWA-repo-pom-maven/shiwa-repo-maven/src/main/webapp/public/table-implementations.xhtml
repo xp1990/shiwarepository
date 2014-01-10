@@ -13,7 +13,6 @@
                             <p:dataTable id="impBrowserTable"
                                      var="appImp"
                                      value="#{backingBean.implementations}"
-                                     selectionMode="single"
                                      paginator="true"
                                      paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                      rowsPerPageTemplate="25,50,100"
@@ -30,12 +29,12 @@
                                                        width="26"
                                                        rendered="#{!appImp.isSubmittable()}"
                                                        style="border-style: none"
-                                                        title="This implementation is not runnable within the SHIWA Simulation Platform, because it has not been deployed to GEMLCA."/>
+                                                        title="This implementation is not runnable within the SHIWA Simulation Platform"/>
                                         <p:graphicImage value="/resources/images/play-blue.png"
                                                         width="26"
                                                         rendered="#{!backingBean.isSspSession() and appImp.isSubmittable()}"
                                                         style="border-style: none"
-                                                        title="This implementation is runnable within the SHIWA Simulation Platform, it has been deployed to GEMLCA."/>
+                                                        title="This implementation is runnable within the SHIWA Simulation Platform"/>
 
                                         <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and appImp.isSubmittable()}">
                                             <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
@@ -61,24 +60,24 @@
                                         </p:outputPanel>
                                     </p:outputPanel>
                                 </p:column>
-                                <p:column sortBy="#{appImp.appName}" filterBy="#{appImp.appName}" filterMatchMode="contains">
+                                <p:column headerText="Workflow" sortBy="#{appImp.appName}" filterBy="#{appImp.appName}" filterMatchMode="contains">
                                     <f:facet name="header">Workflow</f:facet>
                                     <h:outputText value="#{appImp.appName}" />
                                 </p:column>
-                                <p:column sortBy="#{appImp.platformName} (#{appImp.platformVersion})" filterBy="#{appImp.platformName} (#{appImp.platformVersion})" filterMatchMode="contains">
-                                    <f:facet name="header">Engine</f:facet>
+                                <p:column headerText="Engine" sortBy="#{appImp.platformName} (#{appImp.platformVersion})" filterBy="#{appImp.platformName} (#{appImp.platformVersion})" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.platformName} (#{appImp.platformVersion})" />
                                 </p:column>
-                                <p:column sortBy="#{appImp.version}" filterBy="#{appImp.version}" filterMatchMode="contains">
-                                    <f:facet name="header">Version</f:facet>
+                                <p:column headerText="Version" sortBy="#{appImp.version}" filterBy="#{appImp.version}" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.version}" />
                                 </p:column>
-                                <p:column sortBy="#{backingBean.getImpSummary(appImp).dcis}" filterBy="#{backingBean.getImpSummary(appImp).dcis}" filterMatchMode="contains">
-                                    <f:facet name="header">DCIs</f:facet>
+                                <p:column headerText="DCIs" sortBy="#{backingBean.getImpSummary(appImp).dcis}" filterBy="#{backingBean.getImpSummary(appImp).dcis}" filterMatchMode="contains">
                                     <h:outputText value="#{backingBean.getImpSummary(appImp).dcis}" />
                                 </p:column>
                                 <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.statusFriendlyName}" />
+                                </p:column>
+                                <p:column headerText="Rating" sortBy="#{backingBean.getRatingContext().ratingMap[appImp.id]}">
+                                    <h:outputText value="#{backingBean.getRatingContext().ratingMap[appImp.id]}"/>
                                 </p:column>
                                 <p:column style="width:4%">
                                     <p:commandButton id="selectButton" immediate="true" actionListener="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(appImp)}" icon="ui-icon-carat-1-e" title="View">
