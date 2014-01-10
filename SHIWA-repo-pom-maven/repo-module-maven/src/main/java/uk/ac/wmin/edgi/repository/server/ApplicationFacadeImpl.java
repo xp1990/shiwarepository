@@ -1860,6 +1860,9 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     @Override
     public List<ImplementationTO> listImplementationsUserCanRead() {
+
+        List<ImplementationTO> tempList = new ArrayList<ImplementationTO>();
+
         User caller = getListCaller();
         if(caller == null || !caller.isActive()){ //only active users may list applications
             //return new ArrayList<ApplicationTO>(0);
@@ -1868,14 +1871,15 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             // but since there are only a few validated imps and we want to show some content
             // to attract users, temporaily non-validated imps can be seen as well
             // return em.createNamedQuery("Implementation.loadPublishedValidatedImplementations", ImplementationTO.class).getResultList();
-            return em.createNamedQuery("Implementation.loadImplementationsReadableByOthers", ImplementationTO.class).getResultList();
+            tempList = em.createNamedQuery("Implementation.loadImplementationsReadableByOthers", ImplementationTO.class).getResultList();
         }else{
             if(caller.isAdmin()){
-                return em.createNamedQuery("Implementation.loadAllImplementations", ImplementationTO.class).getResultList();
+                tempList = em.createNamedQuery("Implementation.loadAllImplementations", ImplementationTO.class).getResultList();
             }else{
-                return em.createNamedQuery("Implementation.loadImplementations", ImplementationTO.class).setParameter("userId", caller.getId()).getResultList();
+                tempList = em.createNamedQuery("Implementation.loadImplementations", ImplementationTO.class).setParameter("userId", caller.getId()).getResultList();
             }
         }
+        return tempList;
     }
 
     @Override
