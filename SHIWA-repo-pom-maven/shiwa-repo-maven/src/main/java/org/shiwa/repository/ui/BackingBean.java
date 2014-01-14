@@ -180,13 +180,7 @@ public class BackingBean implements Serializable {
     }
 
     private void addImplementationSummaryList(ImplementationSummary wf, List<ImplementationSummary> newWfList) {
-        if (this.isUserGuest()) {
-            if (wf.getStatus().equals("public")) {
-                newWfList.add(wf);
-            }
-        } else {
-            newWfList.add(wf);
-        }
+        newWfList.add(wf);
     }
 
     private void redirect(String target) throws IOException {
@@ -2352,20 +2346,26 @@ public class BackingBean implements Serializable {
 
     public void filterImpSummaries(ActionEvent actionEvent) {
         //System.out.println("search: "+searchStr);
-        String searchStr = impSearchStr;
-        if (!selectedImpDomain.equals(defaultWfDomain)) {
-            searchStr += " " + selectedImpDomain;
-        }
-        List<ImplementationSummary> impList = getAllImpSummaries();
-        List<ImplementationSummary> newImpList = new ArrayList<ImplementationSummary>();
-        for (ImplementationSummary imp : impList) {
-            if (imp.find(searchStr)) {
-                this.addImplementationSummaryList(imp, newImpList);
-            }
-        }
-        impSummaryListCache = newImpList;
-    }
 
+        if(impSearchStr.isEmpty() && selectedImpDomain.equals(defaultWfDomain)){
+            impSummaryListCache = getAllImpSummaries();
+        }else{
+
+            String searchStr = impSearchStr;
+            if (!selectedImpDomain.equals(defaultWfDomain)) {
+                searchStr += " " + selectedImpDomain;
+            }
+
+            List<ImplementationSummary> impList = getAllImpSummaries();
+            List<ImplementationSummary> newImpList = new ArrayList<ImplementationSummary>();
+            for (ImplementationSummary imp : impList) {
+                if (imp.find(searchStr)) {
+                    this.addImplementationSummaryList(imp, newImpList);
+                }
+            }
+            impSummaryListCache = newImpList;
+        }
+    }
     public void refreshImpSummaries(ActionEvent actionEvent) {
         //System.out.println("search: "+searchStr);
         selectedImpDomain = defaultWfDomain;
@@ -2412,11 +2412,12 @@ public class BackingBean implements Serializable {
 
         resetCachesIfUserChanged();
         Date impTimestamp = af.impTimestamp();
-        /*if (impListCacheTimeStamp == null
-                || impListCacheTimeStamp.before(impTimestamp)) {
-            impListCacheTimeStamp = impTimestamp;*/
+        if (impListCacheTimeStamp == null || impListCacheTimeStamp.before(impTimestamp)) {
+            impListCacheTimeStamp = impTimestamp;
 
         impListCache = af.listImplementationsUserCanRead();
+
+        }
 
         if(isUserGuest()){
             ArrayList<ImplementationTO> newImpListCache = new ArrayList<ImplementationTO>();
@@ -2427,24 +2428,22 @@ public class BackingBean implements Serializable {
             }
             //swap lists to ensure concurrent access
             impListCache = newImpListCache;
+            Collections.sort(impListCache, new ImpSort());
         }
-
-        Collections.sort(impListCache, new ImpSort());
 
         return impListCache;
     }
 
-    public int sortByString(String a, String b){
-        return a.compareTo(b);
+    public String truncateForTable(String a){
+        a = (a.length() < 30) ? a : a.substring(0, 29) + "...";
+        return a;
     }
 
     public List<ImplementationSummary> getImplementationSummaries() {
         resetCachesIfUserChanged();
-        /*
-         * TODO: List will ALWAYS refresh now!
-         */
-        //System.out.println("wfSummaryList was NULL ");
+
         filterImpSummaries(null);
+
         return impSummaryListCache;
     }
 
@@ -2470,7 +2469,11 @@ public class BackingBean implements Serializable {
 
         while (iIter.hasNext()) {
             implementationTO = iIter.next();
-            isList.add(getImpSummary(implementationTO));
+            if(this.isUserGuest() && implementationTO.getPublic()){
+                isList.add(getImpSummary(implementationTO));
+            }else if(!this.isUserGuest()){
+                isList.add(getImpSummary(implementationTO));
+            }
         }
 
         return isList;

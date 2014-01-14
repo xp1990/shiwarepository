@@ -16,12 +16,12 @@ import uk.ac.wmin.edgi.repository.server.ApplicationFacadeLocal;
 
 /**
  *
- * @author sasvara
+ * @author michnie
  */
 public class RatingContext {
     private RatingsHelper ratingsHelper = new RatingsHelper();
     private Map<String, Ratings> ratingMap = new HashMap<String, Ratings>();
-    private Double rating = 5.0;
+    private Double rating = 0.0;
     private List<Ratings> ratings = new ArrayList<Ratings>();
     private Map<Integer, Double> userRatings = new HashMap<Integer, Double>();
 
@@ -34,7 +34,9 @@ public class RatingContext {
 
     public Double getAVGRate(String impid) {
         List<Ratings> results = ratingsHelper.getRatingsForVersion(impid);
-        if (results != null) {
+        if (results.isEmpty()) {
+            return 0.0;
+        }else{
             ratings = results;
         }
         Double sum = 0.0;

@@ -53,7 +53,7 @@ public class RatingsHelper {
         ArrayList<Ratings> temp = new ArrayList<Ratings>();
 
         try {
-            Logger.getLogger(RatingsHelper.class.getName()).log(Level.INFO, "Ratings retrieved for for ImpId: " + versionId);
+            //Logger.getLogger(RatingsHelper.class.getName()).log(Level.INFO, "Ratings retrieved for for ImpId: " + versionId);
             return facade.getRatingsByImpId(Integer.parseInt(versionId));
         } catch (AuthorizationException ex) {
             Logger.getLogger(RatingsHelper.class.getName()).log(Level.SEVERE, null, ex);

@@ -29,13 +29,13 @@
                                 </div>
                             </f:facet>
                             <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}" filterMatchMode="contains">
-                                <h:outputText value="#{app.name}" />
+                                <h:outputText value="#{backingBean.truncateForTable(app.name)}"/>
                             </p:column>
                             <p:column headerText="Owner" sortBy="#{app.ownerLoginName}" filterBy="#{app.ownerLoginName}" filterMatchMode="contains">
                                 <h:outputText value="#{app.ownerLoginName}" />
                             </p:column>
                             <p:column headerText="Group" sortBy="#{app.groupName}" filterBy="#{app.groupName}" filterMatchMode="contains">
-                                <h:outputText value="#{app.groupName}" />
+                                <h:outputText value="#{backingBean.truncateForTable(app.groupName)}"/>
                             </p:column>
                             <p:column headerText="Status" sortBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterMatchMode="contains">
                                 <h:outputText value="#{backingBean.getPublishedFriendlyName(app.published)}" />

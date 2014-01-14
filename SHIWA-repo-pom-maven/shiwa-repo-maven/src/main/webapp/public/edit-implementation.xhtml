@@ -251,7 +251,7 @@
                                                 <f:setPropertyActionListener value="#{node}"
                                                                              target="#{backingBean.impAttrTree.selectedNode}" />
                                     </p:commandLink>
-                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddExecutionParameters(node)}"
+                                    <p:commandLink rendered="#{backingBean.impAttrTree.canAddExecutionParameters(node) and backingBean.canCreateImpAttributes}"
                                                    update="addDepPanel dialog"
                                                    oncomplete="AddParameters.show();"
                                                    title="Add parameters"

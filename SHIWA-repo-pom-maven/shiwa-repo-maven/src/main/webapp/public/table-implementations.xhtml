@@ -12,6 +12,7 @@
                     <h:form id="mainForm">
                             <p:dataTable id="impBrowserTable"
                                      var="appImp"
+                                     selectionMode="single"
                                      value="#{backingBean.implementations}"
                                      paginator="true"
                                      paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
@@ -62,7 +63,7 @@
                                 </p:column>
                                 <p:column headerText="Workflow" sortBy="#{appImp.appName}" filterBy="#{appImp.appName}" filterMatchMode="contains">
                                     <f:facet name="header">Workflow</f:facet>
-                                    <h:outputText value="#{appImp.appName}" />
+                                    <h:outputText value="#{backingBean.truncateForTable(appImp.appName)}" />
                                 </p:column>
                                 <p:column headerText="Engine" sortBy="#{appImp.platformName} (#{appImp.platformVersion})" filterBy="#{appImp.platformName} (#{appImp.platformVersion})" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.platformName} (#{appImp.platformVersion})" />
@@ -76,8 +77,8 @@
                                 <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.statusFriendlyName}" />
                                 </p:column>
-                                <p:column headerText="Rating" sortBy="#{backingBean.getRatingContext().ratingMap[appImp.id]}">
-                                    <h:outputText value="#{backingBean.getRatingContext().ratingMap[appImp.id]}"/>
+                                <p:column headerText="Rating" sortBy="#{backingBean.getRatingContext().getAVGRate(appImp.id)}">
+                                    <h:outputText value="#{backingBean.getRatingContext().getAVGRate(appImp.id)}"/>
                                 </p:column>
                                 <p:column style="width:4%">
                                     <p:commandButton id="selectButton" immediate="true" actionListener="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(appImp)}" icon="ui-icon-carat-1-e" title="View">
