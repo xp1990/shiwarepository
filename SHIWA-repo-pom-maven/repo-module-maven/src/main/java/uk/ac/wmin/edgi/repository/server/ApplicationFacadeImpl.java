@@ -362,9 +362,9 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             throw new AuthorizationException(err);
         }
         //validate group name
-        if(!groupName.matches("[A-Za-z0-9]{3,70}")){
+        if(!groupName.matches("[A-Za-z0-9]{3,245}")){
             //context.setRollbackOnly();
-            throw new ValidationFailedException("group names can only contain alphanumeric characters and must be between 3 and 50 charaters long");
+            throw new ValidationFailedException("group names can only contain alphanumeric characters and must be between 3 and 245 charaters long");
         }
         //check it does not exist yet
         if(em.createNamedQuery("UserGroup.findByName", UserGroup.class).setParameter("name", groupName).getResultList().size() > 0){
