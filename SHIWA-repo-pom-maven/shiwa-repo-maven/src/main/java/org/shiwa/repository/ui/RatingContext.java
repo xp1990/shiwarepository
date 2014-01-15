@@ -34,10 +34,11 @@ public class RatingContext {
 
     public Double getAVGRate(String impid) {
         List<Ratings> results = ratingsHelper.getRatingsForVersion(impid);
+
+        ratings = results;
+
         if (results.isEmpty()) {
             return 0.0;
-        }else{
-            ratings = results;
         }
         Double sum = 0.0;
         for (Ratings r : ratings) {

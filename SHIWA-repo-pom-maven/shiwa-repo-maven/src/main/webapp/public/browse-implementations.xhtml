@@ -142,7 +142,7 @@
                                                         </p:outputPanel>
                                                         <p:outputPanel id="ratingPanel">
                                                             <h:outputText value="( Score from #{backingBean.getRatingContext().getNumberOfRatings(imp.id)} reviews )"/>
-                                                            <p:rating id="ratings" stars="10" value="#{backingBean.getRatingContext().rating}"
+                                                            <p:rating id="ratings" stars="10" value="#{backingBean.getRatingContext().getAVGRate(imp.id)}"
                                                                       disabled="true" />
 
                                                             <h:panelGroup rendered="#{!backingBean.isUserGuest() and imp.public}">

@@ -94,6 +94,9 @@
                             <h:outputText value="ID:"/>
                             <h:outputText value="#{backingBean.selectedImp.id}"/>
                             <h:outputText/>
+                            <h:outputText value="Views:"/>
+                            <h:outputText value="#{backingBean.selectedImp.views}"/>
+                            <h:outputText/>
                             </h:panelGrid>
                             <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" id="createPlatformPanel" rendered="#{!backingBean.userGuest}">
                             <h:outputText value="Engine name:" />
@@ -492,7 +495,7 @@
                                                 <h:inputText id="MaxWallTime" style="font-weight:bold"
                                                              value="#{backingBean.impAttrTree.maxWallTime}"  />
                                                 <h:outputLabel for="maxParallelism" value="MaxParallelism " />
-                                                <h:inputText id="MaxParallelism" style="font-weight:bold"
+                                                <h:inputText id="maxParallelism" style="font-weight:bold"
                                                              value="#{backingBean.impAttrTree.maxParallelism}"  />
                                         </h:panelGrid>
                                      </p:outputPanel>
@@ -509,7 +512,7 @@
                                 </p:outputPanel >
                                 <p:outputPanel id="EditParameterPanel" >
                                     <h:panelGrid  columns="2" cellpadding="5">
-                                                <h:outputLabel for="type" value="Type: "/>
+                                                <h:outputLabel for="EditType" value="Type: "/>
                                                 <h:selectOneMenu id="EditType" value="#{backingBean.impAttrTree.editParaType}"  disabled="true" title="Select the type of parameter this is" >
                                                     <f:selectItems value="#{backingBean.impAttrTree.editPara.paramterTypes}"
                                                                    var="editParameterType"
@@ -571,14 +574,14 @@
                                                              title="whether the parameter is an input."
                                                              value="#{backingBean.impAttrTree.editInputCustom}" rendered="#{backingBean.impAttrTree.isEditParaTypeCustom()}"/>
                                              <h:outputLabel for="editCmdLine" value="Edit Command Line: " />
-                                             <h:selectBooleanCheckbox id="editCmdline"
+                                             <h:selectBooleanCheckbox id="editCmdLine"
                                                              title="whether the parameter should be passed as a command line argument."
                                                              value="#{backingBean.impAttrTree.editCmdLine}"/>
                                              <h:outputLabel for="editSwitchName" value="Edit Switch Name: " />
                                              <h:inputText id="editSwitchName" style="font-weight:bold"
                                                           value="#{backingBean.impAttrTree.editSwitchName}"
                                                           title="what should appear before the parameter in the command line"/>
-                                             <h:outputLabel for="editFixedout" value="Edit Fixed: " />
+                                             <h:outputLabel for="editFixedId" value="Edit Fixed: " />
                                              <h:selectBooleanCheckbox id="editFixedId"
                                                              title="whether the parameter is fixed"
                                                              value="#{backingBean.impAttrTree.editFixed}"/>
@@ -668,7 +671,7 @@
                                              <h:selectBooleanCheckbox id="input"
                                                              title="whether the parameter is an input."
                                                              value="#{backingBean.impAttrTree.newPara.isCustomInput}" rendered="#{backingBean.impAttrTree.isParameterTypeCustom()}"/>
-                                             <h:outputLabel for="cmdLine" value="Command Line: " />
+                                             <h:outputLabel for="cmdline" value="Command Line: " />
                                              <h:selectBooleanCheckbox id="cmdline"
                                                              title="whether the parameter should be passed as a command line argument."
                                                              value="#{backingBean.impAttrTree.newPara.cmdLine}"/>

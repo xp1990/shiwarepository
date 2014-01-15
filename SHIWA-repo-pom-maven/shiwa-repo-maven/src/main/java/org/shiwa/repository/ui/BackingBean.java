@@ -97,6 +97,8 @@ public class BackingBean implements Serializable {
     Date appListCacheTimeStamp = null;
     List<ImplementationTO> impListCache = null;
     Date impListCacheTimeStamp = null;
+    int impListHash;
+    int appListHash;
     List<WorkflowSummary> wfSummaryListCache = null;
     List<ImplementationSummary> impSummaryListCache = null;
     AppAttrTree aTree = null;
@@ -170,13 +172,7 @@ public class BackingBean implements Serializable {
     }
 
     private void addWorkflowSummaryList(WorkflowSummary wf, List<WorkflowSummary> newWfList) {
-        if (this.isUserGuest()) {
-            if (wf.getStatus().equals("public")) {
-                newWfList.add(wf);
-            }
-        } else {
-            newWfList.add(wf);
-        }
+        newWfList.add(wf);
     }
 
     private void addImplementationSummaryList(ImplementationSummary wf, List<ImplementationSummary> newWfList) {
@@ -394,7 +390,7 @@ public class BackingBean implements Serializable {
     }
 
     public String getErrorLogs() {
-        System.out.println("getErrorLogs invoked");
+        //System.out.println("getErrorLogs invoked");
         return errLogs;
     }
 
@@ -2313,29 +2309,29 @@ public class BackingBean implements Serializable {
     }
 
     public void filterWfSummaries(ActionEvent actionEvent) {
-        //System.out.println("search: "+searchStr);
-        String searchStr = wfSearchStr;
-        /*if (!selectedWfDomain.equals(defaultWfDomain)) {
-            searchStr += " " + selectedWfDomain;
-        }*/
-        List<WorkflowSummary> wfList = getAllWorkflowSummaries();
 
-        List<WorkflowSummary> newWfList = new ArrayList<WorkflowSummary>();
-        for (WorkflowSummary wf : wfList) {
-            if (!selectedWfDomain.equals(defaultWfDomain)) {
-                if (matchingDomainOrSubdomain(wf)
-                        &&
-                     wf.find(searchStr)) {
+        String searchStr = wfSearchStr;
+        if (selectedWfDomain.equals(defaultWfDomain) && searchStr.isEmpty()) {
+            wfSummaryListCache = getAllWorkflowSummaries();
+        }else{
+            List<WorkflowSummary> wfList = getAllWorkflowSummaries();
+            List<WorkflowSummary> newWfList = new ArrayList<WorkflowSummary>();
+            for (WorkflowSummary wf : wfList) {
+                if (!selectedWfDomain.equals(defaultWfDomain)) {
+                    if (matchingDomainOrSubdomain(wf)
+                            &&
+                         wf.find(searchStr)) {
+                        addWorkflowSummaryList(wf, newWfList);
+                    }
+                }
+                else if (wf.find(searchStr)) {
                     addWorkflowSummaryList(wf, newWfList);
                 }
             }
-            else if (wf.find(searchStr)) {
-                addWorkflowSummaryList(wf, newWfList);
-            }
+            wfSummaryListCache = newWfList;
         }
-        Collections.sort(newWfList);
 
-        wfSummaryListCache = newWfList;
+        Collections.sort(wfSummaryListCache);
     }
 
     public void refreshWfSummaries(ActionEvent actionEvent) {
@@ -2392,17 +2388,17 @@ public class BackingBean implements Serializable {
             // in the jpql query sorting boolean threw an exception saying
             // boolean is not an orderable type
             Collections.sort(appListCache, new AppSort());
-        }
 
-        if(isUserGuest()){
-            ArrayList<ApplicationTO> guestAppListCache = new ArrayList<ApplicationTO>();
-            for(ApplicationTO temp : appListCache){
-                if(getWorkflowSummary(temp).getStatus().equalsIgnoreCase("public")){
-                    guestAppListCache.add(temp);
+            if(isUserGuest()){
+                ArrayList<ApplicationTO> guestAppListCache = new ArrayList<ApplicationTO>();
+                for(ApplicationTO temp : appListCache){
+                    if(getWorkflowSummary(temp).getStatus().equalsIgnoreCase("public")){
+                        guestAppListCache.add(temp);
+                    }
                 }
+                //swap lists to stop concurrent access exception
+                appListCache = guestAppListCache;
             }
-            //swap lists to stop concurrent access exception
-            appListCache = guestAppListCache;
         }
 
         return appListCache;
@@ -2415,20 +2411,18 @@ public class BackingBean implements Serializable {
         if (impListCacheTimeStamp == null || impListCacheTimeStamp.before(impTimestamp)) {
             impListCacheTimeStamp = impTimestamp;
 
-        impListCache = af.listImplementationsUserCanRead();
-
-        }
-
-        if(isUserGuest()){
-            ArrayList<ImplementationTO> newImpListCache = new ArrayList<ImplementationTO>();
-            for(ImplementationTO temp : impListCache){
-                if(getImpSummary(temp).getStatus().equalsIgnoreCase("public")){
-                    newImpListCache.add(temp);
+            impListCache = af.listImplementationsUserCanRead();
+            if(isUserGuest()){
+                ArrayList<ImplementationTO> newImpListCache = new ArrayList<ImplementationTO>();
+                for(ImplementationTO temp : impListCache){
+                    if(getImpSummary(temp).getStatus().equalsIgnoreCase("public")){
+                        newImpListCache.add(temp);
+                    }
                 }
+                //swap lists to ensure concurrent access
+                impListCache = newImpListCache;
+                Collections.sort(impListCache, new ImpSort());
             }
-            //swap lists to ensure concurrent access
-            impListCache = newImpListCache;
-            Collections.sort(impListCache, new ImpSort());
         }
 
         return impListCache;
@@ -2463,47 +2457,51 @@ public class BackingBean implements Serializable {
 
     public List<ImplementationSummary> getAllImpSummaries() {
         List<ImplementationTO> iList = getImplementations();
-        Iterator<ImplementationTO> iIter = iList.iterator();
-        ImplementationTO implementationTO;
-        List<ImplementationSummary> isList = new ArrayList<ImplementationSummary>();
 
-        while (iIter.hasNext()) {
-            implementationTO = iIter.next();
-            if(this.isUserGuest() && implementationTO.getPublic()){
-                isList.add(getImpSummary(implementationTO));
-            }else if(!this.isUserGuest()){
+        /*
+         * FIXME: This may mean that if a change occurs on the impListCache
+         * then the user refreshes the table the impSummaryListCache will not
+         * be refreshed when the summaries are loaded.
+         */
+        if(impSummaryListCache == null || impListHash != impListCache.hashCode()){
+            Iterator<ImplementationTO> iIter = iList.iterator();
+            ImplementationTO implementationTO;
+            List<ImplementationSummary> isList = new ArrayList<ImplementationSummary>();
+
+            while (iIter.hasNext()) {
+                implementationTO = iIter.next();
                 isList.add(getImpSummary(implementationTO));
             }
+            impListHash = impListCache.hashCode();
+            return isList;
+        }else{
+            return impSummaryListCache;
         }
-
-        return isList;
     }
 
     public List<WorkflowSummary> getWorkflowSummaries() {
         resetCachesIfUserChanged();
-
-        /*
-         * TODO: Note removed selection statement now list will always be refreshed
-         */
-
-        //System.out.println("wfSummaryList was NULL ");
         filterWfSummaries(null);
-
         return wfSummaryListCache;
     }
 
     public List<WorkflowSummary> getAllWorkflowSummaries() {
         List<ApplicationTO> aList = getApplications();
-        Iterator<ApplicationTO> aIter = aList.iterator();
-        ApplicationTO applicationTO;
-        List<WorkflowSummary> wsList = new ArrayList<WorkflowSummary>();
+        if(wfSummaryListCache == null || appListHash != appListCache.hashCode()){
+            Iterator<ApplicationTO> aIter = aList.iterator();
+            ApplicationTO applicationTO;
+            List<WorkflowSummary> wsList = new ArrayList<WorkflowSummary>();
 
-        while (aIter.hasNext()) {
-            applicationTO = aIter.next();
-            wsList.add(getWorkflowSummary(applicationTO));
+            while (aIter.hasNext()) {
+                applicationTO = aIter.next();
+                wsList.add(getWorkflowSummary(applicationTO));
+            }
+            appListHash = appListCache.hashCode();
+            return wsList;
+        }else{
+            return wfSummaryListCache;
         }
 
-        return wsList;
     }
 
     public ImplementationSummary getImpSummaryOfSelImp() {
@@ -3639,10 +3637,17 @@ public class BackingBean implements Serializable {
     }
 
     public void setImplementationID(String implementationID) {
-        Logger.getAnonymousLogger().log(Level.INFO, "imp");
+        Logger.getAnonymousLogger().log(Level.INFO, "navigating to imp: ".concat(implementationID));
         Integer impid = parseWorkflowID(implementationID);
         if (impid == null) {
             return;
+        }
+        try {
+            af.viewImp(impid);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AuthorizationException ex) {
+            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (this.selectedImp != null && this.selectedImp.getId().equals(impid)) {
@@ -3677,10 +3682,18 @@ public class BackingBean implements Serializable {
         return applicationID;
     }
     public void setApplicationID(String applicationID) {
-
+        Logger.getAnonymousLogger().log(Level.INFO, "navigating to app: ".concat(applicationID));
         Integer appid = parseWorkflowID(applicationID);
         if (appid == null) {
             return;
+        }
+
+        try {
+            af.viewApp(appid);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AuthorizationException ex) {
+            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (this.selectedApp != null && this.selectedApp.getId().equals(appid)) {

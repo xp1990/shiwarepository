@@ -37,6 +37,8 @@
                             <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
                                 <h:outputText value="ID:"/>
                                 <h:outputText value="#{backingBean.selectedApp.id}"/>
+                                <h:outputText value="Views:"/>
+                                <h:outputText value="#{backingBean.selectedApp.views}"/>
                                 <h:outputText value="Description:" style="width: 13ex"/>
                                 <h:inputTextarea id="editAppDescription"
                                                  value="#{backingBean.selectedApp.description}"

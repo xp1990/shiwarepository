@@ -235,7 +235,7 @@
                                                                     <p:panel>
                                                                         <f:facet name="header">
                                                                             <h:outputText value="Engine: #{imp.engineName}(#{imp.engineVersion}) | Implementation version: #{imp.version}"/>
-                                                                            <p:commandLink action="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(event)}"
+                                                                            <p:commandLink action="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(imp)}"
                                                                                              title="Open editor view. (Note that any dialog windows opened on this page will be closed)"
                                                                                              value="Edit"
                                                                                              style="float: right"
@@ -423,7 +423,7 @@
                                                                                                       rendered="#{!imp.isSubmittable()}"/>
                                                                                     </p:outputPanel>
 
-                                                                                    <p:commandLink action="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(event)}"
+                                                                                    <p:commandLink action="#{backingBean.onImplementationsOfSelectedApplicationRowSelectNavigate(imp)}"
                                                                                                      title="Open editor view. (Note that any dialog windows opened on this page will be closed)"
                                                                                                      value="Edit"
                                                                                                      rendered="#{backingBean.getCanUpdateImplementation(imp.to)}">
