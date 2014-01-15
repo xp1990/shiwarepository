@@ -192,6 +192,8 @@ public interface ApplicationFacadeLocal {
     ImplementationTO updateImp(Integer impId, String platformName, String version) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ImplementationTO updateVersionedImp(Integer impId, String platformName, String platformVersion, String version) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ImplementationTO updateImpTimestamp(Integer impId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
+    void viewImp(int id) throws EntityNotFoundException, AuthorizationException;
+    void viewApp(int id) throws EntityNotFoundException, AuthorizationException;
     ImplementationTO submitImp(Integer impId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ImplementationTO validateImp(Integer impId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ImplementationTO failImp(Integer impId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;

@@ -55,6 +55,7 @@ public class ImplementationTO implements Serializable {
     private Date created;
     private Date updated;
     private boolean submittable;
+    private Integer views;
 
     public ImplementationTO() {
     }
@@ -70,6 +71,7 @@ public class ImplementationTO implements Serializable {
         this.created = imp.getCreated();
         this.updated = imp.getUpdated();
         this.submittable = imp.isSubmittable();
+        this.views = imp.getViews();
     }
 
     public boolean isSubmittable() {
@@ -106,7 +108,7 @@ public class ImplementationTO implements Serializable {
     }
     */
 
-    public ImplementationTO(Integer id, Integer appId, String appName, String platformName, String platformVersion, String version, ImplementationStatus status) {
+    public ImplementationTO(Integer id, Integer appId, String appName, String platformName, String platformVersion, String version, ImplementationStatus status, int views) {
         this.id = id;
         this.appId = appId;
         this.platformName = platformName;
@@ -114,9 +116,10 @@ public class ImplementationTO implements Serializable {
         this.version = version;
         this.appName = appName;
         this.status = status;
+        this.views = views;
     }
 
-    public ImplementationTO(Integer id, Integer appId, String appName, String platformName, String platformVersion, String version, ImplementationStatus status, Date created, Date updated, boolean _submittable) {
+    public ImplementationTO(Integer id, Integer appId, String appName, String platformName, String platformVersion, String version, ImplementationStatus status, Date created, Date updated, boolean _submittable, int views) {
         this.id = id;
         this.appId = appId;
         this.appName = appName;
@@ -127,9 +130,16 @@ public class ImplementationTO implements Serializable {
         this.created = created;
         this.updated = updated;
         this.submittable = _submittable;
+        this.views = views;
     }
 
+    public Integer getViews() {
+        return views;
+    }
 
+    public void setViews(Integer views) {
+        this.views = views;
+    }
 
     public Integer getAppId() {
         return appId;

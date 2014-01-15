@@ -39,18 +39,18 @@ import javax.persistence.Temporal;
     @NamedQuery(name = "Application.findByName", query = "SELECT a FROM Application a WHERE a.name = :name"),
     @NamedQuery(name = "Application.listAll", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AppListItemTO(a.id, a.name) FROM Application a"),
     @NamedQuery(name = "Application.listByImpAttr", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AppListItemTO(a.id, a.name) FROM Application a WHERE EXISTS (SELECT t FROM ImpAttribute t WHERE t.implementation.application = a AND t.name = :impAttrName AND t.value LIKE :impAttrValue)"),
-    @NamedQuery(name = "Application.loadApplication", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.id = :appId"),
-    @NamedQuery(name = "Application.loadAllApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a order by a.updated  desc"),
-    @NamedQuery(name = "Application.loadFilteredApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE EXISTS (SELECT t FROM AppAttribute t WHERE t.application = a AND (t.name LIKE :appAttrNameFilter AND t.value LIKE :appAttrValueFilter)) AND (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupRead = TRUE) OR a.published = TRUE OR a.owner.id = :userId OR a.othersRead = TRUE)"),
-    @NamedQuery(name = "Application.loadFilteredPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE EXISTS (SELECT t FROM AppAttribute t WHERE t.application = a AND (t.name LIKE :appAttrNameFilter AND t.value LIKE :appAttrValueFilter)) AND a.published = TRUE"),
-    @NamedQuery(name = "Application.loadApplicationsOfUser", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.owner.id = :ownerId"),
-    @NamedQuery(name = "Application.loadApplicationsOfGroup", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.group.id = :groupId"),
-    @NamedQuery(name = "Application.loadAppsUserCanRead", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupRead = TRUE) OR a.published = TRUE OR a.owner.id = :userId OR a.othersRead = TRUE) order by a.updated desc"),
-    @NamedQuery(name = "Application.loadAppsUserCanModify", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupModify = TRUE) OR a.owner.id = :userId)"),
-    @NamedQuery(name = "Application.loadNonPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.published = FALSE"),
-    @NamedQuery(name = "Application.loadApplicationsReadyForValidation", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.published = FALSE AND a.othersRead = TRUE"),
-    @NamedQuery(name = "Application.loadAppsReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.othersRead = TRUE order by a.updated desc"),
-    @NamedQuery(name = "Application.loadPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated) FROM Application a WHERE a.published = TRUE order by a.updated desc")
+    @NamedQuery(name = "Application.loadApplication", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.id = :appId"),
+    @NamedQuery(name = "Application.loadAllApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a order by a.updated  desc"),
+    @NamedQuery(name = "Application.loadFilteredApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE EXISTS (SELECT t FROM AppAttribute t WHERE t.application = a AND (t.name LIKE :appAttrNameFilter AND t.value LIKE :appAttrValueFilter)) AND (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupRead = TRUE) OR a.published = TRUE OR a.owner.id = :userId OR a.othersRead = TRUE)"),
+    @NamedQuery(name = "Application.loadFilteredPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE EXISTS (SELECT t FROM AppAttribute t WHERE t.application = a AND (t.name LIKE :appAttrNameFilter AND t.value LIKE :appAttrValueFilter)) AND a.published = TRUE"),
+    @NamedQuery(name = "Application.loadApplicationsOfUser", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.owner.id = :ownerId"),
+    @NamedQuery(name = "Application.loadApplicationsOfGroup", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.group.id = :groupId"),
+    @NamedQuery(name = "Application.loadAppsUserCanRead", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupRead = TRUE) OR a.published = TRUE OR a.owner.id = :userId OR a.othersRead = TRUE) order by a.updated desc"),
+    @NamedQuery(name = "Application.loadAppsUserCanModify", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = a.group.id AND a.groupModify = TRUE) OR a.owner.id = :userId)"),
+    @NamedQuery(name = "Application.loadNonPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.published = FALSE"),
+    @NamedQuery(name = "Application.loadApplicationsReadyForValidation", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.published = FALSE AND a.othersRead = TRUE"),
+    @NamedQuery(name = "Application.loadAppsReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.othersRead = TRUE order by a.updated desc"),
+    @NamedQuery(name = "Application.loadPublishedApplications", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(a.id, a.name, a.owner.loginName, a.group.name, a.description, a.groupRead, a.othersRead, a.groupDownload, a.othersDownload, a.groupModify, a.published, a.created, a.updated, a.views) FROM Application a WHERE a.published = TRUE order by a.updated desc")
 })
 @TableGenerator(name="app_gen", table="generator", pkColumnName="name", pkColumnValue="app_gen", valueColumnName="value")
 public class Application implements Serializable {
@@ -72,8 +72,10 @@ public class Application implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "application") private Collection<Implementation> implementations;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "application") @MapKey(name="name")  private Map<String, AppAttribute> attributes;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "application") @OrderBy("created DESC") private List<AppComment> comments;
+    @Basic(optional = true) @Column(name = "views") private int views;
 
     public Application() {
+        this.views = 0;
     }
 
     public Application(String appName, String description, User owner, UserGroup group, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) {
@@ -87,8 +89,9 @@ public class Application implements Serializable {
         this.othersDownload = othersDownload;
         this.groupModify = groupModify;
         this.published = published;
+        this.views = 0;
     }
-    
+
 
     public Application(String appName, String description, Date created, Date updated, User owner, UserGroup group, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) {
         this.name = appName;
@@ -103,7 +106,8 @@ public class Application implements Serializable {
         this.published = published;
         this.created = created;
         this.updated = updated;
-    }    
+        this.views = 0;
+    }
 
     public Application(Integer id, String name, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, String description, Date created, Date updated, User owner, UserGroup group, Collection<Implementation> implementations, Map<String, AppAttribute> attributes, List<AppComment> comments) {
         this.id = id;
@@ -122,11 +126,20 @@ public class Application implements Serializable {
         this.implementations = implementations;
         this.attributes = attributes;
         this.comments = comments;
+        this.views = 0;
     }
-    
-    
-    
-    
+
+    public void incViews(){
+        views++;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
 
     public Date getCreated() {
         return created;
@@ -143,8 +156,8 @@ public class Application implements Serializable {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-    
-    
+
+
 
     public Integer getId() {
         return id;

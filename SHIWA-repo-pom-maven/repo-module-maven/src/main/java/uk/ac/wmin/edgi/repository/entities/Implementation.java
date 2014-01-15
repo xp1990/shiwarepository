@@ -42,21 +42,17 @@ import javax.persistence.Temporal;
     @NamedQuery(name = "Implementation.findByAppIDAndVersionAndPlatformID", query = "SELECT i FROM Implementation i WHERE i.application.id = :appId AND i.version = :version AND i.platform.id = :platId"),
     @NamedQuery(name = "Implementation.listByAppIDs", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpListItemTO(i.id, i.application.id) FROM Implementation i WHERE i.application.id IN :appIDs"),
     @NamedQuery(name = "Implementation.listByAppIDsAttr", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpListItemTO(t.implementation.id, t.implementation.application.id) FROM ImpAttribute t WHERE t.implementation.application.id = :appID AND t.name = :attrName AND t.value LIKE :attrValue"),
-    @NamedQuery(name = "Implementation.loadImplementation", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.id = :impId"),
-    @NamedQuery(name = "Implementation.loadImplementationsOfApplication", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
-    @NamedQuery(name = "Implementation.loadImplementationsOfPlatform", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.platform.id = :platId"),
-
-
-    @NamedQuery(name = "Implementation.loadImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE)  OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE ORDER BY i.status desc, i.updated desc" ),
-    @NamedQuery(name = "Implementation.loadAllImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i ORDER BY i.status desc, i.updated desc"),
-    @NamedQuery(name = "Implementation.loadFilteredImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE EXISTS (SELECT a FROM ImpAttribute a WHERE a.implementation = i AND (a.name LIKE :impAttrNameFilter AND a.value LIKE :impAttrValueFilter)) AND (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE) OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE)"),
-    @NamedQuery(name = "Implementation.loadPublishedImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.application.published = TRUE"),
-    @NamedQuery(name = "Implementation.loadFilteredPublishedImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE EXISTS (SELECT a FROM ImpAttribute a WHERE a.implementation = i AND (a.name LIKE :impAttrNameFilter AND a.value LIKE :impAttrValueFilter)) AND i.application.published = TRUE"),
-
-
-    @NamedQuery(name = "Implementation.loadImplementationsOfApplicationUserCanRead", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE)  OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE) AND i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
-    @NamedQuery(name = "Implementation.loadImplementationsOfApplicationReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.application.othersRead = TRUE AND i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
-    @NamedQuery(name = "Implementation.loadImplementationsReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable) FROM Implementation i WHERE i.application.othersRead = TRUE ORDER BY i.status desc, i.updated desc")
+    @NamedQuery(name = "Implementation.loadImplementation", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE i.id = :impId"),
+    @NamedQuery(name = "Implementation.loadImplementationsOfApplication", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable,i.views) FROM Implementation i WHERE i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
+    @NamedQuery(name = "Implementation.loadImplementationsOfPlatform", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE i.platform.id = :platId"),
+    @NamedQuery(name = "Implementation.loadImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE)  OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE ORDER BY i.status desc, i.updated desc" ),
+    @NamedQuery(name = "Implementation.loadAllImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i ORDER BY i.status desc, i.updated desc"),
+    @NamedQuery(name = "Implementation.loadFilteredImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE EXISTS (SELECT a FROM ImpAttribute a WHERE a.implementation = i AND (a.name LIKE :impAttrNameFilter AND a.value LIKE :impAttrValueFilter)) AND (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE) OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE)"),
+    @NamedQuery(name = "Implementation.loadPublishedImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE i.application.published = TRUE"),
+    @NamedQuery(name = "Implementation.loadFilteredPublishedImplementations", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE EXISTS (SELECT a FROM ImpAttribute a WHERE a.implementation = i AND (a.name LIKE :impAttrNameFilter AND a.value LIKE :impAttrValueFilter)) AND i.application.published = TRUE"),
+    @NamedQuery(name = "Implementation.loadImplementationsOfApplicationUserCanRead", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE (EXISTS (SELECT g FROM UserGroup g JOIN g.users u WHERE u.id = :userId AND g.id = i.application.group.id AND i.application.groupRead = TRUE)  OR i.application.published = TRUE OR i.application.owner.id = :userId OR i.application.othersRead = TRUE) AND i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
+    @NamedQuery(name = "Implementation.loadImplementationsOfApplicationReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE i.application.othersRead = TRUE AND i.application.id = :appId ORDER BY i.status desc, i.updated desc"),
+    @NamedQuery(name = "Implementation.loadImplementationsReadableByOthers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImplementationTO(i.id, i.application.id, i.application.name, i.platform.name, i.platform.version, i.version, i.status, i.created, i.updated, i.submittable, i.views) FROM Implementation i WHERE i.application.othersRead = TRUE ORDER BY i.status desc, i.updated desc")
 })
 @TableGenerator(name="imp_gen", table="generator", pkColumnName="name", pkColumnValue="imp_gen", valueColumnName="value")
 public class Implementation implements Serializable {
@@ -72,8 +68,10 @@ public class Implementation implements Serializable {
     @Temporal(javax.persistence.TemporalType.DATE) @Column(name = "created") private Date created;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP) @Column(name = "updated") private Date updated;
     @Column(name = "submittable") private boolean submittable;
+    @Basic(optional = true) @Column(name = "views") private int views;
 
     public Implementation() {
+        this.views = 0;
     }
 
     public Implementation(String version, Platform platform, Application application) {
@@ -81,6 +79,7 @@ public class Implementation implements Serializable {
         this.status = status.NEW;
         this.platform = platform;
         this.application = application;
+        this.views = 0;
     }
 
     public Implementation(String version, Platform platform, Application application, Date created, Date updated) {
@@ -90,6 +89,19 @@ public class Implementation implements Serializable {
         this.application = application;
         this.created = created;
         this.updated = updated;
+        this.views = 0;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public void incViews(){
+        views++;
     }
 
     public boolean isSubmittable() {

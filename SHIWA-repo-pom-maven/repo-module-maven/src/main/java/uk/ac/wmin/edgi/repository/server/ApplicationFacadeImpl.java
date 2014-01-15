@@ -876,6 +876,46 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
 
+    @Override
+    public void viewApp(int id) throws EntityNotFoundException, AuthorizationException
+    {
+        Application a = em.find(Application.class, id);
+
+        if(a == null){
+            throw new EntityNotFoundException("Implementation with id: "+ id +" does not exist");
+        }
+
+        if(this.getCallerUser() == null || !this.getCallerUser().isActive()){
+            throw new AuthorizationException("User is guest or is not allowed to view this application: " + id);
+        }
+
+        a.incViews();
+
+        em.merge(a);
+        em.flush();
+    }
+
+
+    @Override
+    public void viewImp(int id) throws EntityNotFoundException, AuthorizationException
+    {
+        Implementation i = em.find(Implementation.class, id);
+
+        if(i == null){
+            throw new EntityNotFoundException("Implementation with id: "+ id +" does not exist");
+        }
+
+        if(this.getCallerUser() == null || !this.getCallerUser().isActive()){
+            throw new AuthorizationException("User is guest or is not allowed to view this implementation: " + id);
+        }
+
+        i.incViews();
+
+        em.merge(i);
+        em.flush();
+    }
+
+
     // use case diagram: Administrator: update application attribute
     // use case diagram: User(owner or group+flag): update application attribute
     @Override
@@ -1720,7 +1760,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     @Override
     public List<ApplicationTO> listApplicationsUserCanRead() {
-        System.out.println("getAppsReadInvoked");
+        //System.out.println("getAppsReadInvoked");
         User caller = getListCaller();
         if(caller == null || !caller.isActive()){ //only active users may list applications
             //return new ArrayList<ApplicationTO>(0);
