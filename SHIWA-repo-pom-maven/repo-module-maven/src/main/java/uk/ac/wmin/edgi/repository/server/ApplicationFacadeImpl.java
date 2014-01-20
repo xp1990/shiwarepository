@@ -462,6 +462,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         em.remove(g);
     }
 
+    
     // use case diagram: Administrator: create platform
     @Override
     public PlatformTO createPlatform(String platName, String description) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException {
