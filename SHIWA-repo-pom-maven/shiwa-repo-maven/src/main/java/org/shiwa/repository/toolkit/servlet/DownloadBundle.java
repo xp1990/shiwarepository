@@ -17,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
 import org.shiwa.desktop.data.description.ConcreteBundle;
 import org.shiwa.desktop.data.description.bundle.BundleFile;
 import org.shiwa.desktop.data.description.bundle.Concepts;
@@ -46,14 +47,14 @@ import uk.ac.wmin.edgi.repository.server.ApplicationFacadeLocal;
 
 
 @WebServlet(name = "DownloadBundle", urlPatterns = {"/downloadbundle/*", "/downloadbundle", "/downloadbundle_guest/*", "/downloadbundle_guest"})
-public class DownloadBundle extends HttpServlet {        
-            
-    @EJB ApplicationFacadeLocal af;     
+public class DownloadBundle extends HttpServlet {
+
+    @EJB ApplicationFacadeLocal af;
 
     private void setWorkflowAccessRights(AbstractWorkflow desktopWorkflow, WorkflowRTO repositoryWorkflow, PrintWriter pw) {
         AccessRights desktopAccessRights = desktopWorkflow.getAccessRights();
         pw.println("Getting Access Rights...");
-        
+
         desktopAccessRights.setGroupId(repositoryWorkflow.getAccessRights().getGroupId());
         pw.println("Group ID: " + desktopAccessRights.getGroupId());
         desktopAccessRights.setOwnerId(repositoryWorkflow.getAccessRights().getOwnerId());
@@ -120,9 +121,9 @@ public class DownloadBundle extends HttpServlet {
         response.addHeader("Content-Disposition", "attachment; filename="+file.getName());
         response.addHeader("Cache-Control", "no-cache");
         response.addHeader("Content-Length", Long.toString(file.length()));
-    }    
+    }
 
-    
+
     private void addInputPorts(WorkflowRTO repositoryWorkflow, PrintWriter pw, TaskSignature signature) {
         for (PortRTO repositoryPort : repositoryWorkflow.getSignature().getInputPorts()) {
             ReferableResource desktopPort = new InputPort(repositoryPort.getName());
@@ -156,13 +157,13 @@ public class DownloadBundle extends HttpServlet {
 
     private void setKeywords(ImplementationRTO repositoryImplementation, WorkflowImplementation desktopImplementation) {
         if (repositoryImplementation.getKeywords() != null) {
-        
+
             String[] implementationKeywords = repositoryImplementation.getKeywords().split(",");
 
             for (String k : implementationKeywords) {
                 desktopImplementation.addKeyword(k.trim());
             }
-        
+
         }
     }
 
@@ -187,10 +188,10 @@ public class DownloadBundle extends HttpServlet {
                     type = BundleFile.FileType.DEFINITION_FILE;
                 }
 
-                files.add( 
+                files.add(
                     new BundleFile(
-                        checkPrimaryMatch(PrimaryType.IMPLEMANTATION,repositoryImplementation.getId(), elem) 
-                        ? repositoryFile.getTitle() 
+                        checkPrimaryMatch(PrimaryType.IMPLEMANTATION,repositoryImplementation.getId(), elem)
+                        ? repositoryFile.getTitle()
                         : desktopImplementation.getUuid() + "/" + repositoryFile.getTitle(), repositoryFile.getFile().getAbsolutePath(), repositoryFile.getDescription(), type));
             }
         }
@@ -222,17 +223,17 @@ public class DownloadBundle extends HttpServlet {
 
         for (ConfigurationRTO repositoryConfiguration : repositoryImplementation.getConfigurations()) {
             pw.println("Cretaing Configuration: " + repositoryConfiguration.getId());
-            
+
             Mapping desktopConfiguration = createConfiguration(
-                    repositoryConfiguration, 
+                    repositoryConfiguration,
                     dependencyMap,
                     elem,
                     pw);
 
             desktopImplementation.getAggregatedResources().add(desktopConfiguration);
-            
+
             List<BundleFile> removeFiles = new ArrayList<BundleFile>();
-            
+
             for (BundleFile configBundleFile : desktopConfiguration.getBundleFiles()) {
                 for (BundleFile ibf : files) {
                     if (configBundleFile.getFilename().equalsIgnoreCase(ibf.getFilename())) {
@@ -240,7 +241,7 @@ public class DownloadBundle extends HttpServlet {
                     }
                 }
             }
-            
+
             for (BundleFile rbf : removeFiles) {
                 files.remove(rbf);
             }
@@ -252,7 +253,7 @@ public class DownloadBundle extends HttpServlet {
             String value = repositoryWorkflow.getDomain().replace(", ", "/").replace(",","/");
 
             Domain domain = DataUtils.addDomain(concepts, value);
-            
+
             desktopWorkflow.setDomain(domain);
         }
     }
@@ -271,28 +272,28 @@ public class DownloadBundle extends HttpServlet {
         Integer configurationId = null;
         PrimaryType primaryType;
     }
-    
+
     class RepoRequestContext {
         int userId;
         RepoElement elem;
-        
+
     }
-    
+
     private static enum PrimaryType {WORKFLOW, IMPLEMANTATION, CONFIGURATION};
 
     static ToolkitInterface repo;
-    
-            
-    
-    //private PrintWriter pw;    
+
+
+
+    //private PrintWriter pw;
     private Concepts concepts;
 
     @Override
     public void init() throws ServletException {
         super.init();
         //repo = Test.getRepo();
-        repo = new ToolkitImplementation(af);    
-        DesktopProperties.setProperty(DesktopProperties.TEMP_LOCATION, RepoUtil.BUNDLE_TEMP_LOCATION);    
+        repo = new ToolkitImplementation(af);
+        DesktopProperties.setProperty(DesktopProperties.TEMP_LOCATION, RepoUtil.BUNDLE_TEMP_LOCATION);
         concepts = new Concepts();
     }
 
@@ -308,7 +309,7 @@ public class DownloadBundle extends HttpServlet {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -320,7 +321,7 @@ public class DownloadBundle extends HttpServlet {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
      * @return a String containing servlet description
      */
@@ -328,7 +329,7 @@ public class DownloadBundle extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -338,8 +339,8 @@ public class DownloadBundle extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Locations.getDefaultTempLocation();
-        File log = Locations.getDebugFile("download-execution",".log",false);        
-                              
+        File log = Locations.getDebugFile("download-execution",".log",false);
+
         boolean includeWorkflow = false;
         Set<Integer> implementations = new HashSet<Integer>();
         Set<Integer> configurations = new HashSet<Integer>();
@@ -363,9 +364,9 @@ public class DownloadBundle extends HttpServlet {
             }
         }
 
-        String query = request.getQueryString();        
-        Map<String, String> queryMap = createQueryMap(query); 
-        
+        String query = request.getQueryString();
+        Map<String, String> queryMap = createQueryMap(query);
+
         for (String s : queryMap.keySet()) {
             String[] values;
 
@@ -394,11 +395,11 @@ public class DownloadBundle extends HttpServlet {
                 String version = queryMap.get(s);
             }
         }
-        
+
         File file = null;
-        InputStream in = null;               
+        InputStream in = null;
         PrintWriter pw = new PrintWriter(new FileOutputStream(log));
-        
+
         try {
             int userId = RepoUtil.getUserId(request, af);
             file = processBundle(includeWorkflow, implementations, configurations, userId, elem, pw);
@@ -420,6 +421,7 @@ public class DownloadBundle extends HttpServlet {
             addHeaders(response, file);
             RepoUtil.write(in, response.getOutputStream());
         } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,e);
             e.printStackTrace(pw);
 
             pw.close();
@@ -436,17 +438,17 @@ public class DownloadBundle extends HttpServlet {
     }
 
     private File processBundle(
-            boolean includeWorkflow, 
-            Set<Integer> implementations, 
-            Set<Integer> configurations, 
-            int userId, 
+            boolean includeWorkflow,
+            Set<Integer> implementations,
+            Set<Integer> configurations,
+            int userId,
             RepoElement elem,
-            PrintWriter pw) 
-            
+            PrintWriter pw)
+
    throws IOException, UnauthorizedException, NotFoundException, ForbiddenException {
         AggregatedResource primary = null;
         Set<AggregatedResource> secondary = new HashSet<AggregatedResource>();
-        
+
         WorkflowRTO repositoryWorkflow = repo.getWorkflow(userId, elem.workflowId);
 
         pw.println("workflowId: " + elem.workflowId);
@@ -485,9 +487,9 @@ public class DownloadBundle extends HttpServlet {
 
             for (ImplementationRTO repositoryImplementation : repoImplementations) {
                 pw.println("Generating Workflow Implementation for repoImp: " + repositoryImplementation.getId());
-                
+
                 WorkflowImplementation desktopImplementation = createImplementation(
-                        repositoryImplementation, 
+                        repositoryImplementation,
                         userId,
                         elem,
                         pw);
@@ -549,17 +551,17 @@ public class DownloadBundle extends HttpServlet {
 
     public TaskSignature createWorkflowSignature(
             WorkflowRTO repositoryWorkflow,
-            PrintWriter pw) 
+            PrintWriter pw)
     throws UnsupportedEncodingException
     {
-        
+
         pw.println("Generating Signature...");
         TaskSignature signature = new TaskSignature();
 
         if (repositoryWorkflow.getSignature().getTaskType() != null) {
             signature.setTasktype(new Tasktype(repositoryWorkflow.getSignature().getTaskType()));
         }
-        
+
         addInputPorts(repositoryWorkflow, pw, signature);
         addOutputPorts(repositoryWorkflow, pw, signature);
 
@@ -568,8 +570,8 @@ public class DownloadBundle extends HttpServlet {
 
     public AbstractWorkflow createAbstractWorkflow(
             WorkflowRTO repositoryWorkflow,
-            PrintWriter pw)    
-            throws UnsupportedEncodingException 
+            PrintWriter pw)
+            throws UnsupportedEncodingException
     {
         AbstractWorkflow desktopWorkflow = new AbstractWorkflow(Integer.toString(repositoryWorkflow.getId()));
         if (repositoryWorkflow.getUuid()  != null && !repositoryWorkflow.getUuid().equals("")) {
@@ -580,15 +582,15 @@ public class DownloadBundle extends HttpServlet {
         desktopWorkflow.setTitle(repositoryWorkflow.getName());
         desktopWorkflow.setCreated(repositoryWorkflow.getCreated());
         desktopWorkflow.setModified(repositoryWorkflow.getModified());
-        
+
         if (repositoryWorkflow.getApplication()  != null) {
             desktopWorkflow.setApplication(new Application(repositoryWorkflow.getApplication()));
         }
-        
+
         setWorkflowDomain(repositoryWorkflow, desktopWorkflow);
         desktopWorkflow.setDescription(repositoryWorkflow.getDescription());
 
-        
+
         setWorkflowAccessRights(desktopWorkflow, repositoryWorkflow, pw);
         setWorkflowKeywords(repositoryWorkflow, desktopWorkflow);
 
@@ -597,16 +599,16 @@ public class DownloadBundle extends HttpServlet {
     }
 
     public WorkflowImplementation createImplementation(
-            ImplementationRTO repositoryImplementation, 
+            ImplementationRTO repositoryImplementation,
             int userId,
             RepoElement elem,
-            PrintWriter pw) 
+            PrintWriter pw)
             throws UnauthorizedException, NotFoundException {
         WorkflowImplementation desktopImplementation = new WorkflowImplementation(Integer.toString(repositoryImplementation.getId()));
         if (repositoryImplementation.getUuid() != null && !repositoryImplementation.getUuid().equals("")) {
             desktopImplementation.setUuid(repositoryImplementation.getUuid());
         }
-        
+
         pw.println("WorkflowImplementation generated with UUID " + desktopImplementation.getUuid());
 
         desktopImplementation.setTitle(repositoryImplementation.getTitle());
@@ -617,13 +619,13 @@ public class DownloadBundle extends HttpServlet {
         desktopImplementation.setDescription(repositoryImplementation.getDescription());
 
         desktopImplementation.setLanguage(new Language(repositoryImplementation.getLanguage()));
-        
+
         setKeywords(repositoryImplementation, desktopImplementation);
-        
+
         setImplementationEngine(userId, repositoryImplementation, desktopImplementation);
 
         desktopImplementation.setVersion(repositoryImplementation.getVersion());
-        
+
         Set<BundleFile> files = getBundleFiles(repositoryImplementation, desktopImplementation, pw, elem);
         setImplementationConfigurations(repositoryImplementation, pw, desktopImplementation, elem, files);
 
@@ -634,26 +636,26 @@ public class DownloadBundle extends HttpServlet {
     }
 
     public Mapping createConfiguration(
-            ConfigurationRTO repositoryConfiguration, 
+            ConfigurationRTO repositoryConfiguration,
             Map<String, ReferableResource> resourceMap,
             RepoElement elem,
-            PrintWriter pw) 
+            PrintWriter pw)
     {
         pw.println("Repo Config is null?: " + (repositoryConfiguration == null));
         pw.println("ResourceMap is null?: " + (resourceMap == null));
         pw.println("Repo Id: " + repositoryConfiguration.getId());
         pw.println("Repo UUID: " + repositoryConfiguration.getUuid());
         pw.println("Repo Type: " + repositoryConfiguration.getConfigurationType());
-        
-        
+
+
         Mapping desktopConfiguration;
-        
+
         if (repositoryConfiguration.getConfigurationType() == ConfigurationRTO.ConfigurationType.PORT) {
             desktopConfiguration = new DataMapping(Integer.toString(repositoryConfiguration.getId()));
         } else {
             desktopConfiguration = new EnvironmentMapping(Integer.toString(repositoryConfiguration.getId()));
         }
-        
+
         if (repositoryConfiguration.getUuid() != null && !repositoryConfiguration.getUuid().equals("")) {
             desktopConfiguration.setUuid(repositoryConfiguration.getUuid());
         }
@@ -668,11 +670,11 @@ public class DownloadBundle extends HttpServlet {
         for (BundleFileRTO repositoryFile : repositoryConfiguration.getFiles()) {
             String filename = repositoryFile.getTitle();
             pw.println("Creating Bundle File (title: " + filename + ")");
-            
-            filename = checkPrimaryMatch(PrimaryType.CONFIGURATION,repositoryConfiguration.getId(), elem) 
-                        ? repositoryFile.getTitle() 
+
+            filename = checkPrimaryMatch(PrimaryType.CONFIGURATION,repositoryConfiguration.getId(), elem)
+                        ? repositoryFile.getTitle()
                         : desktopConfiguration.getUuid() + "/" + repositoryFile.getTitle();
-            
+
             pw.println("Title Changed to: " + filename);
 
             BundleFile bf = new BundleFile(filename, repositoryFile.getFile().getAbsolutePath(), repositoryFile.getDescription(), BundleFile.FileType.BUNDLE_FILE);
@@ -774,13 +776,27 @@ public class DownloadBundle extends HttpServlet {
         // get a temp file
         File tempFile = File.createTempFile(zipFile.getName(), null);
         // delete it, otherwise you cannot rename your existing zip to it.
-        tempFile.delete();
+        if(!tempFile.delete())
+        {
+            throw new IOException("could not delete tempfile.");
+        }
 
-        boolean renameOk=zipFile.renameTo(tempFile);
-        if (!renameOk)
+        String z = zipFile.getAbsolutePath();
+        String t = tempFile.getAbsolutePath();
+
+        Logger.getAnonymousLogger().log(Level.INFO, "zipFile: " + zipFile.getAbsolutePath() + " tempFile: " + tempFile.getAbsolutePath());
+
+        FileUtils.moveFile(zipFile, tempFile);
+
+
+        /*if (!zipFile.renameTo(tempFile))
         {
             throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-        }
+        }*/
+
+        String nz = zipFile.getAbsolutePath();
+        String nt = tempFile.getAbsolutePath();
+
         byte[] buf = new byte[1024];
 
         ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));

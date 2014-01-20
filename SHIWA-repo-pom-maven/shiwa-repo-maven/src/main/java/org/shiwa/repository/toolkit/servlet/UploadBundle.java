@@ -473,7 +473,7 @@ public class UploadBundle extends HttpServlet {
             try {
                 //a matching engine was not found in the list of engines present in the repository.
                 pw.println("Engine not found - attempting automatic creation!");
-                dummyRTO = repo.createEngine(implementation.getEngine(), implementation.getEngineVersion());
+                dummyRTO = repo.createEngine(implementation.getEngine().toUpperCase(), implementation.getEngineVersion());
             } catch (AuthorizationException ex) {
                pw.println(ex);
             } catch (ForbiddenException ex) {

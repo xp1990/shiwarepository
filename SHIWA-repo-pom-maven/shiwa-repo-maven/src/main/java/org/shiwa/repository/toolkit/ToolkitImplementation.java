@@ -1000,7 +1000,7 @@ public class ToolkitImplementation implements ToolkitInterface {
     public EngineRTO createEngine(String name, String version) throws ForbiddenException, AuthorizationException{
         EngineRTO engine;
         try {
-            PlatformTO item = af.createPlatform(name, version);
+            PlatformTO item = af.createPlatform(name, version, "");
             engine = new EngineRTO(
                         item.getId(),
                         item.getName(),
