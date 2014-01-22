@@ -6,10 +6,12 @@ package org.shiwa.repository.ui;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.ConfigurableNavigationHandler;
@@ -87,6 +89,7 @@ public class BackingBean implements Serializable {
     String impAttrNameFilter = "";
     String impAttrValueFilter = "";
     String wfSearchStr = "";
+    String prevWfSearchStr = "";
     String impSearchStr = "";
     String selectedWfApplication = "";
     final String defaultWfDomain = "All Domains";
@@ -167,8 +170,34 @@ public class BackingBean implements Serializable {
     }
 
     public String initBackingBean() {
-        //put submission service stuff here
+        if (prevUser != currentUser) {
+            logAccess();
+        }
         return "";
+    }
+
+    private void logAccess(){
+        Date date = new Date();
+        String longDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
+        String shortDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String name = "/srv/shiwa/access.log" + shortDate;
+        File access_log = new File(name);
+
+        FileWriter fstream = null;
+        BufferedWriter out = null;
+
+        Boolean beg = access_log.exists();
+
+        try{
+            fstream = new FileWriter(access_log, beg);
+            out = new BufferedWriter(fstream);
+            out.write( longDate + " " + currentUser.getLoginName()+ "\n");
+            out.close();
+        }catch(IOException e){
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, e);
+        }finally{
+            prevUser = currentUser;
+        }
     }
 
     private void addWorkflowSummaryList(WorkflowSummary wf, List<WorkflowSummary> newWfList) {
@@ -1118,6 +1147,7 @@ public class BackingBean implements Serializable {
             af.deleteApp(selectedApp.getId());
             addMessage(null, FacesMessage.SEVERITY_INFO, "Deleted application '" + selectedApp.getName() + "'", null);
             selectedApp = null;
+            impListCacheTimeStamp = null;
             return "success";
         } catch (EntityNotFoundException e) {
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + e.getMessage(), null);
@@ -2075,6 +2105,10 @@ public class BackingBean implements Serializable {
         return af.filterAppOwnerLoginNames(query);
     }
 
+    public List<String> appOwnerByApp(String query){
+        return af.filterAppOwnerLoginNamesByGroup(query, af.getGroup(selectedApp.getGroupName()).getId());
+    }
+
     //used by autocomplete when filtering for AppAttrNames
     public List<String> completeAppAttrName(String query) {
         return af.filterAppAttrNames(query);
@@ -2314,6 +2348,9 @@ public class BackingBean implements Serializable {
         if (selectedWfDomain.equals(defaultWfDomain) && searchStr.isEmpty()) {
             wfSummaryListCache = getAllWorkflowSummaries();
         }else{
+            if(!prevWfSearchStr.equals(wfSearchStr)){
+                appListHash = 0;
+            }
             List<WorkflowSummary> wfList = getAllWorkflowSummaries();
             List<WorkflowSummary> newWfList = new ArrayList<WorkflowSummary>();
             for (WorkflowSummary wf : wfList) {
@@ -2328,6 +2365,7 @@ public class BackingBean implements Serializable {
                     addWorkflowSummaryList(wf, newWfList);
                 }
             }
+            prevWfSearchStr = wfSearchStr;
             wfSummaryListCache = newWfList;
         }
 
@@ -2336,6 +2374,7 @@ public class BackingBean implements Serializable {
 
     public void refreshWfSummaries(ActionEvent actionEvent) {
         //System.out.println("search: "+searchStr);
+        appListHash = 0;
         selectedWfDomain = defaultWfDomain;
         wfSummaryListCache = getAllWorkflowSummaries();
     }

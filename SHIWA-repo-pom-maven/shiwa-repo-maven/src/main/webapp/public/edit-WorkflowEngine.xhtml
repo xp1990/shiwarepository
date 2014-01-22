@@ -33,7 +33,7 @@
                                 <h:outputText value="Description:" style="width: 13ex"/>
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.description}" />
                             </h:panelGrid>
-                            <p:commandButton value="Delete" onclick="deleteWEDialogWidget.show();" rendered="#{backingBean.canCreateWorkflowEngine}"/>
+                            <p:commandButton value="Delete" onclick="deleteWEDialogWidget.show();" rendered="#{backingBean.canCreateWEImplementations}"/>
                         </p:tab>
                         <p:tab title="Implementations">
                             <p:dataTable id="WEImpBrowserTable"

@@ -109,7 +109,9 @@
                                                itemLabel="#{selectPlatformName}"
                                                itemValue="#{selectPlatformName}" />
                             </h:selectOneMenu>
-                            <p:commandButton value="Select" action="#{backingBean.update()}" ajax="false" update="createPlatformPanel createPlatformPanel1" />
+                            <p:commandButton value="Select" action="#{backingBean.update()}" ajax="false" update="createPlatformPanel createPlatformPanel1" rendered="#{backingBean.canUpdateImplementation}"/>
+
+                            <h:outputText value="" rendered="#{!backingBean.canUpdateImplementation}"/>
 
                             <h:outputText value="Engine version:" />
                             <h:selectOneMenu value="#{backingBean.selectedImp.platformVersion}"

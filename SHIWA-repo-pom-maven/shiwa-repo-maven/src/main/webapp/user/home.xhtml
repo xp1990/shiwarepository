@@ -154,7 +154,7 @@
                                 <f:facet name="header">
                                     <div align="left">
                                         <h:outputText value="Workflow Engines" style="font-size: 20pt"/>
-                                        <p:menuButton value="Actions" style="float: right">
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canCreateWEImplementations}">
                                             <p:menuitem value="New" url="/user/create-WorkflowEngine.xhtml"/>
                                         </p:menuButton>
                                     </div>

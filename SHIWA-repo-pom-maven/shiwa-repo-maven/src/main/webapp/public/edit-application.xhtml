@@ -68,7 +68,7 @@
                                                 value="#{backingBean.selectedApp.ownerLoginName}"
                                                 readonly="#{!backingBean.canChangeAppOwner}"
                                                 disabled="#{!backingBean.canChangeAppOwner}"
-                                                completeMethod="#{backingBean.completeAppOwnerName}" />
+                                                completeMethod="#{backingBean.appOwnerByApp}" />
                             </h:panelGrid>
                             <p:message for="editAppOwner" />
                             <div align="right" style="padding-top: 5px">
