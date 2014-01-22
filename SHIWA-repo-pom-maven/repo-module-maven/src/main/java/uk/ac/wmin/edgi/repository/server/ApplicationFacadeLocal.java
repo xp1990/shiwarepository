@@ -115,6 +115,7 @@ public interface ApplicationFacadeLocal {
     List<String> filterAppOwnerLoginNames(String query);
     List<String> filterAppAttrNames(String query);
     List<String> filterImpAttrNames(String query);
+    public List<String> filterAppOwnerLoginNamesByGroup(String query, int groupId);
 
     //these are business methods
     UserTO createUser(String loginName, String password, String fullName, String organization, String emailAddr, Boolean isActive, Boolean isAdmin, Boolean isValidator) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;

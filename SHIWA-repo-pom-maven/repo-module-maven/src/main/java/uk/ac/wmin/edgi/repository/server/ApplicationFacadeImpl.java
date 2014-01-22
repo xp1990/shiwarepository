@@ -194,6 +194,16 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
+    public List<String> filterAppOwnerLoginNamesByGroup(String query, int groupId){
+        User caller = getCallerUser();
+        if (caller == null || !caller.isActive()) {
+            return new ArrayList<String>(0);
+        }
+        return em.createNamedQuery("User.loadUsersOfGroupLikeName", String.class).setParameter("groupId", groupId).setParameter("loginName", "%"+query+"%").getResultList();
+    }
+
+
+    @Override
     public List<String> filterAppAttrNames(String query) {
         List<String> list = em.createNamedQuery("AppAttribute.filterNames", String.class).setParameter("name", "%"+query+"%").getResultList();
         return list;
@@ -462,7 +472,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         em.remove(g);
     }
 
-    
+
     // use case diagram: Administrator: create platform
     @Override
     public PlatformTO createPlatform(String platName, String description) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException {

@@ -39,6 +39,7 @@ import org.shiwa.repository.toolkit.wfengine.WEImplementation;
     @NamedQuery(name = "User.filterNames", query = "SELECT u.loginName FROM User u WHERE u.loginName LIKE :loginName ORDER BY u.loginName ASC"),
     @NamedQuery(name = "User.filterNamesNotInGroup", query = "SELECT u.loginName FROM User u WHERE u.loginName LIKE :loginName AND u.id NOT IN (SELECT gu.id FROM UserGroup g JOIN g.users gu WHERE g.id = :groupId) ORDER BY u.loginName ASC"),
     @NamedQuery(name = "User.loadAllUsers", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.UserTO(u.id, u.loginName, u.fullName, u.organization, u.email, u.admin, u.WEDev, u.active) FROM User u"),
+    @NamedQuery(name = "User.loadUsersOfGroupLikeName", query = "SELECT u.loginName FROM User u JOIN u.groups g WHERE g.id = :groupId AND u.loginName LIKE :loginName"),
     @NamedQuery(name = "User.loadUsersOfGroup", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.UserTO(u.id, u.loginName, u.fullName, u.organization, u.email, u.admin, u.WEDev, u.active) FROM User u JOIN u.groups g WHERE g.id = :groupId")
 })
 @TableGenerator(name="user_gen", table="generator", pkColumnName="name", pkColumnValue="user_gen", valueColumnName="value")
