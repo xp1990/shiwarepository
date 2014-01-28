@@ -91,6 +91,7 @@ public class BackingBean implements Serializable {
     String wfSearchStr = "";
     String prevWfSearchStr = "";
     String impSearchStr = "";
+    String prevImpSearchStr = "";
     String selectedWfApplication = "";
     final String defaultWfDomain = "All Domains";
     String selectedWfDomain = defaultWfDomain;
@@ -165,14 +166,16 @@ public class BackingBean implements Serializable {
     private static final String REPO_VERSION = "3.1";
 
     public BackingBean() {
-
+        if (prevUser != currentUser) {
+            logAccess();
+        }
 
     }
 
     public String initBackingBean() {
-        if (prevUser != currentUser) {
+        /*if (prevUser != currentUser) {
             logAccess();
-        }
+        }*/
         return "";
     }
 
@@ -2381,12 +2384,14 @@ public class BackingBean implements Serializable {
 
     public void filterImpSummaries(ActionEvent actionEvent) {
         //System.out.println("search: "+searchStr);
+        String searchStr = impSearchStr;
 
-        if(impSearchStr.isEmpty() && selectedImpDomain.equals(defaultWfDomain)){
+        if(searchStr.isEmpty() && selectedImpDomain.equals(defaultWfDomain)){
             impSummaryListCache = getAllImpSummaries();
         }else{
-
-            String searchStr = impSearchStr;
+            if(!prevImpSearchStr.equals(impSearchStr)){
+                impListHash = 0;
+            }
             if (!selectedImpDomain.equals(defaultWfDomain)) {
                 searchStr += " " + selectedImpDomain;
             }
@@ -2398,11 +2403,13 @@ public class BackingBean implements Serializable {
                     this.addImplementationSummaryList(imp, newImpList);
                 }
             }
+            prevImpSearchStr = impSearchStr;
             impSummaryListCache = newImpList;
         }
     }
     public void refreshImpSummaries(ActionEvent actionEvent) {
         //System.out.println("search: "+searchStr);
+        impListHash = 0;
         selectedImpDomain = defaultWfDomain;
         impSummaryListCache = getAllImpSummaries();
     }

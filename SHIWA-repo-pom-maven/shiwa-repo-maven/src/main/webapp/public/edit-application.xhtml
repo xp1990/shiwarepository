@@ -158,7 +158,7 @@
                             <div align="left" style="vertical-align: middle">
                                 <h:outputText value="Attributes" style="font-size: 22pt"/>
                                 <p:menuButton value="Actions" style="float: right">
-                                    <p:menuitem value="Expand/Colapse" update="growl" ajax="false" action="#{backingBean.appAttrTree.expandColapse}"/>
+                                    <p:menuitem value="Expand/Collapse" update="growl" ajax="false" action="#{backingBean.appAttrTree.expandColapse}"/>
                                     <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadApplicationAttributeTree}"/>
                                     <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedApplication}" rendered="#{backingBean.canCreateAppAttributes}"/>
                                 </p:menuButton>
@@ -436,7 +436,7 @@
                               hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl,appFileTable"/>
+                        <p:ajax event="close" update="growl mainForm:appFileTable mainForm:appFileTableNoDownload"/>
                         <p:panel>
                             <h:outputText value="Are you sure you want to delete selected file(s)?" />
                             <div align="right" style="padding-top: 5px">
