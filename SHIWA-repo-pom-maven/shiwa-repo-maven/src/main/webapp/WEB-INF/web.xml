@@ -125,4 +125,9 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>/srv/shiwa</env-entry-value>
     </env-entry>
+    
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/index.jsp</location>
+    </error-page>
 </web-app>
