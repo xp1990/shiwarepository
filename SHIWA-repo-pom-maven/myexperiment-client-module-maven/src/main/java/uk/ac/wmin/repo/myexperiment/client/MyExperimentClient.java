@@ -54,6 +54,8 @@ public class MyExperimentClient {
     }
 
     public String getWorkflowTitle(String workflow) {
+        logger.info("MyExperimentClient title: " + workflow);
+
         String urlWorkflowBasic = "http://www.myexperiment.org"
                 + "/workflow.xml?id=" + workflow + "&elements=title";
         WorkflowContentsSummary workflowSummary = new WorkflowContentsSummary();
@@ -64,6 +66,7 @@ public class MyExperimentClient {
 
     public List<String> getWorkflowInputNames(String workflow,
             TYPE_WORKFLOW typeWorkflow) {
+        logger.info("MyExperimentClient input names for:" + workflow + " --- " + typeWorkflow);
         switch (typeWorkflow) {
             case TAVERNA1:
                 return filledListTaverna1(workflow, TYPE_PORT.INPUT, TYPE_DATA.NAME);
@@ -76,6 +79,7 @@ public class MyExperimentClient {
 
     public List<String> getWorkflowInputDescription(String workflow,
             TYPE_WORKFLOW typeWorkflow) {
+        logger.info("MyExperimentClient input descriptions for:" + workflow + " --- " + typeWorkflow);
         switch (typeWorkflow) {
             case TAVERNA1:
                 return filledListTaverna1(workflow, TYPE_PORT.INPUT, TYPE_DATA.DESCRIPTION);
@@ -88,6 +92,7 @@ public class MyExperimentClient {
 
     public List<String> getWorkflowOutputNames(String workflow,
             TYPE_WORKFLOW typeWorkflow) {
+        logger.info("MyExperimentClient output names for:" + workflow + " --- " + typeWorkflow);
         switch (typeWorkflow) {
             case TAVERNA1:
                 return filledListTaverna1(workflow, TYPE_PORT.OUTPUT, TYPE_DATA.NAME);
@@ -100,6 +105,7 @@ public class MyExperimentClient {
 
     public List<String> getWorkflowOutputDescription(String workflow,
             TYPE_WORKFLOW typeWorkflow) {
+        logger.info("MyExperimentClient input descriptions for:" + workflow + " --- " + typeWorkflow);
         switch (typeWorkflow) {
             case TAVERNA1:
                 return filledListTaverna1(workflow, TYPE_PORT.OUTPUT, TYPE_DATA.DESCRIPTION);
@@ -111,6 +117,7 @@ public class MyExperimentClient {
     }
 
     public WorkflowContentsSummary getWorkflow(String workflow) {
+        logger.info("MyExperimentClient all workflow data: " + workflow);
         String urlWorkflowBasic = "http://www.myexperiment.org"
                 + "/workflow.xml?id=" + workflow + "&elements=";
         WorkflowContentsSummary workflowSummary = new WorkflowContentsSummary();
@@ -126,6 +133,10 @@ public class MyExperimentClient {
 
     private List<String> filledListTaverna1(String workflow, TYPE_PORT type,
             TYPE_DATA data) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("MyExperimentClient for (" + workflow + ") type ("
+                    + type + ") data (" + data + ")");
+        }
         String urlWorkflow = "http://www.myexperiment.org"
                 + "/workflow.xml?id=" + workflow + "&elements=components";
         SAXBuilder builder = new SAXBuilder();
@@ -161,6 +172,9 @@ public class MyExperimentClient {
             Element child = source.getChild(data.getValue());
 
             if (child != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("(" + child.getTextTrim() + ") added to data (" + data + ")");
+                }
                 list.add(child.getText().trim());
             }
         }
@@ -168,6 +182,10 @@ public class MyExperimentClient {
 
     private List<String> filledListTaverna2(String workflow, TYPE_PORT type,
             TYPE_DATA data) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("MyExperimentClient for (" + workflow + ") type ("
+                    + type + ") data (" + data + ")");
+        }
         String urlWorkflow = "http://www.myexperiment.org"
                 + "/workflow.xml?id=" + workflow + "&elements=components";
         SAXBuilder builder = new SAXBuilder();
@@ -228,6 +246,9 @@ public class MyExperimentClient {
                 Element child = source.getChild(data.getValue());
 
                 if (child != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("(" + child.getTextTrim() + ") added to data (" + data + ")");
+                    }
                     list.add(child.getText().trim());
                 }
             } else {
@@ -235,6 +256,9 @@ public class MyExperimentClient {
                         data.getValue() + "s");
 
                 if (child != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("(" + child.getTextTrim() + ") added to data (" + data + ")");
+                    }
                     list.add(child.getValue().trim());
                 }
             }
@@ -243,6 +267,9 @@ public class MyExperimentClient {
 
     private void getSpecificData(String id, String urlWorkflow,
             WorkflowContentsSummary workflowMap) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("MyExperimentClient get (" + id + ") from (" + urlWorkflow + ")");
+        }
         SAXBuilder builder = new SAXBuilder();
         try {
             Document document = builder.build(urlWorkflow);
