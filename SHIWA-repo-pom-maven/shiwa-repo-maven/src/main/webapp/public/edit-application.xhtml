@@ -277,8 +277,8 @@
                                 </p:column>
                             </p:treeTable>
                         </p:tab>
-                        <p:tab title="Files" rendered="#{!backingBean.canDownloadAppFiles}">
-                            <p:dataTable id="appFileTableNoDownload"
+                        <p:tab title="Files">
+                            <p:dataTable id="appFileTable"
                                          value="#{backingBean.filesOfSelectedApplication}"
                                          selection="#{backingBean.selectedAppSelectedFiles}"
                                          var="appFile"
@@ -292,39 +292,6 @@
                                 <f:facet name="header">
                                     <div align="left" style="vertical-align: middle">
                                         <h:outputText value="Files" style="font-size: 22pt"/>
-                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}" >
-                                            <p:menuitem value="Upload"
-                                                        onclick="uploadAppFilesDialogWidget.show();"
-                                                        update="growl,appFileTable"
-                                                        rendered="#{backingBean.canUploadAppFile}"/>
-                                            <p:menuitem value="Delete"
-                                                        oncomplete="deleteAppFilesDialogWidget.show()"
-                                                        rendered="#{backingBean.canDeleteAppFiles}"/>
-                                        </p:menuButton>
-                                    </div>
-                                </f:facet>
-                                <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteAppFiles}"/>
-                                <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}">
-                                    <h:outputText value="#{appFile.pathName}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:tab>
-                        <p:tab title="Files" rendered="#{backingBean.canDownloadAppFiles}">
-                            <p:dataTable id="appFileTable"
-                                         value="#{backingBean.filesOfSelectedApplication}"
-                                         selection="#{backingBean.selectedAppSelectedFiles}"
-                                         var="appFile"
-                                         paginator="true"
-                                         rowKey="#{appFile.pathName}"
-                                         paginatorPosition="top"
-                                         paginatorAlwaysVisible="true"
-                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                                         rowsPerPageTemplate="25,50,100"
-                                         rows="25"
-                                         rendered="#{backingBean.canDownloadAppFiles}">
-                                <f:facet name="header">
-                                    <div align="left" style="vertical-align: middle">
-                                        <h:outputText value="Files" style="font-size: 22pt"/>
                                         <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}">
                                             <p:menuitem value="Upload"
                                                         onclick="uploadAppFilesDialogWidget.show();"
@@ -332,16 +299,21 @@
                                                         rendered="#{backingBean.canUploadAppFile}"/>
                                             <p:menuitem value="Delete"
                                                         oncomplete="deleteAppFilesDialogWidget.show()"
+                                                        update="growl,appFileTable"
                                                         rendered="#{backingBean.canDeleteAppFiles}"/>
                                         </p:menuButton>
                                     </div>
                                 </f:facet>
                                 <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteAppFiles}"/>
-                                <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}">
+                                <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}" rendered="#{backingBean.canDownloadAppFiles}">
                                     <a href="../download?appid=#{appFile.appId}&amp;filename=#{appFile.pathName}">
                                         <h:outputText value="#{appFile.pathName}"/>
                                     </a>
                                 </p:column>
+                                <p:column rendered="#{!backingBean.canDownloadAppFiles}">
+                                    <h:outputText value="#{appFile.pathName}"/>
+                                </p:column>
+
                             </p:dataTable>
                         </p:tab>
                         <p:tab title="Implementations">
@@ -436,11 +408,10 @@
                               hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl mainForm:appFileTable mainForm:appFileTableNoDownload"/>
                         <p:panel>
                             <h:outputText value="Are you sure you want to delete selected file(s)?" />
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Yes" onclick="deleteAppFilesDialogWidget.hide()" action="#{backingBean.deleteAppFiles}" ajax="true" update="growl appFileTable appFileTableNoDownload" />
+                                <p:commandButton value="Yes" onclick="deleteAppFilesDialogWidget.hide()" action="#{backingBean.deleteAppFiles}" ajax="true" update="mainForm growl" />
                                 <p:commandButton value="No" onclick="deleteAppFilesDialogWidget.hide()" type="button" />
                             </div>
                         </p:panel>
@@ -454,7 +425,7 @@
                               resizable="false"
                               closable="false"
                               width="450">
-                        <p:ajax event="close" update="growl,appFileTable"/>
+                        <p:ajax event="close" update="mainForm growl"/>
                         <p:panel>
                             <p:fileUpload fileUploadListener="#{backingBean.handleAppFileUpload}"
                                           multiple="true"
@@ -463,7 +434,7 @@
                                           sizeLimit="500000000"
                                           update="growl,impFileTable"/>
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Close" onclick="uploadAppFilesDialogWidget.hide()" type="button" />
+                                <p:commandButton value="Close" onclick="uploadAppFilesDialogWidget.hide()" type="button" update="mainForm growl" />
                             </div>
                         </p:panel>
                     </p:dialog>

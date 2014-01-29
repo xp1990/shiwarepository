@@ -344,7 +344,7 @@
                                 </p:column>
                             </p:treeTable>
                         </p:tab>
-                        <p:tab title="Files" rendered="#{backingBean.canDownloadImpFiles}">
+                        <p:tab title="Files">
                             <p:dataTable id="impFileTable"
                                          value="#{backingBean.filesOfSelectedImplementation}"
                                          selection="#{backingBean.selectedImpSelectedFiles}"
@@ -355,18 +355,18 @@
                                          paginatorAlwaysVisible="true"
                                          paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                          rowsPerPageTemplate="25,50,100"
-                                         rows="25"
-                                         rendered="#{backingBean.canDownloadImpFiles}">
+                                         rows="25">
                                 <f:facet name="header">
                                     <div align="left" style="vertical-align: middle">
                                         <h:outputText value="Files" style="font-size: 22pt"/>
                                         <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadImpFile or backingBean.canDeleteImpFiles}">
                                             <p:menuitem value="Upload"
                                                         onclick="uploadImpFilesDialogWidget.show()"
-                                                        update="growl,impFileTable,impFileTableNoDownload"
+                                                        update="growl"
                                                         rendered="#{backingBean.canUploadImpFile}"/>
                                             <p:menuitem value="Delete"
-                                                        oncomplete="deleteImpFilesDialogWidget.show()"
+                                                        onclick="deleteImpFilesDialogWidget.show();"
+                                                        update="growl"
                                                         rendered="#{backingBean.canDeleteImpFiles}"/>
                                         </p:menuButton>
                                     </div>
@@ -430,11 +430,10 @@
                               hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl impFileTable ImpFileTableNoDownload"/>
                         <p:panel>
                             <h:outputText value="Are you sure you want to delete selected file(s)?" />
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Yes" onclick="deleteImpFilesDialogWidget.hide()" action="#{backingBean.deleteImpFiles}" ajax="true" update="growl ImpFileTable ImpFileTableNoDownload" />
+                                <p:commandButton value="Yes" onclick="deleteImpFilesDialogWidget.hide()" action="#{backingBean.deleteImpFiles}" ajax="true" update="mainForm growl" />
                                 <p:commandButton value="No" onclick="deleteImpFilesDialogWidget.hide()" type="button" />
                             </div>
                         </p:panel>
@@ -448,16 +447,16 @@
                               resizable="false"
                               closable="false"
                               width="450">
-                        <p:ajax event="close" update="growl impFileTable ImpFileTableNoDownload"/>
+                        <p:ajax event="close" update="mainForm growl"/>
                         <p:panel>
                             <p:fileUpload fileUploadListener="#{backingBean.handleImpFileUpload}"
                                           multiple="true"
                                           auto="false"
                                           label="Browse"
                                           sizeLimit="500000000"
-                                          update="growl impFileTable ImpFileTableNoDownload"/>
+                                          update="growl impFileTable"/>
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Close" onclick="uploadImpFilesDialogWidget.hide()" type="button" />
+                                <p:commandButton value="Close" onclick="uploadImpFilesDialogWidget.hide()" type="button"/>
                             </div>
                         </p:panel>
                     </p:dialog>
