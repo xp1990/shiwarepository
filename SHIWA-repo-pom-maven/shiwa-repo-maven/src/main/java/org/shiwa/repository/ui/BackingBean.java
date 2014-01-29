@@ -1006,7 +1006,7 @@ public class BackingBean implements Serializable {
             return null;
         }
         try {
-            selectedApp = af.updateAppDetails(selectedApp.getId(), selectedApp.getDescription());
+            selectedApp = af.updateAppDetails(selectedApp.getId(), selectedApp.getDescription(), selectedApp.getName());
             addMessage(null, FacesMessage.SEVERITY_INFO, "Updated application '" + selectedApp.getName() + "'", null);
             return null;
         } catch (EntityNotFoundException e) {
@@ -2278,6 +2278,24 @@ public class BackingBean implements Serializable {
             }
         }
         return appList.toArray(new String[0]);
+    }
+
+    public String[] getUsedWfDomains(){
+
+        List<String> usedWfDoms = new ArrayList<String>();
+
+        for(String s : getWfDomains()){
+            for (WorkflowSummary w : getWorkflowSummaries()){
+                if(w.getDomain().equalsIgnoreCase(s) || w.getSubdomain().equalsIgnoreCase(s)){
+                    usedWfDoms.add(s);
+                    break;
+                }
+
+            }
+        }
+
+        return usedWfDoms.toArray(new String[0]);
+
     }
 
     public String[] getWfDomains() {

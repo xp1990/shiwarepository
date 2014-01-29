@@ -36,7 +36,7 @@
                                 <h:selectOneMenu value="#{backingBean.selectedImpDomain}"
                                                  style="width: 150px"
                                                  title="Select a domain to filter workflow implementation list. Currently selected: #{backingBean.selectedImpDomain}">
-                                    <f:selectItems value="#{backingBean.wfDomains}"
+                                    <f:selectItems value="#{backingBean.usedWfDomains}"
                                                    var="wfApp"
                                                    itemLabel="#{wfDom}"
                                                    itemValue="#{wfDom}"/>

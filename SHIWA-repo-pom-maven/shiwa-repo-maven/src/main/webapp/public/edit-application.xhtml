@@ -35,6 +35,14 @@
                     <p:tabView id ="editAppDetails">
                         <p:tab title="Details">
                             <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Name:"/>
+                                <h:inputText value="#{backingBean.selectedApp.name}"
+                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                             disabled="#{!backingBean.canUpdateAppDetails}"
+                                             required="true"
+                                             label="Workflow Name"
+                                             style="width: 100%"
+                                             title="This is a required field and must be less than 250 characters long."/>
                                 <h:outputText value="ID:"/>
                                 <h:outputText value="#{backingBean.selectedApp.id}"/>
                                 <h:outputText value="Views:"/>
@@ -56,7 +64,7 @@
                             <div align="right">
                                 <p:commandButton value="Save"
                                                  action="#{backingBean.updateAppDetails}"
-                                                 update="growl"
+                                                 update="mainForm growl"
                                                  rendered="#{backingBean.canUpdateAppDetails}" />
                             </div>
                         </p:tab>
