@@ -159,7 +159,7 @@ public interface ApplicationFacadeLocal {
 
     ApplicationTO createApp(String appName, String description, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
     ApplicationTO createApp(String appName, String description, Date created, Date updated, int groupId, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
-    ApplicationTO updateAppDetails(Integer appId, String description) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
+    ApplicationTO updateAppDetails(Integer appId, String description, String name) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO updateAppTimestamp(Integer appId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO updateAppAccess(Integer appId, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO changeAppOwner(Integer appId, String newOwnerLoginName) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;

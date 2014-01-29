@@ -59,6 +59,10 @@ public class ApplicationTO implements Serializable{
     private Date updated;
     private Integer views;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getViews() {
         return views;
     }

@@ -645,17 +645,37 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     // use case diagram: Admin: update application
     // use case diagram: User(owner or group+modify flag): update application
     @Override
-    public ApplicationTO updateAppDetails(Integer appId, String description) throws EntityNotFoundException, ValidationFailedException, AuthorizationException {
+    public ApplicationTO updateAppDetails(Integer appId, String description, String name) throws EntityNotFoundException, ValidationFailedException, AuthorizationException {
         User caller = getCallerUser();
         Application a = em.find(Application.class, appId);
+        if(a == null){
+            throw new EntityNotFoundException("No such workflow found in the database. Please refresh your session");
+        }
         String err = canUserModifyApplication(caller, a);
         if(err != null){
             throw new AuthorizationException(err);
         }
-        //TODO: validate description
-        if(description != null){
-            a.setDescription(description);
+
+        if(description == null || name == null){
+            throw new ValidationFailedException("Either the name or the description field is null. Please check and try again.");
         }
+
+        if(!name.matches("[A-Za-z0-9_-]{3,250}")){
+                logger.log(Level.SEVERE, "Application name: {0} failed validation for user {1}", new Object[]{name, caller.getLoginName()});
+                throw new ValidationFailedException("application names can only contain alphanumeric, - and _ characters and must be between 3 and 250 charaters long");
+        }
+
+        if( !name.equals(a.getName()) && !em.createNamedQuery("Application.findByName", Application.class).setParameter("name", name).getResultList().isEmpty()){
+            throw new ValidationFailedException("A Workflow with this name already exists. Try again.");
+        }
+
+        if(description.length() == 0 || description.length() >= 5000){
+            throw new ValidationFailedException("Please check the length of the description string");
+        }
+
+        a.setDescription(description);
+        a.setName(name);
+
         a = em.merge(a);
         return new ApplicationTO(a);
     }
@@ -880,6 +900,10 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
                 if(item.getName() == null){
                     logger.log(Level.SEVERE, "Imp: " + i.getId() + " attribute item has no name with value: " + item.getValue());
                     throw new ValidationFailedException("Attribute with value: " + item.getValue()+ " has no name");
+                }
+                if(item.getName().matches("(.*)defaultValue(.*)") && item.getValue().isEmpty()){
+                    logger.log(Level.SEVERE, "Imp: " + i.getId() + " attribute 'defaultValue' has no value");
+                    throw new ValidationFailedException("Attribute 'defaultValue' must have a value");
                 }
                 em.persist(new ImpAttribute(i, item.getName(), item.getValue()));
             }
