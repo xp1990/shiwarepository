@@ -13,29 +13,29 @@
                     <h:outputText value="Only admins are allowed to be here"/>
                 </p:outputPanel>
 
-                <h:form id="mainForm" rendered="#{backingBean.canCreateUser}">                                        
-                    <h1>Domains</h1>                                                            
+                <h:form id="mainForm" rendered="#{backingBean.canCreateUser}">
+                    <h1>Domains</h1>
                     <p:treeTable id="domainsTree"
                                  value="#{backingBean.getDomainContext().getDomainsTreeNode()}"
-                                 var="domainObj">
+                                 var="domainObj"
+                                 selection="#{backingBean.getDomainContext().selectedDomain}"
+                                 selectionMode="single">
+                        <f:facet name="header">
+                            <div align="left">
+                                <p:menuButton value="Actions" style="float: right">
+                                    <p:menuitem value="Delete" oncomplete="deleteDomainDialog.show();" update="dialog"/>
+                                </p:menuButton>
+                            </div>
+                        </f:facet>
+
                         <p:column>
                             <f:facet name="header">Name</f:facet>
                             <h:outputText value="#{domainObj}"/>
                         </p:column>
+                    </p:treeTable>
 
-                        <p:column>                 
-                            <f:facet name="header">Action</f:facet>    
-                           
-                            <p:commandButton action="#{backingBean.getDomainContext().setSelectedDomain(domainObj)}"
-                                             oncomplete="deleteDomainDialog.show();"
-                                             update="mainForm:deleteDomainPanel"
-                                             value="Delete"
-                                             ajax="true"/>
-                        </p:column>
-                    </p:treeTable>                                        
+                    <h2>Create new domain / subdomain(s)</h2>
 
-                    <h2>Create new domain / subdomain(s)</h2>                                                            
-                    
                     <h:panelGrid columns="2"  width="100%">
                         <p:column>
                             <h:outputText value="Domain:"/>
@@ -56,40 +56,41 @@
                                              value="Add"/>
                         </p:column>
                     </h:panelGrid>
-                    
+
                     <p:commandButton ajax="true"
                                      onclick="JSONdialog.show()"
                                      value="Show JSON"
                                      styleClass="justifyLeft"/>
-                    
+
                     <p:dialog widgetVar="JSONdialog" modal="true">
                         <h:outputText id="jsonContent"
-                                      value="#{backingBean.getDomainContext().domainHandler.jsonToString()}" 
+                                      value="#{backingBean.getDomainContext().domainHandler.jsonToString()}"
                                       styleClass="justifyLeft"/>
                         <br/>
                         <p:commandButton action="#{backingBean.getDomainContext().createNewSubdomains}"
                                              ajax="false"
                                              onclick="JSONdialog.hide()"
                                              value="OK"/>
-                    </p:dialog>                    
-                    
-                    <p:dialog id="domainDialogId"
-                              header="Delete Domain" 
-                              showEffect="fade" 
-                              widgetVar="deleteDomainDialog">
-                                <p:outputPanel id="deleteDomainPanel">
-                                    <h:outputText value="Are you sure you want to delete '#{backingBean.getDomainContext().getSelectedDomain()}'?" />
-                                </p:outputPanel>
-                                    <div align="right" style="padding-top: 5px">
-                                        <p:commandButton value="Yes" 
-                                                         action="#{backingBean.getDomainContext().deleteDomain(backingBean.getDomainContext().getSelectedDomain())}"                                                         
-                                                         ajax="false"/>
-                                        <p:commandButton value="No"                                                          
-                                                         onclick="deleteDomainDialog.hide()"/>
-                                    </div>
+                    </p:dialog>
+                    </h:form>
+                    <h:form id="dialog">
+                        <p:dialog id="domainDialogId"
+                                  header="Delete Domain"
+                                  showEffect="fade"
+                                  widgetVar="deleteDomainDialog">
+                                    <p:outputPanel id="deleteDomainPanel">
+                                        <h:outputText value="Are you sure you want to delete '#{backingBean.getDomainContext().getSelectedDomain()}'?" />
+                                    </p:outputPanel>
+                                        <div align="right" style="padding-top: 5px">
+                                            <p:commandButton value="Yes"
+                                                             action="#{backingBean.getDomainContext().deleteDomain(backingBean.getDomainContext().getSelectedDomain())}"
+                                                             ajax="false"/>
+                                            <p:commandButton value="No"
+                                                             onclick="deleteDomainDialog.hide()"/>
+                                        </div>
 
-                            </p:dialog>
-                </h:form>
+                        </p:dialog>
+                    </h:form>
             </ui:define>
         </ui:composition>
     </body>

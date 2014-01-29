@@ -203,7 +203,7 @@
                                 <h:outputText value="Attributes" style="font-size: 22pt"/>
 
                                 <p:menuButton value="Actions" style="float: right">
-                                    <p:menuitem value="Expand/Colapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
+                                    <p:menuitem value="Expand/Collapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
                                     <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadImplementationAttributeTree}"/>
                                     <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}"/>
                                     <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes}"/>
@@ -344,38 +344,6 @@
                                 </p:column>
                             </p:treeTable>
                         </p:tab>
-                        <p:tab title="Files" rendered="#{!backingBean.canDownloadImpFiles}">
-                            <p:dataTable id="impFileTableNoDownload"
-                                         value="#{backingBean.filesOfSelectedImplementation}"
-                                         selection="#{backingBean.selectedImpSelectedFiles}"
-                                         var="impFile"
-                                         paginator="true"
-                                         paginatorPosition="top"
-                                         rowKey="#{impFile.pathName}"
-                                         paginatorAlwaysVisible="true"
-                                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                                         rowsPerPageTemplate="25,50,100"
-                                         rows="25">
-                                <f:facet name="header">
-                                    <div align="left" style="vertical-align: middle">
-                                        <h:outputText value="Files" style="font-size: 22pt"/>
-                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadImpFile or backingBean.canDeleteImpFiles}">
-                                            <p:menuitem value="Upload"
-                                                        onclick="uploadImpFilesDialogWidget.show()"
-                                                        update="growl,impFileTable"
-                                                        rendered="#{backingBean.canUploadImpFile}"/>
-                                            <p:menuitem value="Delete"
-                                                        oncomplete="deleteImpFilesDialogWidget.show()"
-                                                        rendered="#{backingBean.canDeleteImpFiles}"/>
-                                        </p:menuButton>
-                                    </div>
-                                </f:facet>
-                                <p:column selectionMode="multiple" />
-                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}">
-                                    <h:outputText value="#{impFile.pathName}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:tab>
                         <p:tab title="Files" rendered="#{backingBean.canDownloadImpFiles}">
                             <p:dataTable id="impFileTable"
                                          value="#{backingBean.filesOfSelectedImplementation}"
@@ -395,7 +363,7 @@
                                         <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadImpFile or backingBean.canDeleteImpFiles}">
                                             <p:menuitem value="Upload"
                                                         onclick="uploadImpFilesDialogWidget.show()"
-                                                        update="growl,impFileTable"
+                                                        update="growl,impFileTable,impFileTableNoDownload"
                                                         rendered="#{backingBean.canUploadImpFile}"/>
                                             <p:menuitem value="Delete"
                                                         oncomplete="deleteImpFilesDialogWidget.show()"
@@ -404,10 +372,13 @@
                                     </div>
                                 </f:facet>
                                 <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteImpFiles}"/>
-                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}">
+                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}" rendered="#{backingBean.canDownloadImpFiles}">
                                     <a href="../download?impid=#{impFile.impId}&amp;filename=#{impFile.pathName}">
                                         <h:outputText value="#{impFile.pathName}"/>
                                     </a>
+                                </p:column>
+                                <p:column headerText="Filename" sortBy="#{impFile.pathName}" filterBy="#{impFile.pathName}" rendered="#{!backingBean.canDownloadImpFiles}">
+                                    <h:outputText value="#{impFile.pathName}"/>
                                 </p:column>
                             </p:dataTable>
                         </p:tab>

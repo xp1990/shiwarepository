@@ -26,14 +26,14 @@ public class DomainContext {
     private String newDomain;
     private String newSubdomains;
     private Object selectedDomain;
-    
+
     private DomainContext(BackingBean backingBean) {
         this.backingBean = backingBean;
         init();
     }
-    
-    
-    
+
+
+
     public static DomainContext create(BackingBean backingBean) {
         return new DomainContext(backingBean);
     }
@@ -56,10 +56,10 @@ public class DomainContext {
         List<String> dependantApplications = getApplicationsUsingDomainOrSubdomain(domainStr);
         if (!dependantApplications.isEmpty()) {
             backingBean.addMessage(
-                    null, 
-                    FacesMessage.SEVERITY_ERROR, 
+                    null,
+                    FacesMessage.SEVERITY_ERROR,
                     String.format("Cannot delete '%s'. "
-                    + "Following application(s) depend(s) on it: %s", 
+                    + "Following application(s) depend(s) on it: %s",
                     domainStr, dependantApplications.toString()), null);
             return true;
         }
@@ -69,28 +69,28 @@ public class DomainContext {
     private void deleteDomain(String domainStr, Object domain) {
         for (String sd : domainHandler.extractSubdomains(domainStr)) {
             backingBean.addMessage(
-                    null, 
-                    FacesMessage.SEVERITY_INFO, 
+                    null,
+                    FacesMessage.SEVERITY_INFO,
                     String.format("Subdomain deleted: '%s'", domainStr), null);
         }
-        
-        domainHandler.removeDomain((String) domain);            
-        
+
+        domainHandler.removeDomain(domain.toString());
+
         backingBean.addMessage(
-            null, 
-            FacesMessage.SEVERITY_INFO, 
-            String.format("Domain deleted: '%s'", (String) domain), null);
+            null,
+            FacesMessage.SEVERITY_INFO,
+            String.format("Domain deleted: '%s'", domain.toString()), null);
     }
 
     private void deleteSubdomains(Object domain) {
         Subdomain sd = (Subdomain) domain;
         domainHandler.removeSubdomain(sd.domain, sd.subdomain);
         backingBean.addMessage(
-            null, 
-            FacesMessage.SEVERITY_INFO, 
+            null,
+            FacesMessage.SEVERITY_INFO,
             String.format("Subdomain deleted: '%s'", (String) sd.subdomain), null);
     }
-    
+
     class Subdomain extends Object {
         String domain;
         String subdomain;
@@ -98,12 +98,12 @@ public class DomainContext {
             domain = d;
             subdomain = s;
         }
-        
+
         @Override
         public String toString() {
             return subdomain;
         }
-    }        
+    }
 
     private void init() {
         File domainConfig = new File("/srv/shiwa/domains.json");
@@ -119,30 +119,38 @@ public class DomainContext {
 
     public DomainHandler getDomainHandler() {
         return domainHandler;
-    }        
-    
+    }
+
     public List<String> getApplicationsUsingDomainOrSubdomain(String domain) {
         List<String> dependantApplications = new ArrayList<String>();
         for (WorkflowSummary wf : backingBean.getWorkflowSummaries()) {
             if (wf.getDomain().equals(domain)
                     || (wf.getSubdomain() != null && wf.getSubdomain().equals(domain))) {
                 dependantApplications.add(wf.getWorkflowName());
-            }                        
+            }
         }
         return dependantApplications;
     }
-    
+
     public void deleteDomain(Object domain) {
+        if (domain == null){
+            backingBean.addMessage(
+            null,
+            FacesMessage.SEVERITY_ERROR, "Please select a domain", null);
+            return;
+        }
+
         String domainStr = domain.toString();
         if (isDomainUsed(domainStr)) return;
-        
-        if (domain instanceof Subdomain) {
-            deleteSubdomains(domain);
-        } else {                                  
+
+        if (((DefaultTreeNode)domain).getChildCount() == 0 && !((DefaultTreeNode)domain).getParent().getData().toString().equals("root")) {
+            Subdomain subDomain = new Subdomain(((DefaultTreeNode)domain).getParent().getData().toString(), domain.toString());
+            deleteSubdomains(subDomain);
+        } else {
             deleteDomain(domainStr, domain);
         }
         domainHandler.persist();
-        AppAttrTree.refreshDomains();        
+        AppAttrTree.refreshDomains();
     }
 
     /**
@@ -213,5 +221,5 @@ public class DomainContext {
         }
         return root;
     }
-    
+
 }
