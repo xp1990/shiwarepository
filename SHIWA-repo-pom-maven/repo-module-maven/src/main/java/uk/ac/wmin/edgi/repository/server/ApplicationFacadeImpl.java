@@ -1261,6 +1261,12 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         if(err != null){
             throw new AuthorizationException(err);
         }
+
+        if(!em.createNamedQuery("ImpEmbed.listByImpId", ImpEmbedTO.class).setParameter("id", impId).getResultList().isEmpty()){
+            logger.log(Level.SEVERE, "User: " + getCallerUser().getLoginName() + " tried to delete an imp (" + impId + ") that is marked as submittable and being used in the SSP");
+            throw new AuthorizationException("You cannot delete this implementation because it is being used in the SSP by another user. This has been logged. Contact the admin if deleting is necessary!");
+        }
+
         //System.out.println("User can delete imp: "+impId);
 
         deleteAllImpFiles(i);

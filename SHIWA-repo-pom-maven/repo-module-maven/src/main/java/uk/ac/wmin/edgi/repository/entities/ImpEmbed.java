@@ -26,13 +26,14 @@ import javax.persistence.TableGenerator;
 @Table(name = "imp_embed")
 @NamedQueries({
     @NamedQuery(name = "ImpEmbed.listAll", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e"),
+    @NamedQuery(name = "ImpEmbed.listByImpId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.id = :id"),
     @NamedQuery(name = "ImpEmbed.listAllByExtServiceId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId"),
-    @NamedQuery(name = "ImpEmbed.loadImpEmbed", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId AND e.extUserId = :extUserId AND e.implementation.id = :impId"),    
+    @NamedQuery(name = "ImpEmbed.loadImpEmbed", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId AND e.extUserId = :extUserId AND e.implementation.id = :impId"),
     @NamedQuery(name = "ImpEmbed.listAllByExtServiceIdAndExtUserId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId AND e.extUserId = :extUserId")
 })
 @TableGenerator(name="imp_emb_gen", table="generator", pkColumnName="name", pkColumnValue="imp_emb_gen", valueColumnName="value")
 public class ImpEmbed implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
     @Id @GeneratedValue(generator="imp_emb_gen") @Column(name = "id") private Integer id;
     @Basic(optional = false) @Column(name = "ext_user_id") private String extUserId;
@@ -74,7 +75,7 @@ public class ImpEmbed implements Serializable {
 
     public void setImplementation(Implementation implementation) {
         this.implementation = implementation;
-    }    
+    }
 
     @Override
     public int hashCode() {
