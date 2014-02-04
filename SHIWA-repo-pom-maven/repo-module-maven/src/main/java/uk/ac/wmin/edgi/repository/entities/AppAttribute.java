@@ -29,6 +29,7 @@ import javax.persistence.TableGenerator;
     @NamedQuery(name = "AppAttribute.listByAppIDs", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttrListItemTO(a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.application.id IN :appIDs"),
     @NamedQuery(name = "AppAttribute.listByAppIDsNames", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttrListItemTO(a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.application.id IN :appIDs and a.name IN :attrNames"),
     @NamedQuery(name = "AppAttribute.loadAttributesOfApplication", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttributeTO(a.id, a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.application.id = :appId"),
+    @NamedQuery(name = "AppAttribute.loadAttributesOfApplicationAndByName", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttributeTO(a.id, a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.application.id = :appId AND a.name = :attr_name"),
     @NamedQuery(name = "AppAttribute.listAttributesByKey", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttributeTO(a.id, a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.name LIKE :attrKey ORDER BY a.value"),
     @NamedQuery(name = "AppAttribute.listAttributesByKeyAndFilter", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.AttributeTO(a.id, a.application.id, a.name, a.value) FROM AppAttribute a WHERE a.name LIKE :attrKey AND a.value LIKE :filter ORDER BY a.value"),
     @NamedQuery(name = "AppAttribute.deleteAllByAppID", query = "DELETE FROM AppAttribute a WHERE a.application.id = :appId"),
@@ -36,7 +37,7 @@ import javax.persistence.TableGenerator;
 })
 @TableGenerator(name="app_attr_gen", table="generator", pkColumnName="name", pkColumnValue="app_attr_gen", valueColumnName="value")
 public class AppAttribute implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
     @Id @GeneratedValue(generator="app_attr_gen") @Column(name = "id") private Integer id;
     @Basic(optional = false) @Column(name = "name") private String name;

@@ -66,6 +66,8 @@ public interface ApplicationFacadeLocal {
 
     PlatformTO loadPlatform(String name, String version);
     PlatformTO getPlatform(String name, String version);
+    boolean getPlatformSubmittable(String name, String version);
+    void togglePlatformSubmittable(Platform plat) throws AuthorizationException;
 
     PlatformTO loadPlatform(int id);
     PlatformTO getPlatform(int id);
@@ -221,6 +223,7 @@ public interface ApplicationFacadeLocal {
     String canUserCreateImpAttrs(Integer userId, Integer appId);
     String canUserUpdateImpAttr(Integer userId, Integer attrId);
     String canUserDeleteImpAttr(Integer userId, Integer attrId);
+    long countAllViews(boolean imp);
 
     CommentTO createImpComm(Integer impId, String message) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     //void deleteImpComm(Integer impCommId) throws EntityNotFoundException, AuthorizationException;

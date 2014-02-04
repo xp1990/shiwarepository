@@ -7,15 +7,18 @@ package uk.ac.wmin.edgi.repository.server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1643,23 +1646,57 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
          * Only perform checks if the imnplementation is not submittable already
          */
         if(!imp.isSubmittable()){
+
+            /*
+             * Check if imp, and therefore app, is public
+             */
             if(!imp.getStatus().equals(ImplementationStatus.PUBLIC)){
-                logger.log(Level.SEVERE, "Cannot toggle submittable; Implementation with id: {0} is not public.", _imp);
+                logger.log(Level.SEVERE, "Cannot toggle submittable; Implementation with id: "+_imp+" is not public.");
                 throw new ValidationFailedException("Implementation must be public to be marked as submittable");
+            }
+
+            /*
+             * Check for a definition file
+             */
+            Query q = em.createNamedQuery("ImpAttributes.loadLikeAttributesOfImplementationByName");
+            q.setParameter("impId", _imp);
+            q.setParameter("attrName", "definition");
+
+            List<AttributeTO> list = q.getResultList();
+
+            if(list.isEmpty()){
+                logger.log(Level.SEVERE, "Implementation: "+ _imp +" needs a definition file to be marked as submittable");
+                throw new ValidationFailedException("Implementation needs a definition file to be marked as submittable");
             }
 
             /*
              * Check if the implementation has an execution node
              */
-            Query q = em.createNamedQuery("ImpAttributes.loadLikeAttributesOfImplementationByName");
+            q = em.createNamedQuery("ImpAttributes.loadLikeAttributesOfImplementationByName");
             q.setParameter("impId", _imp);
             q.setParameter("attrName", "execution.parameters%");
 
-            List<AttributeTO> list = q.getResultList();
+            list = q.getResultList();
 
             if(list.isEmpty()){
-                logger.log(Level.SEVERE, "Implementation: {0} needs an execution node to be marked as submittable", _imp);
+                logger.log(Level.SEVERE, "Implementation: " + _imp + " needs an execution node to be marked as submittable");
                 throw new ValidationFailedException("Implementation needs an execution node to be marked as submittable");
+            }
+
+            /*
+             * Check if the owning application has a domain assigned to it
+             */
+            Application app = imp.getApplication();
+
+            q = em.createNamedQuery("AppAttribute.loadAttributesOfApplicationAndByName");
+            q.setParameter("appId", app.getId());
+            q.setParameter("attr_name", "domain");
+
+            list = q.getResultList();
+
+            if(list.isEmpty()){
+                logger.log(Level.SEVERE, "The Application:  " + app.getId().toString() +" that relates to Implementation: "+ _imp +" needs a domain to be marked as submittable");
+                throw new ValidationFailedException("The Workflow:  " + app.getId().toString() +" that relates to Implementation: "+ _imp +" needs a domain to be marked as submittable. Please go to the Workflow and assign a domain!");
             }
         }
 
@@ -3329,6 +3366,24 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
+    public boolean getPlatformSubmittable(String name, String version){
+        Platform platform = em.createNamedQuery("Platform.findByNameAndVersion", Platform.class).setParameter("name", name).setParameter("version", version).getSingleResult();
+        return platform.isSubmittable();
+    }
+
+    @Override
+    public void togglePlatformSubmittable(Platform plat) throws AuthorizationException{
+        if(getCallerUser() == null || !getCallerUser().isActive() || !getCallerUser().isWEDev()){
+            logger.log(Level.SEVERE, "A User attempted to toggle a workflow engine as submittable to the submission service without authorization");
+            throw new AuthorizationException("You are not permitted to perform this action. This has been logged");
+        }
+
+        plat.setSubmittable(!plat.isSubmittable());
+        em.merge(plat);
+        em.flush();
+    }
+
+    @Override
     public PlatformTO getPlatform(int id) {
         Platform platform = em.createNamedQuery("Platform.findById", Platform.class).setParameter("platformId", id).getSingleResult();
         if(platform!=null){
@@ -4928,6 +4983,14 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             em.flush();
             logger.log(Level.INFO, "Successfully completed rating transacton!");
         }
+    }
+
+    @Override
+    public long countAllViews(boolean imp){
+        if (imp)
+            return em.createQuery("SELECT SUM(i.views) FROM Implementation i", Long.class).getSingleResult();
+        else
+            return em.createQuery("SELECT SUM(a.views) FROM Application a", Long.class).getSingleResult();
     }
 
     @Override

@@ -79,6 +79,7 @@ public class WEImplementation implements Serializable {
     @JoinColumn(name = "we_dev", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User WEDev;
+    @Column(name = "enabled") private boolean enabled;
 
     public WEImplementation() {
     }
@@ -94,6 +95,7 @@ public class WEImplementation implements Serializable {
         this.idWE = _we;
         this.shellPath = _shell;
         this.WEDev = _WEDev;
+        this.enabled = true;
     }
 
        public WEImplementation
@@ -108,6 +110,7 @@ public class WEImplementation implements Serializable {
         this.shellWEFileId = _shellFile;
         this.zipWEFileId = _zip;
         this.WEDev = _WEDev;
+        this.enabled = true;
     }
 
     public static WEImplementation WEImplementationFactory
@@ -136,6 +139,14 @@ public class WEImplementation implements Serializable {
 	    throw new WEBuildingException( "extraArg", _prefixData );
 
 	return new WEImplementation( _name, _description, _preDeployed, _prefixData, _we, _be, _zip, _shell, _WEDev);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public WEImplementation(Integer idWEImp) {

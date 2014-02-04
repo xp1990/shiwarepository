@@ -60,6 +60,7 @@ public class Platform implements Serializable {
     private Collection<WEUploadedFile> uploadedFileCollection;
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "idWE", orphanRemoval = true)
     private Collection<WEImplementation> weImplementationCollection;
+    @Column(name = "submittable") private boolean submittable;
 
     public Platform() {
     }
@@ -67,12 +68,22 @@ public class Platform implements Serializable {
     public Platform(String name, String description) {
         this.name = name;
         this.description = description;
+        this.submittable = false;
     }
 
     public Platform(String name, String version, String description) {
         this.name = name;
         this.version = version;
         this.description = description;
+        this.submittable = false;
+    }
+
+    public boolean isSubmittable() {
+        return submittable;
+    }
+
+    public void setSubmittable(boolean submittable) {
+        this.submittable = submittable;
     }
 
     public String getVersion() {
