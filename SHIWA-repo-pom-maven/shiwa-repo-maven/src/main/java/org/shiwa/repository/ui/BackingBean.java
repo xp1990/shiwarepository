@@ -82,6 +82,7 @@ public class BackingBean implements Serializable {
     String userLoginNameToAddToGroup = "";
     UserTO currentUser = null;
     UserTO prevUser = null;
+    String prevAccessUser = null;
     String err = "";
     String errLogs = "";
     String appAttrNameFilter = "";
@@ -103,6 +104,8 @@ public class BackingBean implements Serializable {
     Date impListCacheTimeStamp = null;
     int impListHash;
     int appListHash;
+    long impViewCount;
+    long appViewCount;
     List<WorkflowSummary> wfSummaryListCache = null;
     List<ImplementationSummary> impSummaryListCache = null;
     AppAttrTree aTree = null;
@@ -167,7 +170,7 @@ public class BackingBean implements Serializable {
 
     public BackingBean() {
         if (prevUser != currentUser) {
-            logAccess();
+            //logAccess();
         }
 
     }
@@ -179,29 +182,7 @@ public class BackingBean implements Serializable {
         return "";
     }
 
-    private void logAccess(){
-        Date date = new Date();
-        String longDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
-        String shortDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        String name = "/srv/shiwa/access.log" + shortDate;
-        File access_log = new File(name);
 
-        FileWriter fstream = null;
-        BufferedWriter out = null;
-
-        Boolean beg = access_log.exists();
-
-        try{
-            fstream = new FileWriter(access_log, beg);
-            out = new BufferedWriter(fstream);
-            out.write( longDate + " " + currentUser.getLoginName()+ "\n");
-            out.close();
-        }catch(IOException e){
-            Logger.getAnonymousLogger().log(Level.SEVERE, null, e);
-        }finally{
-            prevUser = currentUser;
-        }
-    }
 
     private void addWorkflowSummaryList(WorkflowSummary wf, List<WorkflowSummary> newWfList) {
         newWfList.add(wf);
@@ -2280,24 +2261,6 @@ public class BackingBean implements Serializable {
         return appList.toArray(new String[0]);
     }
 
-    public String[] getUsedWfDomains(){
-
-        List<String> usedWfDoms = new ArrayList<String>();
-
-        for(String s : getWfDomains()){
-            for (WorkflowSummary w : getWorkflowSummaries()){
-                if(w.getDomain().equalsIgnoreCase(s) || w.getSubdomain().equalsIgnoreCase(s)){
-                    usedWfDoms.add(s);
-                    break;
-                }
-
-            }
-        }
-
-        return usedWfDoms.toArray(new String[0]);
-
-    }
-
     public String[] getWfDomains() {
 //        List<AttributeTO> aList = af.getAppAttributesByKey("domain");
 
@@ -3392,6 +3355,37 @@ public class BackingBean implements Serializable {
         return selectedImp.isSubmittable();
     }
 
+    public int getPercentPopImp(ImplementationTO imp){
+        double x;
+
+        if(imp.getViews() == 0 || impViewCount == 0){
+            return 0;
+        }else{
+            x = ((double)imp.getViews() / (double)impViewCount) * 100;
+        }
+
+        if(x < 1)
+            return 1;
+
+        return (int) x;
+
+    }
+
+    public int getPercentPopApp(ApplicationTO app){
+        double x;
+
+        if(app.getViews() == 0 || appViewCount == 0){
+            return 0;
+        }else{
+            x = ((double)app.getViews() / (double)appViewCount) * 100;
+        }
+
+        if(x < 1)
+            return 1;
+
+        return (int) x;
+    }
+
     public void toggleSubmittable(){
         try {
             selectedImp = af.toggleSubmittable(selectedImp.getId());
@@ -3405,9 +3399,16 @@ public class BackingBean implements Serializable {
         }
     }
 
-    public void initSelectedNode(){
+    public boolean isPlatformSubmittable(){
+        return af.getPlatformSubmittable(selectedImp.getPlatformName(), selectedImp.getPlatformVersion());
+    }
 
-
+    public void togglePlatformSubmittable(){
+        try {
+            af.togglePlatformSubmittable(selectedWorkflowEngine);
+        } catch (AuthorizationException ex) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
+        }
     }
 
     public ImpAttrTree getImpAttrTree() {
@@ -4429,6 +4430,51 @@ public class BackingBean implements Serializable {
     public boolean canModifyBEInst(BeInstance beinst){
         return (err = af.canUserModifyBEInst(getCurrentUser().getId(), beinst)) == null;
 
+    }
+
+    public void logAccess(){
+
+
+        /*
+         * A way of counting popularity on a semi-regular basis
+         */
+
+        impViewCount = af.countAllViews(true);
+        appViewCount = af.countAllViews(false);
+
+        String user;
+
+        if( getCurrentUser() == null){
+            user = "guest";
+        }else{
+            user = getCurrentUser().getLoginName();
+        }
+
+        if(prevAccessUser == null || !prevAccessUser.equals(user)){
+            Date date = new Date();
+            String longDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
+            String shortDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            String name = "/srv/shiwa/access.log" + shortDate;
+            File access_log = new File(name);
+
+            FileWriter fstream = null;
+            BufferedWriter out = null;
+
+            Boolean beg = access_log.exists();
+
+            try{
+                fstream = new FileWriter(access_log, beg);
+                out = new BufferedWriter(fstream);
+                out.write( longDate + " " + user + "\n");
+                out.close();
+            }catch(IOException e){
+                Logger.getAnonymousLogger().log(Level.SEVERE, null, e);
+            }finally{
+                prevAccessUser = user;
+                Logger.getAnonymousLogger().log(Level.INFO, "Logging session for " + user);
+
+            }
+        }
     }
 
     public void createBEInstance(boolean edit){

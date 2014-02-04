@@ -32,6 +32,31 @@
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.version}" />
                                 <h:outputText value="Description:" style="width: 13ex"/>
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.description}" />
+                                <h:outputText value="Submittable to the SSP by the Submission Service:"/>
+                                <p:outputPanel id="submittableIcons">
+                                    <p:commandLink action="#{backingBean.togglePlatformSubmittable()}"
+                                                    title="Click to toggle the Workflow Engine as submittable to the SSP via the submission service"
+                                                    ajax="true"
+                                                    update="submittableIcons,growl"
+                                                    rendered="#{backingBean.canCreateWEImplementations}">
+                                         <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                     width="26"
+                                                     style="border-style: none"
+                                                     rendered="#{!backingBean.selectedWorkflowEngine.submittable}"/>
+                                         <p:graphicImage value="/resources/images/play-blue.png"
+                                                     width="26"
+                                                     style="border-style: none"
+                                                     rendered="#{backingBean.selectedWorkflowEngine.submittable}"/>
+                                     </p:commandLink>
+                                     <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                 width="26"
+                                                 style="border-style: none"
+                                                 rendered="#{!backingBean.selectedWorkflowEngine.submittable and !backingBean.canCreateWEImplementations}"/>
+                                     <p:graphicImage value="/resources/images/play-blue.png"
+                                                 width="26"
+                                                 style="border-style: none"
+                                                 rendered="#{backingBean.selectedWorkflowEngine.submittable and !backingBean.canCreateWEImplementations}"/>
+                                 </p:outputPanel>
                             </h:panelGrid>
                             <p:commandButton value="Delete" onclick="deleteWEDialogWidget.show();" rendered="#{backingBean.canCreateWEImplementations}"/>
                         </p:tab>

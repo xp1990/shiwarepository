@@ -43,6 +43,9 @@
                             <p:column headerText="Description" >
                                 <h:outputText value="#{app.shortDescription}" />
                             </p:column>
+                            <p:column headerText="Popularity" sortBy="#{backingBean.getPercentPopApp(app)}">
+                                <h:outputText value="#{backingBean.getPercentPopApp(app)}%"/>
+                            </p:column>
                             <p:column style="width:4%">
                                     <p:commandButton id="selectButton" actionListener="#{backingBean.onApplicationsRowSelectNavigate(app)}" icon="ui-icon-carat-1-e" title="View">
                                         <f:setPropertyActionListener value="#{app}" target="#{backingBean.selectedApp}" />

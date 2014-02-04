@@ -215,7 +215,7 @@
                                 <h:selectOneMenu value="#{backingBean.selectedWfDomain}"
                                                  style="width: 150px"
                                                  title="Select a domain to filter workflows. Currently selected: #{backingBean.selectedWfDomain}">
-                                    <f:selectItems value="#{backingBean.usedWfDomains}"
+                                    <f:selectItems value="#{backingBean.wfDomains}"
                                                    var="wfApp"
                                                    itemLabel="#{wfDom}"
                                                    itemValue="#{wfDom}"/>

@@ -145,6 +145,7 @@
                             <p:menuitem value="Log in"
                                         url="/user/home.xhtml"
                                         style="color: #db4865; float: right"
+                                        actionListener="#{backingBean.logAccess()}"
                                         rendered="${!request.isUserInRole('user-role')}"/>
                             <p:menuitem value="Log out"
                                         url="/logout.jsp"
@@ -152,6 +153,7 @@
                                         rendered="${request.isUserInRole('user-role')}"
                                         action="#{backingBean.resetWEVars()}"/>
                         </p:menubar>
+                        <p:remoteCommand name="logAccess" actionListener="#{backingBean.logAccess}" autoRun="#{true}"/>
                         <br/>
                     </h:form>
                 </ui:insert>

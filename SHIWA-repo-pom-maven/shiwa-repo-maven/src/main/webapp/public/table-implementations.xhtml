@@ -71,11 +71,11 @@
                                 <p:column headerText="Version" sortBy="#{appImp.version}" filterBy="#{appImp.version}" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.version}" />
                                 </p:column>
-                                <p:column headerText="DCIs" sortBy="#{backingBean.getImpSummary(appImp).dcis}" filterBy="#{backingBean.getImpSummary(appImp).dcis}" filterMatchMode="contains">
-                                    <h:outputText value="#{backingBean.getImpSummary(appImp).dcis}" />
-                                </p:column>
                                 <p:column headerText="Status" sortBy="#{appImp.statusFriendlyName}" filterBy="#{appImp.statusFriendlyName}" filterMatchMode="contains">
                                     <h:outputText value="#{appImp.statusFriendlyName}" />
+                                </p:column>
+                                <p:column headerText="Popularity" sortBy="#{backingBean.getPercentPopImp(appImp)}">
+                                    <h:outputText value="#{backingBean.getPercentPopImp(appImp)}%"/>
                                 </p:column>
                                 <p:column headerText="Rating" sortBy="#{backingBean.getRatingContext().getAVGRate(appImp.id)}">
                                     <h:outputText value="#{backingBean.getRatingContext().getAVGRate(appImp.id)}"/>

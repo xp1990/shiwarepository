@@ -35,16 +35,21 @@
                                <p:outputPanel id="submittable" style="float: right">
                                     <p:graphicImage value="/resources/images/disabled-grey.png"
                                                    width="26"
-                                                   rendered="#{!backingBean.isSelectedImpRunnable()}"
+                                                   rendered="#{!backingBean.isSelectedImpRunnable() and !backingBean.isPlatformSubmittable()}"
                                                    style="border-style: none"
-                                                    title="This implementation is not runnable within the SHIWA Simulation Platform."/>
+                                                    title="This implementation is not runnable within the SHIWA Simulation Platform and the Workflow Engine with which it is associated is not submittable to the SSP!"/>
+                                   <p:graphicImage value="/resources/images/disabled-blue.png"
+                                                   width="26"
+                                                   rendered="#{!backingBean.isSelectedImpRunnable() and backingBean.isPlatformSubmittable()}"
+                                                   style="border-style: none"
+                                                    title="This implementation is not runnable within the SHIWA Simulation Platform. Although it can be toggled for submission!"/>
                                     <p:graphicImage value="/resources/images/play-blue.png"
                                                     width="26"
                                                     rendered="#{!backingBean.isSspSession() and backingBean.isSelectedImpRunnable()}"
                                                     style="border-style: none"
                                                     title="This implementation is runnable within the SHIWA Simulation Platform."/>
 
-                                    <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and backingBean.isSelectedImpRunnable()}">
+                                    <p:outputPanel id="sspIcons" rendered="#{backingBean.isSspSession() and backingBean.isSelectedImpRunnable() and backingBean.isPlatformSubmittable()}">
                                         <p:commandLink action="#{backingBean.selectImpForEmbedding()}"
                                                        title="Click to select workflow implementation for embedding in SSP"
                                                        ajax="true"
@@ -206,7 +211,7 @@
                                     <p:menuitem value="Expand/Collapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
                                     <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadImplementationAttributeTree}"/>
                                     <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}"/>
-                                    <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes}"/>
+                                    <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes and backingBean.isPlatformSubmittable()} "/>
                                 </p:menuButton>
 
                                 <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}" style="float: right"/>
