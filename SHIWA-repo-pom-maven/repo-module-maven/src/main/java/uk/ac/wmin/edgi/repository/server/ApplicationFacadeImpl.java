@@ -4858,6 +4858,10 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         int implId = SubmissionRequests.getValidatedImplementationID(implName, em);
         Implementation implementation = SubmissionRequests.getImplementation(implId, em);
 
+        if(implementation == null || !implementation.isSubmittable()){
+            throw new DatabaseProblemException(implName + " can no longer be selected");
+        }
+        
         try {
             return SubmissionHelpers.treatImplementationToJSDL(repositoryURL,
                     implementation, implId);
@@ -4874,6 +4878,12 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         logger.info("Full workflow engine instance for JSDL requested");
 
         Platform engine = SubmissionRequests.getWorkflowEngineData(engineData, em);
+
+        if (engine == null || !engine.isSubmittable()) {
+            throw new DatabaseProblemException((engineData == null ? "Engine"
+                    : engineData.getEngineName() + " " + engineData.getEngineVersion())
+                    + " can no longer be selected");
+        }
 
         try {
             return SubmissionHelpers.loadWorkflowEngineImplementation(
