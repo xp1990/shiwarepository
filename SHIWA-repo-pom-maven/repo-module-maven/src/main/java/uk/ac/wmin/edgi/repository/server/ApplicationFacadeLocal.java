@@ -270,6 +270,7 @@ public interface ApplicationFacadeLocal {
     public void deleteWEImplementation(int weImpId) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
     public List<WEImplementation> getWEImpByWE(Platform _we);
     public List<WEImplementation> getAfftectedWEImps(WEUploadedFile _wefile);
+    public void toggleWEImpEnabled(WEImplementation imp) throws AuthorizationException;
 
 
     /*

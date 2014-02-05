@@ -3384,6 +3384,18 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
+    public void toggleWEImpEnabled(WEImplementation weimp) throws AuthorizationException{
+        if(getCallerUser() == null || !getCallerUser().isActive() || !getCallerUser().isWEDev()){
+            logger.log(Level.SEVERE, "A User attempted to toggle a workflow engine implementation as enabled without proper auth");
+            throw new AuthorizationException("You are not permitted to perform this action. This has been logged");
+        }
+
+        weimp.setEnabled(!weimp.isEnabled());
+        em.merge(weimp);
+        em.flush();
+    }
+
+    @Override
     public PlatformTO getPlatform(int id) {
         Platform platform = em.createNamedQuery("Platform.findById", Platform.class).setParameter("platformId", id).getSingleResult();
         if(platform!=null){
