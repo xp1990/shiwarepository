@@ -96,6 +96,33 @@
                                     <h:outputText value="#{WEImp.idBackendInst.backendInstName}" />
                                 </p:column>
 
+                                <p:column>
+                                    <p:outputPanel id="enabledIcons">
+                                    <p:commandLink action="#{backingBean.toggleWEImpEnabled(WEImp)}"
+                                                    title="Click to toggle the Workflow Engine Implementation as enabled. This means it will be visible to the user in the SSP"
+                                                    ajax="true"
+                                                    update="enabledIcons,growl"
+                                                    rendered="#{backingBean.canCreateWEImplementations}">
+                                         <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                     width="26"
+                                                     style="border-style: none"
+                                                     rendered="#{!WEImp.enabled}"/>
+                                         <p:graphicImage value="/resources/images/play-blue.png"
+                                                     width="26"
+                                                     style="border-style: none"
+                                                     rendered="#{WEImp.enabled}"/>
+                                     </p:commandLink>
+                                     <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                 width="26"
+                                                 style="border-style: none"
+                                                 rendered="#{!WEImp.enabled and !backingBean.canCreateWEImplementations}"/>
+                                     <p:graphicImage value="/resources/images/play-blue.png"
+                                                 width="26"
+                                                 style="border-style: none"
+                                                 rendered="#{WEImp.enabled and !backingBean.canCreateWEImplementations}"/>
+                                 </p:outputPanel>
+                                </p:column>
+
                                 <p:column selectionMode="single" style="width:5%" rendered="#{backingBean.canCreateWEImplementations}"/>
 
                                 <p:rowExpansion>

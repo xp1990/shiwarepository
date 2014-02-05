@@ -3411,6 +3411,14 @@ public class BackingBean implements Serializable {
         }
     }
 
+    public void toggleWEImpEnabled(WEImplementation weimp){
+        try{
+            af.toggleWEImpEnabled(weimp);
+        }catch(AuthorizationException ex){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
+        }
+    }
+
     public ImpAttrTree getImpAttrTree() {
         if (selectedImp == null) {
             addMessage(null, FacesMessage.SEVERITY_WARN, "Please select an implementation", null);
