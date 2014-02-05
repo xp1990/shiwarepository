@@ -38,16 +38,24 @@ public class SubmissionRequests {
         //TODO: see again this function when validated system working and
         // see the management of public implementation only
         // maybe set up validation(replacing gemlca deployment) as imp_attribute?
-        String rqt = "SELECT CONCAT(app.name, '#', i.version) as name, "
-                + "(SELECT a.attr_value FROM imp_attribute a "
-                + "WHERE a.imp_id=i.id AND a.name='description') as description, "
-                + "IF(EXISTS(SELECT e.imp_id FROM imp_embed e "
+
+        String RESULT_CONCAT = "CONCAT(app.name, '#', i.version) as name";
+        String RESULT_DESCRIPTION = "(SELECT a.attr_value FROM imp_attribute a "
+                + "WHERE a.imp_id=i.id AND a.name='description') as description";
+        String RESULT_SELECTED = "IF(EXISTS(SELECT e.imp_id FROM imp_embed e "
                 + "WHERE e.imp_id=i.id AND e.ext_service_id=?1 "
-                + "AND e.ext_user_id=?2), 'true', 'false') as selected "
-                + "FROM implementation i, application app "
-                + "WHERE i.submittable='1' AND app.id=i.app_id "
-                + "AND EXISTS(SELECT idWEImp FROM we_implementation wei "
-                + "WHERE wei.idWE = i.plat_id) = '1'";
+                + "AND e.ext_user_id=?2), 'true', 'false') as selected";
+        String TABLES = "implementation i, application app";
+        String CONDITION_GENERAL = "i.submittable='1' AND app.id=i.app_id";
+        String CONDITION_WEI = "EXISTS(SELECT wei.idWEImp FROM we_implementation wei "
+                + "WHERE wei.idWE=i.plat_id AND wei.enabled='1')='1'";
+        String CONDITION_WE = "(SELECT p.submittable FROM platform p "
+                + "WHERE p.id=i.plat_id)='1'";
+
+        String rqt = "SELECT " + RESULT_CONCAT + ", " + RESULT_DESCRIPTION + ", "
+                + RESULT_SELECTED + " FROM " + TABLES + " "
+                + "WHERE " + CONDITION_GENERAL + " AND " + CONDITION_WEI
+                + " AND " + CONDITION_WE;
 
         Query queryImplShort = em.createNativeQuery(rqt);
         queryImplShort.setParameter(1, extServiceId);
@@ -69,7 +77,8 @@ public class SubmissionRequests {
 
         String rqt = "SELECT wei.nameWEImp FROM "
                 + "implementation i, platform p, we_implementation wei "
-                + "WHERE i.id=?1 AND i.plat_id=p.id AND p.id=wei.idWE";
+                + "WHERE i.id=?1 AND i.plat_id=p.id AND p.id=wei.idWE AND "
+                + "p.submittable='1' and wei.enabled='1'";
 
         Query queryWEI = em.createNativeQuery(rqt);
         queryWEI.setParameter(1, implId);
