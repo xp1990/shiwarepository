@@ -19,6 +19,7 @@ import org.shiwa.repository.submission.objects.workflowengines.WorkflowEngineIns
 import org.shiwa.repository.toolkit.wfengine.BeInstance;
 import org.shiwa.repository.toolkit.wfengine.WEImplementation;
 import org.shiwa.repository.toolkit.wfengine.WEUploadedFile;
+import uk.ac.wmin.edgi.repository.common.DatabaseProblemException;
 import uk.ac.wmin.edgi.repository.entities.ImpAttribute;
 import uk.ac.wmin.edgi.repository.entities.Implementation;
 import uk.ac.wmin.edgi.repository.entities.Platform;
@@ -241,9 +242,14 @@ public class SubmissionHelpers {
 
     public static WorkflowEngineInstance loadWorkflowEngineImplementation(
             String repositoryURL, Platform engine, String engineInstanceName)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, DatabaseProblemException {
         WEImplementation engineInstance = extractWEImplementation(engine,
                 engineInstanceName);
+
+        if (engineInstance == null || !engineInstance.isEnabled()) {
+            throw new DatabaseProblemException(engineInstanceName
+                    + " can no longer be selected");
+        }
 
         WorkflowEngineInstance returnInstance = new WorkflowEngineInstance();
         returnInstance.setName(engineInstanceName);
