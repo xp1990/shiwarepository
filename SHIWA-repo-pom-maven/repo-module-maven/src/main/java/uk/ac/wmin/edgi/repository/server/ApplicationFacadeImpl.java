@@ -1674,7 +1674,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
              */
             q = em.createNamedQuery("ImpAttributes.loadLikeAttributesOfImplementationByName");
             q.setParameter("impId", _imp);
-            q.setParameter("attrName", "execution.parameters%");
+            q.setParameter("attrName", "Submission Execution Node.parameters%");
 
             list = q.getResultList();
 
@@ -3372,10 +3372,19 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
-    public void togglePlatformSubmittable(Platform plat) throws AuthorizationException{
+    public void togglePlatformSubmittable(Platform plat) throws AuthorizationException, ValidationFailedException{
         if(getCallerUser() == null || !getCallerUser().isActive() || !getCallerUser().isWEDev()){
             logger.log(Level.SEVERE, "A User attempted to toggle a workflow engine as submittable to the submission service without authorization");
             throw new AuthorizationException("You are not permitted to perform this action. This has been logged");
+        }
+
+        if(plat.isSubmittable()){
+            for(WEImplementation w : em.createNamedQuery("WEImplementation.listAccordingWE", WEImplementation.class).setParameter("idWE", plat).getResultList()){
+                if(w.isEnabled()){
+                    logger.log(Level.SEVERE, "User tried to toggle a platform as not submittable and the platform currently has enabled WEImps");
+                    throw new ValidationFailedException("You must disable all of the Workflow Engine Implementations before flagging this Workflow Engine as not submittable");
+                }
+            }
         }
 
         plat.setSubmittable(!plat.isSubmittable());
@@ -3384,10 +3393,15 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
-    public void toggleWEImpEnabled(WEImplementation weimp) throws AuthorizationException{
+    public void toggleWEImpEnabled(WEImplementation weimp) throws AuthorizationException, ValidationFailedException{
         if(getCallerUser() == null || !getCallerUser().isActive() || !getCallerUser().isWEDev()){
             logger.log(Level.SEVERE, "A User attempted to toggle a workflow engine implementation as enabled without proper auth");
             throw new AuthorizationException("You are not permitted to perform this action. This has been logged");
+        }
+
+        if(!weimp.getIdWE().isSubmittable()){
+            logger.log(Level.SEVERE, "A Workflow engine implementation cannot be flagged as enabled unless the owning workflow engine is submittable to the SSP");
+            throw new ValidationFailedException("User attempted to log a WEImp as enabled without the WE being submittable to the SSP");
         }
 
         weimp.setEnabled(!weimp.isEnabled());

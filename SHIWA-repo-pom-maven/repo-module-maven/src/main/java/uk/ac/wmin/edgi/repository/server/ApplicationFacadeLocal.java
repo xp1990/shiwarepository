@@ -67,7 +67,7 @@ public interface ApplicationFacadeLocal {
     PlatformTO loadPlatform(String name, String version);
     PlatformTO getPlatform(String name, String version);
     boolean getPlatformSubmittable(String name, String version);
-    void togglePlatformSubmittable(Platform plat) throws AuthorizationException;
+    void togglePlatformSubmittable(Platform plat) throws AuthorizationException, ValidationFailedException;
 
     PlatformTO loadPlatform(int id);
     PlatformTO getPlatform(int id);
@@ -270,7 +270,7 @@ public interface ApplicationFacadeLocal {
     public void deleteWEImplementation(int weImpId) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
     public List<WEImplementation> getWEImpByWE(Platform _we);
     public List<WEImplementation> getAfftectedWEImps(WEUploadedFile _wefile);
-    public void toggleWEImpEnabled(WEImplementation imp) throws AuthorizationException;
+    public void toggleWEImpEnabled(WEImplementation imp) throws AuthorizationException, ValidationFailedException;
 
 
     /*
