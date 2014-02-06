@@ -137,7 +137,7 @@ public class SubmissionHelpers {
             for (ImpAttribute attr : list) {
                 String name = attr.getName();
 
-                if (name.startsWith("execution.parameters.para")) {
+                if (name.startsWith("Submission Execution Node.parameters.para")) {
                     int index = name.lastIndexOf(".");
                     name = name.substring(0, index);
 

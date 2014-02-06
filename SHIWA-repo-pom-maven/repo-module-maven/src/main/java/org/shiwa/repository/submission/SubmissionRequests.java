@@ -100,7 +100,7 @@ public class SubmissionRequests {
         Query queryAttr = em.createNamedQuery(
                 "ImpAttribute.findByImpIDAndName");
         queryAttr.setParameter("impId", implId);
-        queryAttr.setParameter("name", "execution.parameters.%");
+        queryAttr.setParameter("name", "Submission Execution Node.parameters.%");
         queryAttr.setHint("eclipselink.refresh", "true");
         queryAttr.setHint("eclipselink.refresh.cascade", "CascadeAllParts");
 
