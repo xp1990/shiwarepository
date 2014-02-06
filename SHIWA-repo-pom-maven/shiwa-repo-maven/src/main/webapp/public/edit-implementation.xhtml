@@ -45,7 +45,7 @@
                                                     title="This implementation is not runnable within the SHIWA Simulation Platform. Although it can be toggled for submission!"/>
                                     <p:graphicImage value="/resources/images/play-blue.png"
                                                     width="26"
-                                                    rendered="#{!backingBean.isSspSession() and backingBean.isSelectedImpRunnable()}"
+                                                    rendered="#{!backingBean.isSspSession() and backingBean.isSelectedImpRunnable() and backingBean.isPlatformSubmittable()}"
                                                     style="border-style: none"
                                                     title="This implementation is runnable within the SHIWA Simulation Platform."/>
 
@@ -210,8 +210,7 @@
                                 <p:menuButton value="Actions" style="float: right">
                                     <p:menuitem value="Expand/Collapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
                                     <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadImplementationAttributeTree}"/>
-                                    <p:menuitem value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}"/>
-                                    <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes and backingBean.isPlatformSubmittable()} "/>
+                                    <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes and backingBean.platformSubmittable}"/>
                                 </p:menuButton>
 
                                 <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}" style="float: right"/>

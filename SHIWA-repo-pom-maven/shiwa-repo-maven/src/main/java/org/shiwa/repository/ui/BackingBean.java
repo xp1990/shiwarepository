@@ -1130,8 +1130,21 @@ public class BackingBean implements Serializable {
         try {
             af.deleteApp(selectedApp.getId());
             addMessage(null, FacesMessage.SEVERITY_INFO, "Deleted application '" + selectedApp.getName() + "'", null);
+
+            /*
+             * Enable this code for performance increase on WE deletion
+            if(appListCache.remove(selectedApp))
+                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Attempted quick removal of app from listCache: success!");
+            else
+                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Attempted quick removal of app from listCache: failiure!");
+
+            if(wfSummaryListCache.remove(getWorkflowSummary(selectedApp)))
+                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Attempted quick removal of app from summaryCache: success!");
+            else
+                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Attempted quick removal of app from summaryCache: failiure!");
+            */
             selectedApp = null;
-            impListCacheTimeStamp = null;
+            resetCaches();
             return "success";
         } catch (EntityNotFoundException e) {
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + e.getMessage(), null);
@@ -2929,7 +2942,7 @@ public class BackingBean implements Serializable {
             List<AttributeTO> iAttrList = af.listAttributesOfImplementation(oldImpId);
             List<AttributeTO> itemsToRemove = new ArrayList<AttributeTO>();
             for (AttributeTO iAttr : iAttrList) {
-                if (iAttr.getName().contains("execution.deployer")) {
+                if (iAttr.getName().contains("Submission Execution Node.deployer")) {
                     itemsToRemove.add(iAttr);
                 }
             }
@@ -3406,7 +3419,10 @@ public class BackingBean implements Serializable {
     public void togglePlatformSubmittable(){
         try {
             af.togglePlatformSubmittable(selectedWorkflowEngine);
+            addMessage(null, FacesMessage.SEVERITY_INFO, "Workflow Engine " + selectedWorkflowEngine.getName() + "(" + selectedWorkflowEngine.getVersion() + ")'s submittable flag has been set to: " + selectedWorkflowEngine.isSubmittable(), null);
         } catch (AuthorizationException ex) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
+        } catch (ValidationFailedException ex) {
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
         }
     }
@@ -3414,7 +3430,10 @@ public class BackingBean implements Serializable {
     public void toggleWEImpEnabled(WEImplementation weimp){
         try{
             af.toggleWEImpEnabled(weimp);
+            addMessage(null, FacesMessage.SEVERITY_INFO, "Workflow Engine Implementation " + weimp.getNameWEImp() + "'s enabled flag has been set to: " + weimp.isEnabled(), null);
         }catch(AuthorizationException ex){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
+        }catch (ValidationFailedException ex) {
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + ex.getMessage(), null);
         }
     }

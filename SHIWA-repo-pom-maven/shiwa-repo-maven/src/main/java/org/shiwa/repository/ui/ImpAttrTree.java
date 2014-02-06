@@ -1043,7 +1043,7 @@ public class ImpAttrTree extends AttrTree{
         ( (Node) keywords.getData()).setTreeNode(keywords);
         uuid = (TreeNode) new DefaultTreeNode(new Node("uuid"), root);
         ( (Node) uuid.getData()).setTreeNode(uuid);
-        execution = (TreeNode) new DefaultTreeNode(new Node("execution"), root);
+        execution = (TreeNode) new DefaultTreeNode(new Node("Submission Execution Node"), root);
         ( (Node) execution.getData()).setTreeNode(execution);
 
         depPool = generatePool("dep",100);
@@ -1153,7 +1153,7 @@ public class ImpAttrTree extends AttrTree{
 
     public boolean canRemoveExecution(Node node){
 
-       if(node.getKey().equals("execution")&& !doesExecutionExist()) {
+       if(node.getKey().equals("Submission Execution Node")&& !doesExecutionExist()) {
             return true;
          }
       return false;
@@ -1162,7 +1162,7 @@ public class ImpAttrTree extends AttrTree{
     public void removeExecution() {
 
          execution.getParent().getChildren().remove(execution);
-         execution = (TreeNode) new DefaultTreeNode(new Node("execution"), root);
+         execution = (TreeNode) new DefaultTreeNode(new Node("Submission Execution Node"), root);
         ( (Node) execution.getData()).setTreeNode(execution);
     }
 
@@ -1457,7 +1457,7 @@ public class ImpAttrTree extends AttrTree{
     }
 
     public Boolean canAddExecutionAttr(Node node){
-        if(node.getKey().equals("execution")) {
+        if(node.getKey().equals("Submission Execution Node")) {
             return true;
         }
         return false;
