@@ -248,7 +248,7 @@
                         <p:dialog id="editJobManager"
                                   widgetVar="editJobManagerWidget"
                                   modal="true"
-                                  header="#{backingBean.selectedBEInstance.backendInstName} Job Manager #{backingBean.selectedBEInstance.jobManager}"
+                                  header="#{backingBean.selectedBEInstance.backendInstName} Job Manager: #{backingBean.selectedBEInstance.jobManager}"
                                   showEffect="fade"
                                   hideEffect="fade"
                                   resizable="false"
@@ -258,6 +258,7 @@
                                 <h:selectOneMenu id="jobManagerBEI"
                                                  value="#{backingBean.newBEInstance.jobManager}"
                                                  style="width: 90%">
+                                    <p:ajax event="change" listener="#{backingBean.handleJobManUpdate}"/>
                                     <f:selectItem id="defaultValJM" itemLabel="Please Select..." itemValue="0"/>
                                     <f:selectItems value="#{backingBean.selectedBEInstance.idBackend.jobManagerCollection}"
                                                    var="jobMan"
