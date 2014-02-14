@@ -4907,6 +4907,20 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
                     + ex.getMessage(), ex);
         }
     }
+    
+    @Override
+    public BeInstance loadBackendInstance(String implName, String engineInstance)
+            throws IllegalArgumentException, DatabaseProblemException {
+        int implId = SubmissionRequests.getValidatedImplementationID(implName, em);
+        Platform engine = SubmissionRequests.getWorkflowEngineData(implId, em);
+
+        try {
+            return SubmissionHelpers.loadBackendInstance(engine, engineInstance);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Processing data problem: "
+                    + ex.getMessage(), ex);
+        }
+    }
 
     /**
      * END OF SUBMISSION SERVICE
@@ -5032,19 +5046,5 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     @Override
     public User findUserByName(String login){
         return em.createNamedQuery("User.findByLoginName", User.class).setParameter("loginName", login).getSingleResult();
-    }
-
-    @Override
-    public BeInstance loadBackendInstance(String implName, String engineInstance)
-            throws IllegalArgumentException, DatabaseProblemException {
-        int implId = SubmissionRequests.getValidatedImplementationID(implName, em);
-        Platform engine = SubmissionRequests.getWorkflowEngineData(implId, em);
-
-        try {
-            return SubmissionHelpers.loadBackendInstance(engine, engineInstance);
-        } catch (Exception ex) {
-            throw new IllegalArgumentException("Processing data problem: "
-                    + ex.getMessage(), ex);
-        }
     }
 }
