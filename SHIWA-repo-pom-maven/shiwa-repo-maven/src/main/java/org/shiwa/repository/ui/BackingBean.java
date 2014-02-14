@@ -4589,6 +4589,16 @@ public class BackingBean implements Serializable {
         }
     }
 
+    public void handleJobManUpdate(){
+        if(selectedBEInstance instanceof GT2){
+            ((GT2)selectedBEInstance).setJobManager(newBEInstance.getJobManager());
+        }
+
+        if(selectedBEInstance instanceof GT4){
+            ((GT4)selectedBEInstance).setJobManager(newBEInstance.getJobManager());
+        }
+    }
+
     public void setBEIUpdate(){
         try {
             af.updateBEI(selectedBEInstance);

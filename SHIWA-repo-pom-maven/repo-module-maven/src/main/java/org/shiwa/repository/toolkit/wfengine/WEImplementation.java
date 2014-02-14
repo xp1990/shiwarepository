@@ -95,7 +95,7 @@ public class WEImplementation implements Serializable {
         this.idWE = _we;
         this.shellPath = _shell;
         this.WEDev = _WEDev;
-        this.enabled = true;
+        this.enabled = false;
     }
 
        public WEImplementation
@@ -110,7 +110,7 @@ public class WEImplementation implements Serializable {
         this.shellWEFileId = _shellFile;
         this.zipWEFileId = _zip;
         this.WEDev = _WEDev;
-        this.enabled = true;
+        this.enabled = false;
     }
 
     public static WEImplementation WEImplementationFactory
