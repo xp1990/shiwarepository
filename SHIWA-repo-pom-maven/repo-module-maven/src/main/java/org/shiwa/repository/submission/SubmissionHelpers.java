@@ -34,6 +34,7 @@ public class SubmissionHelpers {
 
         APPLICATION, IMPLEMENTATION, WORKFLOW_ENGINE
     }
+    private static final String SEN = "Submission Execution Node";
 
     public static List<ImplShort> treatValidatedImplementations(
             List<Object[]> listGiven) {
@@ -137,7 +138,7 @@ public class SubmissionHelpers {
             for (ImpAttribute attr : list) {
                 String name = attr.getName();
 
-                if (name.startsWith("Submission Execution Node.parameters.para")) {
+                if (name.startsWith(SEN + ".parameters.para")) {
                     int index = name.lastIndexOf(".");
                     name = name.substring(0, index);
 
@@ -176,6 +177,18 @@ public class SubmissionHelpers {
         // other attributes
         ExecutionNode executionNode = extractParametersJSDL(repositoryURL, impl,
                 attributes);
+
+        if (attributes.containsKey(SEN + ".maxWallTime")) {
+            try {
+                int maxWallTime = Integer.parseInt(
+                        attributes.get(SEN + ".maxWallTime").getValue());
+                if (maxWallTime > 0) {
+                    executionNode.setMaxWallTime(maxWallTime);
+                }
+            } catch (NumberFormatException ex) {
+            }
+        }
+
         implJSDL.setExecutionNode(executionNode);
 
         return implJSDL;

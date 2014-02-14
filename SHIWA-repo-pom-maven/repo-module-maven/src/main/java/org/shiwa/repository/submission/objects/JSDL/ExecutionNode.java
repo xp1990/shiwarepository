@@ -14,17 +14,20 @@ import java.util.List;
 public class ExecutionNode {
 
     private String implFullName; // AppName#ImplVersion
+    private int maxWallTime;
     private List<Param> listInputs;
     private List<Param> listOutputs;
 
     public ExecutionNode() {
         this.implFullName = null;
+        this.maxWallTime = 0;
         this.listInputs = new ArrayList<Param>();
         this.listOutputs = new ArrayList<Param>();
     }
 
     public ExecutionNode(String implFullName) {
         this.implFullName = implFullName;
+        this.maxWallTime = 0;
         this.listInputs = new ArrayList<Param>();
         this.listOutputs = new ArrayList<Param>();
     }
@@ -51,5 +54,13 @@ public class ExecutionNode {
 
     public void setListOutputs(List<Param> listOutputs) {
         this.listOutputs = listOutputs;
+    }
+
+    public int getMaxWallTime() {
+        return maxWallTime;
+    }
+
+    public void setMaxWallTime(int maxWallTime) {
+        this.maxWallTime = maxWallTime;
     }
 }
