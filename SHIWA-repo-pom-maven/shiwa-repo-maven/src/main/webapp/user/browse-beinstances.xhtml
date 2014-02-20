@@ -119,13 +119,13 @@
                                                                disabled="#{!backingBean.canModifyBEInst(BEI)}"
                                                                actionListener="#{backingBean.initBEImpUpdateVars(BEI)}"/>
 
-                                    <h:outputText value="Job Manager:" rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2'}" />
-                                    <h:outputText value="#{BEI.jobManager}" rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2'}" />
+                                    <h:outputText value="Job Manager:" rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2' or BEI.idBackend.backendName == 'PBS'}" />
+                                    <h:outputText value="#{BEI.jobManager}" rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2' or BEI.idBackend.backendName == 'PBS'}" />
                                     <p:commandButton oncomplete="editJobManagerWidget.show();"
                                                                title="Edit Job Manager"
                                                                immediate="true"
                                                                icon="ui-icon-pencil"
-                                                               rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2'}"
+                                                               rendered="#{BEI.idBackend.backendName == 'GT4' or BEI.idBackend.backendName == 'GT2' or BEI.idBackend.backendName == 'PBS'}"
                                                                update="editJobManagerForm"
                                                                disabled="#{!backingBean.canModifyBEInst(BEI)}"
                                                                actionListener="#{backingBean.initBEImpUpdateVars(BEI)}"/>
@@ -255,11 +255,11 @@
                                   closable="true">
                             <h:panelGrid columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
                                 <h:outputText value="Job Manager"/>
-                                <h:selectOneMenu id="jobManagerBEI"
+                                <h:selectOneMenu id="jobManagerBEIedit"
                                                  value="#{backingBean.newBEInstance.jobManager}"
                                                  style="width: 90%">
                                     <p:ajax event="change" listener="#{backingBean.handleJobManUpdate}"/>
-                                    <f:selectItem id="defaultValJM" itemLabel="Please Select..." itemValue="0"/>
+                                    <f:selectItem id="defaultValJMedit" itemLabel="Please Select..." itemValue="0"/>
                                     <f:selectItems value="#{backingBean.selectedBEInstance.idBackend.jobManagerCollection}"
                                                    var="jobMan"
                                                    itemLabel="#{jobMan.jobManagerName}"
@@ -366,7 +366,7 @@
                                 <h:outputText value="Backend"/>
                                     <h:selectOneMenu value="#{backingBean.newBEAbstractId}"
                                                      style="width: 90%">
-                                        <p:ajax event="change" listener="#{backingBean.handleJobManExistBEMenus}" update="growl existingBackendGrid jobManagerBEI GT4GT2"/>
+                                        <p:ajax event="change" listener="#{backingBean.handleJobManExistBEMenus}" update="growl existingBackendGrid jobManagerBEI jobManagerBEIPBS GT4GT2 PBS"/>
                                         <f:selectItem id="defaultValAbs" itemLabel="Please Select..." itemValue="0"/>
                                         <f:selectItems value="#{backingBean.backendAll}"
                                                        var="backend"
@@ -423,6 +423,20 @@
                                                        itemValue="#{os.idOS}" />
                                     </h:selectOneMenu>
                                     </h:panelGrid>
+                                    <h:panelGroup id="PBS">
+                                        <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" rendered="#{(backingBean.newBEInstance.idBackend.backendName == 'PBS')}">
+                                                    <h:outputText value="Job Manager"/>
+                                                    <h:selectOneMenu id="jobManagerBEIPBS"
+                                                                     value="#{backingBean.newBEInstance.jobManager}"
+                                                                     style="width: 90%">
+                                                        <f:selectItem id="defaultValJMPBS" itemLabel="Please Select..." itemValue="0"/>
+                                                        <f:selectItems value="#{backingBean.newBEInstance.idBackend.jobManagerCollection}"
+                                                                       var="jobMan"
+                                                                       itemLabel="#{jobMan.jobManagerName}"
+                                                                       itemValue="#{jobMan.jobManagerName}" />
+                                                    </h:selectOneMenu>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
                                     <h:panelGroup id="GT4GT2">
                                         <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" rendered="#{(backingBean.newBEInstance.idBackend.backendName == 'GT2' or backingBean.newBEInstance.idBackend.backendName == 'GT4')}">
                                                 <h:outputText value="Job Manager"/>
