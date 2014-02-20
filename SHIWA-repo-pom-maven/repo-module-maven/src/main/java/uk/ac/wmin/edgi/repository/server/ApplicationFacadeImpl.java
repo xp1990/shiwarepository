@@ -4748,6 +4748,11 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
         }
 
+        if(_idBackend.getBackendName().equalsIgnoreCase("pbs")){
+                newBEI = new PBS(_name, _idBackend, _backendOut, _backendErr, _idOS, _resource, wedev, _jobManager);
+                logger.log(Level.INFO, "New "+_idBackend.getBackendName()+" object created");
+        }
+
         if(_idBackend.getBackendName().equalsIgnoreCase("gLite")){
                 newBEI = new GLite(_name, _idBackend, _backendOut, _backendErr, _idOS, _resource, wedev);
                 logger.log(Level.INFO, "New "+_idBackend.getBackendName()+" object created");
@@ -4798,6 +4803,12 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             GLite temp = ((GLite)_bei);
             logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
             return this.createBeInstance(_name, temp.getIdBackend(), null, temp.getBackendOutput(), temp.getBackendErrorOut(), null, null, temp.getIdOS(), temp.getResource(), getCallerUser().getId());
+        }else if(_bei.getIdBackend().getBackendName().equalsIgnoreCase("pbs")){
+            //PBS temp = ((PBS)_bei);
+            //logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
+            //return this.createBeInstance(_name, temp.getIdBackend(), null, temp.getBackendOutput(), temp.getBackendErrorOut(), null, null, temp.getIdOS(), temp.getResource(), getCallerUser().getId());
+            logger.log(Level.SEVERE, "No functionality to dupe PBS yet!");
+            return null;
         }else{
             logger.log(Level.SEVERE, "Null pointer received, no abstract backend selected!");
             return null;
@@ -4875,7 +4886,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         if(implementation == null || !implementation.isSubmittable()){
             throw new DatabaseProblemException(implName + " can no longer be selected");
         }
-        
+
         try {
             return SubmissionHelpers.treatImplementationToJSDL(repositoryURL,
                     implementation, implId);
@@ -4907,7 +4918,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
                     + ex.getMessage(), ex);
         }
     }
-    
+
     @Override
     public BeInstance loadBackendInstance(String implName, String engineInstance)
             throws IllegalArgumentException, DatabaseProblemException {

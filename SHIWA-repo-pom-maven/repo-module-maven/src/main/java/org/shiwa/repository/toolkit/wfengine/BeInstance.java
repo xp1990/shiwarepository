@@ -40,6 +40,7 @@ import uk.ac.wmin.edgi.repository.entities.User;
     GLite.class,
     GT2.class,
     GT4.class,
+    PBS.class,
     Local.class
 })
 @NamedQueries({
