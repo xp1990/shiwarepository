@@ -23,6 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.shiwa.repository.toolkit.wfengine.BeInstance;
 import org.shiwa.repository.toolkit.wfengine.WEImplementation;

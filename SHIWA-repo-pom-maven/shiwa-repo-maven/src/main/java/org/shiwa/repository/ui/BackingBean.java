@@ -3987,7 +3987,6 @@ public class BackingBean implements Serializable {
         newWEImplementation = new WEImplementation();
         newWorkflowEngine = new Platform();
         selectedBackend = null;
-        newBackend = new Backend();
         selectedJobManagers = new ArrayList<String>();
 
         /* WEFiles Management */
@@ -4008,10 +4007,6 @@ public class BackingBean implements Serializable {
         newWEIZipId = 0;
         showBEIDetails = false;
         changeEngineExec = false;
-
-        //OS
-        selectedOS = null;
-        newOS = new OperatingSystems();
 
         //for workflow engine management
         wfEngineList = null;

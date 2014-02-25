@@ -5,61 +5,65 @@
 package org.shiwa.repository.toolkit.wfengine;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import uk.ac.wmin.edgi.repository.entities.User;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author xp
+ * @author edward
  */
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "idBackend", discriminatorType = DiscriminatorType.INTEGER)
-@Table(name = "be_instance")
+@Table(name = "be_attr")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b")})
-public abstract class BeInstance implements Serializable {
-
+    @NamedQuery(name = "BeAttr.findAll", query = "SELECT b FROM BeAttr b"),
+    @NamedQuery(name = "BeAttr.findById", query = "SELECT b FROM BeAttr b WHERE b.id = :id"),
+    @NamedQuery(name = "BeAttr.findByName", query = "SELECT b FROM BeAttr b WHERE b.name = :name"),
+    @NamedQuery(name = "BeAttr.findByAttrValue", query = "SELECT b FROM BeAttr b WHERE b.attrValue = :attrValue")})
+public class BeAttr implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 50)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
     @Column(name = "name")
     private String name;
-    @Column(name ="backend")
-    private String backend;
-    @JoinColumn(name = "we_dev", referencedColumnName = "id")
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 250)
+    @Column(name = "attr_value")
+    private String attrValue;
+    @JoinColumn(name = "be_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User WEDev;
-    @OneToMany(mappedBy = "id")
-    private Collection<BeAttr> beAttrCollection;
+    private BeInstance beId;
 
-    public BeInstance() {
+    public BeAttr() {
     }
 
-    public BeInstance(String _name, String _backend, User _wedev) {
-        this.name = _name;
-        this.backend = _backend;
-        this.WEDev = _wedev;
+    public BeAttr(Integer id) {
+        this.id = id;
+    }
+
+    public BeAttr(Integer id, String name, String attrValue) {
+        this.id = id;
+        this.name = name;
+        this.attrValue = attrValue;
     }
 
     public Integer getId() {
@@ -78,28 +82,20 @@ public abstract class BeInstance implements Serializable {
         this.name = name;
     }
 
-    public String getBackend() {
-        return backend;
+    public String getAttrValue() {
+        return attrValue;
     }
 
-    public void setBackend(String backend) {
-        this.backend = backend;
+    public void setAttrValue(String attrValue) {
+        this.attrValue = attrValue;
     }
 
-    public User getWEDev() {
-        return WEDev;
+    public BeInstance getBeId() {
+        return beId;
     }
 
-    public void setWEDev(User WEDev) {
-        this.WEDev = WEDev;
-    }
-
-    public Collection<BeAttr> getBeAttrCollection() {
-        return beAttrCollection;
-    }
-
-    public void setBeAttrCollection(Collection<BeAttr> beAttrCollection) {
-        this.beAttrCollection = beAttrCollection;
+    public void setBeId(BeInstance beId) {
+        this.beId = beId;
     }
 
     @Override
@@ -112,10 +108,10 @@ public abstract class BeInstance implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof BeInstance)) {
+        if (!(object instanceof BeAttr)) {
             return false;
         }
-        BeInstance other = (BeInstance) object;
+        BeAttr other = (BeAttr) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -124,6 +120,7 @@ public abstract class BeInstance implements Serializable {
 
     @Override
     public String toString() {
-        return "org.shiwa.repository.toolkit.wfengine.BeInstance[ idBackendInst=" + id + " ]";
+        return "org.shiwa.repository.toolkit.wfengine.BeAttr[ id=" + id + " ]";
     }
+
 }
