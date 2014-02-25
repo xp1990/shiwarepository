@@ -15,6 +15,10 @@
                 <xs:element ref="ns1:backend" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
+        <xs:unique name="UniqueBackendName">
+            <xs:selector xpath="ns1:backend"/>
+            <xs:field xpath="@ns1:name"/>
+        </xs:unique>
     </xs:element>
     
     <xs:element name="backend">
@@ -24,6 +28,10 @@
             </xs:sequence>
             <xs:attribute ref="ns1:name" use="required"/>
         </xs:complexType>
+        <xs:unique name="UniqueAttributeName">
+            <xs:selector xpath="ns1:attribute"/>
+            <xs:field xpath="@ns1:name"/>
+        </xs:unique>
     </xs:element>
     
     <xs:element name="attribute">
