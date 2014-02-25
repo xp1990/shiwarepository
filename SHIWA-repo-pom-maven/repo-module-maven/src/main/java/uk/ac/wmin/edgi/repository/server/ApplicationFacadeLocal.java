@@ -18,6 +18,7 @@ import org.shiwa.repository.submission.objects.JSDL.ImplJSDL;
 import org.shiwa.repository.submission.objects.Parameter;
 import org.shiwa.repository.submission.objects.workflowengines.WorkflowEngineInstance;
 import org.shiwa.repository.toolkit.wfengine.*;
+import org.shiwa.repository.configuration.*;
 import uk.ac.wmin.edgi.repository.common.*;
 import uk.ac.wmin.edgi.repository.entities.Implementation;
 import uk.ac.wmin.edgi.repository.entities.Platform;
@@ -287,38 +288,20 @@ public interface ApplicationFacadeLocal {
     public Platform deleteWEFiles(WEUploadedFile _weFile) throws EntityNotFoundException, AuthorizationException, FileOperationFailedException, ValidationFailedException;
 
     //these are for backend management
-    public List<Backend> listBackendNames();
     public List<Backend> listBackendAll();
     public String canUserCreateBackends(int callId);
-    public Backend createBackend(String name, String desc, Collection<JobManager> _jList) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;
-    public void updateBackend(Backend _be, Collection<JobManager> _jm) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;
+
+
     public void deleteBackend(Backend _be) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
     public Backend getBackendById(int _bId);
     public BeInstance getBEInstanceById(int _bId);
     public String canUserModifyBEInst(int callerId, BeInstance beinst);
     public boolean isBEInstOwner(int callerId, BeInstance beinst);
-    public BeInstance createBeInstance(String _name, Backend _idBackend, String _site, String _backendOut, String _backendErr, String _jobManager, JobType _jobType, OperatingSystems _idOS, String resource, int callerId ) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;
+
     public BeInstance dupeBeInstance(BeInstance _bei, String _name) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;
     public BeInstance updateBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public void deleteBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public List<BeInstance> getBeInstanceAll();
-
-    //these are for JobManager management
-    public List<JobManager> listJobManagers();
-    public List<JobManager> getJobManagersFromString(ArrayList<String> selectedJobManagers);
-
-    //these are for job type management
-    public List<JobType> listJobTypes();
-    public JobType getJobTypeFromString(int _jId);
-
-    //these are for operating systems management
-    public List<OperatingSystems> listOperatingSystemsNames();
-    public int getOsIdByName(String name);
-    public OperatingSystems getOperatingSystemById(int id);
-    public String canUserModifyOS(int callId);
-    public OperatingSystems createOS(String name, String version) throws ValidationFailedException, AuthorizationException, EntityAlreadyExistsException;
-    public OperatingSystems updateOS(OperatingSystems _os) throws ValidationFailedException, AuthorizationException, EntityAlreadyExistsException;
-    public void deleteOS(OperatingSystems _os) throws ValidationFailedException, AuthorizationException, EntityNotFoundException;
 
     //functions for the ratings management
     public void removeSingleRating(int impId, int userId) throws AuthorizationException, EntityNotFoundException;

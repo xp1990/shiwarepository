@@ -35,6 +35,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.xml.bind.JAXBException;
+import org.shiwa.repository.configuration.Backend;
+import org.shiwa.repository.configuration.Backends;
 import org.shiwa.repository.submission.SubmissionHelpers;
 import org.shiwa.repository.submission.SubmissionRequests;
 import org.shiwa.repository.submission.objects.EngineData;
@@ -43,6 +46,7 @@ import org.shiwa.repository.submission.objects.JSDL.ImplJSDL;
 import org.shiwa.repository.submission.objects.Parameter;
 import org.shiwa.repository.submission.objects.workflowengines.WorkflowEngineInstance;
 import org.shiwa.repository.toolkit.wfengine.*;
+import org.xml.sax.SAXException;
 import uk.ac.wmin.edgi.repository.common.*;
 import uk.ac.wmin.edgi.repository.entities.*;
 import uk.ac.wmin.edgi.repository.transferobjects.*;
@@ -62,9 +66,14 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     private String globusUserpass;
     private String globusUsercert;
     private String globusUserkey;
+    private final String backendSchema = "/home/edward/BackendConfiguration.xml";
+
+    private JaxbWrapper <Backends> jaxBackend;
 
     @PostConstruct
     public void initialize () {
+        initJaxb();
+
         try{
             String p = (String)context.lookup("java:comp/env/edgi-logger");
             if(p.length() == 0){
@@ -92,6 +101,18 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             this.repoPath="/srv/repo/";
             this.logger.log(Level.WARNING, "Repository path (java:comp/env/edgi-repo-path) not set, using default (/srv/repo/)");
         }
+    }
+
+    private void initJaxb(){
+        try {
+            jaxBackend = new JaxbWrapper <Backends> (ApplicationFacadeImpl.class.getResource("/jaxb/BackendsConfiguration/BackendsConfiguration.xsd"), Backends.class);
+        } catch (JAXBException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
     }
 
     @Override
@@ -3775,11 +3796,14 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
                 weImp.getIdWE().getWeImplementationCollection().add(weImp);
 
+                /*
                 if(weImp.getIdBackendInst().getWeImplementationCollection() == null){
                     weImp.getIdBackendInst().setWeImplementationCollection(new ArrayList<WEImplementation>());
-                }
+                }*/
 
+                /*
                 weImp.getIdBackendInst().getWeImplementationCollection().add(weImp);
+                */
 
                 if(_zip != null){
                     if(weImp.getZipWEFileId().getWeImplementationCollection() == null){
@@ -3949,8 +3973,10 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             em.flush();
         }
 
+        /*
         weImp.getIdBackendInst().getWeImplementationCollection().remove(weImp);
         em.merge(weImp.getIdBackendInst());
+        */
 
         //May not be necessary!
         weImp.getWEDev().getWEImps().remove(weImp);
@@ -3982,132 +4008,26 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     }
 
-    /*
-     * Two Functions that do the same thing! Destroy one!
-     */
     @Override
-    public List<Backend> listBackendNames() {
-        User caller = getListCaller();
-        if(caller == null || !caller.isActive()){ //only active users may list platforms
-            return new ArrayList<Backend>(0);
-        }
-        return em.createNamedQuery("Backend.listOnlyNames", Backend.class).getResultList();
-    }
-
-        @Override
     public List<Backend> listBackendAll() {
-        User caller = getListCaller();
-        if(caller == null || !caller.isActive()){ //only active users may list platforms
-            return new ArrayList<Backend>(0);
+
+        Backends list;
+
+        try {
+            list = jaxBackend.xmlToObject(new FileInputStream(backendSchema));
+            return list.getBackend();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return em.createNamedQuery("Backend.listAll", Backend.class).getResultList();
+
+        return null;
     }
 
     @Override
     public Backend getBackendById(int _bId){
-        return em.createNamedQuery("Backend.findByIdBackend", Backend.class).setParameter("idBackend", _bId).getSingleResult();
-    }
-
-
-    @Override
-    public Backend createBackend(String name, String desc, Collection<JobManager> _jList)
-            throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException
-    {
-
-        User caller = getCallerUser();
-        String err = canUserCreateBackends(caller);
-        if(err != null){
-            throw new AuthorizationException(err);
-        }
-        //validate app name
-        if(!name.matches("[\\-\\w\\.]+{3,50}")){
-            throw new ValidationFailedException("Backend names can only contain alphanumeric characters and must be between 3 and 50 charaters long");
-        }
-        if(_jList.isEmpty()){
-            throw new ValidationFailedException("Need to pick at laest 1 Job Manager");
-        }
-        if(em.createNamedQuery("Backend.findByBackendName", Backend.class).setParameter("backendName", name).getResultList().size() > 0){
-            throw new EntityAlreadyExistsException("Backend '"+name+"' already exists");
-        }
-
-        Backend b = new Backend(name, desc, _jList);
-        /* clean up if this works! */
-
-        for(JobManager j : _jList){
-            //j.getBackendCollection().add(selectedBackend);
-            Collection<Backend> temp = j.getBackendCollection();
-            temp.add(b);
-            j.setBackendCollection(temp);
-            em.merge(j);
-        }
-
-        em.persist(b);
-        em.flush();
-        return b;
-    }
-
-    @Override
-    public void updateBackend(Backend _be, Collection<JobManager> _jm)
-            throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException {
-
-        User caller = getCallerUser();
-        String err = canUserCreateBackends(caller);
-        if(err != null){
-            throw new AuthorizationException(err);
-        }
-        //validate app name
-        if(!_be.getBackendName().matches("[\\-\\w\\.]+{3,50}")){
-            throw new ValidationFailedException("Backend names can only contain alphanumeric characters and must be between 3 and 50 charaters long");
-        }
-        if(_jm.isEmpty()){
-            throw new ValidationFailedException("Need to pick at laest 1 Job Manager");
-        }
-
-        List<Backend> results = em.createNamedQuery("Backend.findByBackendName", Backend.class).setParameter("backendName", _be.getBackendName()).getResultList();
-
-        if(results.size() > 0 && !results.contains(_be)){
-            throw new EntityAlreadyExistsException("Backend '"+_be.getBackendName()+"' already exists");
-
-        }
-
-        /*
-         * Need to test if old list of supported Job Managers is different to new list
-         * If it is. New list needs ammeding on be and on jm collection side of the ManyToMany relationship
-         * This is a long way round! Better way perhaps?
-         */
-
-        Collection<JobManager> _be_jm = _be.getJobManagerCollection();
-
-        /*
-         * Remove all BE objects from old JobManager backend collections
-         * This represents the ManyToMany relationship from the JobManagers side
-         */
-        for(JobManager bjm : _be_jm)
-        {
-            Collection<Backend> temp = bjm.getBackendCollection();
-            temp.remove(_be);
-            bjm.setBackendCollection(temp);
-            em.merge(bjm);
-        }
-
-        /*
-         * Add the editted backend to the new list of JobManagers' BE collections
-         * This represents the ManyToMany relationship from the JobManagers side
-         */
-        for(JobManager j : _jm){
-            Collection<Backend> temp = j.getBackendCollection();
-            temp.add(_be);
-            j.setBackendCollection(temp);
-            em.merge(j);
-        }
-
-        /*
-         * This represents the ManyToMany relationship on the backend side
-         * Adds the updated collection of JobManagers to the updated Backend
-         */
-        _be.setJobManagerCollection(_jm);
-        em.merge(_be);
-        em.flush();
+        return null;
     }
 
     //need auth here!
@@ -4115,24 +4035,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     public void deleteBackend(Backend _be)
         throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException
     {
-        /*
-         * Remove all BE objects from old JobManager backend collections
-         * This represents the ManyToMany relationship from the JobManagers side
-         * TODO: Validation!! Throw some things!
-         */
-        Collection<JobManager> _be_jm = _be.getJobManagerCollection();
 
-        for(JobManager bjm : _be_jm)
-        {
-            Collection<Backend> temp = bjm.getBackendCollection();
-            temp.remove(_be);
-            bjm.setBackendCollection(temp);
-            em.merge(bjm);
-        }
-
-        Backend remove = em.merge(_be);
-        em.remove(remove);
-        em.flush();
     }
 
     /*
@@ -4399,196 +4302,6 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     /*
-     * Operating system management functions ----------------------------------------------------
-     */
-
-    //returns the list of OS
-    @Override
-    public List<OperatingSystems> listOperatingSystemsNames() {
-        User caller = getListCaller();
-        if(caller == null || !caller.isActive()){ //only active users may list platforms
-            return new ArrayList<OperatingSystems>(0);
-        }
-        return em.createNamedQuery("OperatingSystems.findAll", OperatingSystems.class).getResultList();
-    }
-
-    @Override
-    public int getOsIdByName(String name){
-        return em.createNamedQuery("OperatingSystems.findByName", OperatingSystems.class).setParameter("name", name).getSingleResult().getIdOS();
-    }
-
-    @Override
-    public OperatingSystems getOperatingSystemById(int id){
-        return em.createNamedQuery("OperatingSystems.findByIdOS", OperatingSystems.class).setParameter("idOS", id).getSingleResult();
-    }
-
-    @Override
-    public String canUserModifyOS(int callId){
-        return canUserModifyOS(em.find(User.class, callId));
-    }
-
-
-    private String canUserModifyOS(User caller) {
-        //only the admin or a WE manager is supposed to be allowed to perform this
-        if(caller == null){
-            return "your account has been deleted";
-        }//need to update the correct role
-        if(!caller.isActive()){
-            return "your account has been deactivated";
-        }else if(caller.isAdmin()){
-            return null;
-        }else{
-            return "You are not permitted to perform this action";
-        }
-
-    }
-
-    @Override
-    public OperatingSystems createOS(String name, String version)
-            throws ValidationFailedException, AuthorizationException, EntityAlreadyExistsException
-    {
-
-        User caller = getCallerUser();
-
-        //Assume if can create, then can delete/update!!
-        String err = canUserModifyOS(caller);
-
-        if(err != null){
-            throw new AuthorizationException(err);
-        }
-
-        if(!name.matches("[\\-\\w\\.]+{3,50}"))
-            throw new ValidationFailedException("Please format the name correctly");
-
-        if(version.length() > 50 || !name.matches("[\\-\\w\\.]+{3,50}"))
-            throw new ValidationFailedException("Please format the version correctly");
-
-        List<OperatingSystems> nameTemp = em.createNamedQuery("OperatingSystems.findByName", OperatingSystems.class).setParameter("name", name).getResultList();
-
-        for(OperatingSystems t : nameTemp){
-            if(t.getVersion().equals(version))
-                throw new EntityAlreadyExistsException("An Operating System with that Version already exists");
-        }
-
-        OperatingSystems newOS = new OperatingSystems(name, version);
-
-        em.persist(newOS);
-        em.flush();
-
-        return newOS;
-    }
-
-    @Override
-    public OperatingSystems updateOS(OperatingSystems _os)
-            throws ValidationFailedException, AuthorizationException, EntityAlreadyExistsException
-    {
-
-        /*
-         * names do not have to be unique because versions can represent the uniqueness
-         */
-
-        User caller = getCallerUser();
-
-        //Assume if can create, then can delete/update!!
-        String err = canUserModifyOS(caller);
-
-        if(err != null){
-            throw new AuthorizationException(err);
-        }
-
-        List<OperatingSystems> nameTemp = em.createNamedQuery("OperatingSystems.findByName", OperatingSystems.class).setParameter("name", _os.getName()).getResultList();
-
-        for(OperatingSystems t : nameTemp){
-            if(t.getVersion().equals(_os.getVersion()))
-                throw new EntityAlreadyExistsException("An Operating System with that Version already exists");
-        }
-
-        if(!_os.getName().matches("[\\-\\w\\.]+{3,50}"))
-            throw new ValidationFailedException("Please format the name correctly");
-
-        if(_os.getVersion().length() > 50 || !_os.getName().matches("[\\-\\w\\.]+{3,50}"))
-            throw new ValidationFailedException("Please format the version correctly");
-
-        return em.merge(_os);
-    }
-
-    @Override
-    public void deleteOS(OperatingSystems _os)
-            throws ValidationFailedException, AuthorizationException, EntityNotFoundException
-    {
-
-        User caller = getCallerUser();
-
-        //Assume if can create, then can delete/update!!
-        String err = canUserModifyOS(caller);
-
-        if(err != null){
-            throw new AuthorizationException(err);
-        }
-
-        if(_os == null)
-            throw new ValidationFailedException("Null OS: An error has occurred, please try again");
-
-        if(em.createNamedQuery("OperatingSystems.findByIdOS", OperatingSystems.class).setParameter("idOS", _os.getIdOS()).getResultList().isEmpty())
-            throw new EntityNotFoundException("Operating System destined for destruction doesn't exist, reload and try again.");
-
-        /*
-         * TODO: Fix!
-         * This REALLY WON'T Work!
-         */
-
-        OperatingSystems _osR = em.merge(_os);
-        em.remove(_osR);
-        em.flush();
-    }
-
-    /*
-     * Job Manager management functions -------------------------------------------------------
-     */
-
-    //Return appropriate job manager objects from string references
-    @Override
-    public List<JobManager> getJobManagersFromString(ArrayList<String> selectedJobManagers)
-    {
-        List<JobManager> allList = this.listJobManagers();
-        List<JobManager> newList = new ArrayList<JobManager>();
-
-        for(JobManager t : allList)
-        {
-            for(String s : selectedJobManagers)
-            {
-                if(t.getJobManagerName().equals(s))
-                {
-                    newList.add(t);
-                    continue;
-                }
-            }
-        }
-
-        return newList;
-    }
-
-    @Override
-    public List<JobManager> listJobManagers(){
-        User caller = getListCaller();
-        if(caller == null || !caller.isActive()){ //only active users may list platforms
-            return new ArrayList<JobManager>(0);
-        }
-        return em.createNamedQuery("JobManager.findAll", JobManager.class).getResultList();
-    }
-
-    @Override
-    public List<JobType> listJobTypes(){
-        return em.createNamedQuery("JobType.findAll", JobType.class).getResultList();
-    }
-
-    @Override
-    public JobType getJobTypeFromString(int _jId){
-        return em.createNamedQuery("JobType.findByJobTypeId", JobType.class).setParameter("jobTypeId", _jId).getSingleResult();
-    }
-
-
-    /*
      * Backend Instance Management Functions ------------------------------------------------
      */
 
@@ -4602,217 +4315,23 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     public BeInstance updateBEI(BeInstance _be)
             throws ValidationFailedException, AuthorizationException, EntityNotFoundException
     {
-        if(!(getCallerUser().isAdmin() || _be.getWEDev().equals(getCallerUser()))){
-            throw new AuthorizationException("You are not permitted to perform this action");
-        }
-
-        if(em.find(BeInstance.class, _be.getIdBackendInst()) == null){
-            throw new EntityNotFoundException("Either a Backend Configuration has not been selected or it does not exist!");
-        }
-
-        if(_be.getIdBackend() == null){
-            throw new ValidationFailedException("Please select an appropriate Backend to alter this configuration");
-        }
-
-        if(_be instanceof GT4){
-            if(((GT4)_be).getSite().isEmpty()){
-                throw new ValidationFailedException("Invalid Resource String");
-            }
-            if(((GT4)_be).getJobManager().isEmpty()){
-                throw new ValidationFailedException("Invalid Job Manager");
-            }
-            if(((GT4)_be).getJobTypeId() == null){
-                throw new ValidationFailedException("Invalid Job Type");
-            }
-        }
-        if(_be instanceof GT2){
-            if(((GT2)_be).getSite().isEmpty()){
-                throw new ValidationFailedException("Invalid Resource String");
-            }
-            if(((GT2)_be).getJobManager().isEmpty()){
-                throw new ValidationFailedException("Invalid Job Manager");
-            }
-            if(((GT2)_be).getJobTypeId() == null){
-                throw new ValidationFailedException("Invalid Job Type");
-            }
-        }
-
-        _be = em.merge(_be);
-        em.flush();
-
-
-        return _be;
+        return null;
     }
 
     @Override
     public void deleteBEI(BeInstance _beI)
            throws EntityNotFoundException, AuthorizationException, ValidationFailedException
     {
-        /*
-         * Check management of relationships
-         */
 
-        if((_beI = em.find(BeInstance.class, _beI.getIdBackendInst())) == null){
-            logger.log(Level.SEVERE,"Entity not found in DB");
-            throw new EntityNotFoundException("Entity not found in DB");
-        }
-
-        if(em.createNamedQuery("WEImplementation.findByBEI", WEImplementation.class).setParameter("bei", _beI).getResultList().size() > 0){
-            logger.log(Level.SEVERE, "Backend Configuration: {0} cannot be deleted. It is used in one or more Workflow Engine Implementations", _beI.getBackendInstName());
-            throw new EntityNotFoundException("Backend Configuration: " + _beI.getBackendInstName() + " cannot be deleted. It is used in one or more Workflow Engine Implementations");
-        }
-
-        if(!(getCallerUser().isAdmin() || getCallerUser().equals(_beI.getWEDev()))){
-            logger.log(Level.SEVERE,"Not permitted to perform this action - Deleting a Backend Configuration");
-             throw new AuthorizationException("Not permitted to perform this action - Deleting a Backend Configuration " + _beI.getBackendInstName());
-        }
-
-
-        em.remove(_beI);
-        em.flush();
     }
 
-
-
     @Override
-    public BeInstance createBeInstance(String _name, Backend _idBackend, String _site, String _backendOut, String _backendErr, String _jobManager, JobType _jobType, OperatingSystems _idOS, String _resource, int callerId)
+    public BeInstance dupeBeInstance (BeInstance _bei, String _name)
             throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException
     {
 
-        logger.log(Level.INFO, "Beginning Backend Instance Creation");
 
-        User caller = getCallerUser();
-
-        String err = canUserCreateWEImplementations(caller);
-
-        User wedev = em.find(User.class, callerId);
-
-        if(err != null){
-            logger.log(Level.SEVERE, err);
-            throw new AuthorizationException(err);
-        }
-
-        if(wedev == null){
-            logger.log(Level.SEVERE, "No such WEDev user or User couldn't be found");
-            throw new AuthorizationException("Workflow Developer doesn't exist or you do not have the correct privileges, contact an administrator.");
-        }
-
-        /*
-         * TODO: Test regex
-         */
-        if(!_name.matches("[\\-\\w\\.]+{3,50}")){
-            logger.log(Level.WARNING, "Please format the name correctly");
-            throw new ValidationFailedException("Please format the name correctly");
-        }
-
-        if(_resource.isEmpty()){
-            logger.log(Level.SEVERE, "Resource is null");
-            throw new ValidationFailedException("Please input a resource to associate with the configuration.");
-        }
-
-        if(!em.createNamedQuery("BeInstance.findByBackendInstName", BeInstance.class).setParameter("backendInstName", _name).getResultList().isEmpty()){
-            logger.log(Level.WARNING, "BEInstance Entity already exists");
-            throw new EntityAlreadyExistsException("A Backend Instance with that name already exists, please chose another.");
-        }
-
-
-        if(_idBackend == null){
-            logger.log(Level.SEVERE, "Abstract backend is null");
-            throw new ValidationFailedException("Please select an Backend to associate with the configuration.");
-        }
-
-        if(_idOS == null){
-            logger.log(Level.SEVERE, "Operating System var is null");
-            throw new ValidationFailedException("Please select an OS to associate with the configuration.");
-        }
-
-        BeInstance newBEI = null;
-
-        if(_idBackend.getBackendName().equalsIgnoreCase("GT4") || _idBackend.getBackendName().equalsIgnoreCase("GT2")){
-            if(_jobType == null){
-                logger.log(Level.SEVERE, "JobType is null");
-                throw new ValidationFailedException("Please select a Job Type to associate woth this configuration.");
-            }
-            if(_jobManager.isEmpty()){
-                logger.log(Level.SEVERE, "Job Manager is null");
-                throw new ValidationFailedException("Please select a Job Manager to associate with this configuration.");
-            }
-
-            if(_idBackend.getBackendName().equalsIgnoreCase("GT4") ){
-                newBEI = new GT4(_jobManager, _jobType, _name, _idBackend, _site, _backendOut, _backendErr, _idOS, _resource, wedev);
-                logger.log(Level.INFO, "New GT4 object created");
-            }else if(_idBackend.getBackendName().equalsIgnoreCase("GT2")){
-                newBEI = new GT2(_jobManager, _jobType, _name, _idBackend, _site, _backendOut, _backendErr, _idOS, _resource, wedev);
-                logger.log(Level.INFO, "New GT2 object created");
-            }
-
-        }
-
-        if(_idBackend.getBackendName().equalsIgnoreCase("pbs")){
-                newBEI = new PBS(_name, _idBackend, _backendOut, _backendErr, _idOS, _resource, wedev, _jobManager);
-                logger.log(Level.INFO, "New "+_idBackend.getBackendName()+" object created");
-        }
-
-        if(_idBackend.getBackendName().equalsIgnoreCase("gLite")){
-                newBEI = new GLite(_name, _idBackend, _backendOut, _backendErr, _idOS, _resource, wedev);
-                logger.log(Level.INFO, "New "+_idBackend.getBackendName()+" object created");
-        }
-
-        if(_idBackend.getBackendName().equalsIgnoreCase("local")){
-                newBEI = new Local(_name, _idBackend, _backendOut, _backendErr, _idOS, _resource, wedev);
-                logger.log(Level.INFO, "New "+_idBackend.getBackendName()+" object created");
-        }
-
-        em.persist(newBEI);
-
-        if(newBEI.getIdBackend().getBeInstanceCollection() == null){
-            newBEI.getIdBackend().setBeInstanceCollection(new ArrayList<BeInstance>());
-        }
-
-        newBEI.getIdBackend().getBeInstanceCollection().add(newBEI);
-
-        if(newBEI.getIdOS().getBeInstanceCollection() == null){
-            newBEI.getIdOS().setBeInstanceCollection(new ArrayList<BeInstance>());
-        }
-
-        newBEI.getIdOS().getBeInstanceCollection().add(newBEI);
-
-        em.merge(newBEI.getIdBackend());
-        em.merge(newBEI.getIdOS());
-        em.flush();
-        return newBEI;
-    }
-
-    @Override
-    public BeInstance dupeBeInstance (BeInstance _bei, String _name) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException{
-
-        if(_bei == null){
-            logger.log(Level.SEVERE, "Please select a backend configuration to duplicate");
-            throw new ValidationFailedException("Please select a backend configuration to duplicate");
-        }
-
-        if(_bei.getIdBackend().getBackendName().equalsIgnoreCase("GT4")){
-            GT4 temp = ((GT4)_bei);
-            logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
-            return this.createBeInstance(_name, temp.getIdBackend(), temp.getSite(), temp.getBackendOutput(), temp.getBackendErrorOut(), temp.getJobManager(), temp.getJobTypeId(), temp.getIdOS(), temp.getResource(), getCallerUser().getId());
-        }else if(_bei.getIdBackend().getBackendName().equalsIgnoreCase("GT2")){
-            GT2 temp = ((GT2)_bei);
-            logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
-            return this.createBeInstance(_name, temp.getIdBackend(), temp.getSite(), temp.getBackendOutput(), temp.getBackendErrorOut(), temp.getJobManager(), temp.getJobTypeId(), temp.getIdOS(), temp.getResource(), getCallerUser().getId());
-        }else if(_bei.getIdBackend().getBackendName().equalsIgnoreCase("gLite")){
-            GLite temp = ((GLite)_bei);
-            logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
-            return this.createBeInstance(_name, temp.getIdBackend(), null, temp.getBackendOutput(), temp.getBackendErrorOut(), null, null, temp.getIdOS(), temp.getResource(), getCallerUser().getId());
-        }else if(_bei.getIdBackend().getBackendName().equalsIgnoreCase("pbs")){
-            //PBS temp = ((PBS)_bei);
-            //logger.log(Level.INFO, "Attempting to Dupelicate Backend Configuration: " + _bei.getBackendInstName() + "...");
-            //return this.createBeInstance(_name, temp.getIdBackend(), null, temp.getBackendOutput(), temp.getBackendErrorOut(), null, null, temp.getIdOS(), temp.getResource(), getCallerUser().getId());
-            logger.log(Level.SEVERE, "No functionality to dupe PBS yet!");
-            return null;
-        }else{
-            logger.log(Level.SEVERE, "Null pointer received, no abstract backend selected!");
-            return null;
-        }
+        return null;
     }
 
     @Override
