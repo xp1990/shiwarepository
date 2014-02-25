@@ -6,12 +6,10 @@ package org.shiwa.repository.ui;
 
 import java.io.*;
 import java.lang.reflect.Array;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.ConfigurableNavigationHandler;
@@ -29,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
+import org.shiwa.repository.configuration.Backend;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationNodeRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationRTO;
 import org.shiwa.repository.toolkit.transferobjects.DependencyRTO;
@@ -125,8 +124,6 @@ public class BackingBean implements Serializable {
     WEImplementation selectedWEImp = null;
     WEImplementation newWEImplementation = new WEImplementation();
     Platform newWorkflowEngine = new Platform();
-    Backend selectedBackend = null;
-    Backend newBackend = new Backend();
     Collection<String> selectedJobManagers = new ArrayList<String>();
 
     /* WEFiles Management */
@@ -137,8 +134,6 @@ public class BackingBean implements Serializable {
     WEUploadedFile[] selectedWEFiles = null;
 
     /* WEImplementation */
-    NewBeInstanceBean displayBEInstance = new NewBeInstanceBean();
-    NewBeInstanceBean newBEInstance = new NewBeInstanceBean();
     BeInstance selectedBEInstance = null;
     boolean showExistingBEI = true;
     int selectedBEIJobTypeId = 0;
@@ -149,10 +144,6 @@ public class BackingBean implements Serializable {
     int newShellFileId = 0;
     Boolean showBEIDetails;
     Boolean changeEngineExec = false;
-
-    /* OperatingSystem Management */
-    OperatingSystems selectedOS = null;
-    OperatingSystems newOS = new OperatingSystems();
 
     //for implementation table
     String impWEIdString;
@@ -3986,7 +3977,6 @@ public class BackingBean implements Serializable {
         selectedWEImp = null;
         newWEImplementation = new WEImplementation();
         newWorkflowEngine = new Platform();
-        selectedBackend = null;
         selectedJobManagers = new ArrayList<String>();
 
         /* WEFiles Management */
@@ -3997,7 +3987,6 @@ public class BackingBean implements Serializable {
         selectedWEFiles = null;
 
         /* WEImplementation */
-        newBEInstance = new NewBeInstanceBean();
         selectedBEInstance = null;
         showExistingBEI = true;
         selectedBEIJobTypeId = 0;
@@ -4193,107 +4182,25 @@ public class BackingBean implements Serializable {
      * Backend Functions -------------------------------------------------------------
      */
 
-    public void setSelectedBackend(Backend b){
-        this.selectedBackend = b;
-    }
-
-    public Backend getSelectedBackend(){
-        return this.selectedBackend;
-    }
 
     public void onBackendRowSelectNavigate(SelectEvent event) {
         nav.performNavigation("/user/edit-backend?faces-redirect=true");
     }
 
-    public List<Backend> getBackendNames(){
-        return af.listBackendNames();
-    }
-
-    public List<Backend> getBackendAll(){
+    public List<Backend> getBackends(){
         return af.listBackendAll();
     }
 
-    public Backend getNewBackend(){
-        return newBackend;
-    }
-
-    public void setNewBackend(Backend _b){
-        newBackend = _b;
-    }
-
     public String createBackend(){
-        try{
-            List<JobManager> jobManagerCol = af.getJobManagersFromString((ArrayList<String>)selectedJobManagers);
-            selectedBackend = af.createBackend(newBackend.getBackendName(), newBackend.getBackendDesc(), jobManagerCol);
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Created Backend '"+selectedBackend.getBackendName()+"'", null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Created Backend '"+selectedBackend.getBackendName()+"'");
-            resetWEVars();
-            return "/user/browse-backends.xhtml";
-
-        } catch (EntityAlreadyExistsException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }catch(ValidationFailedException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }catch(AuthorizationException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }
-
-        return "";
+        return null;
     }
 
     public String updateBackend(){
-
-        try{
-            List<JobManager> jobManagerCol = af.getJobManagersFromString((ArrayList<String>)selectedJobManagers);
-            af.updateBackend(selectedBackend, jobManagerCol);
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Updated Backend '"+selectedBackend.getBackendName()+"'", null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Updated Backend '"+selectedBackend.getBackendName()+"'");
-            resetWEVars();
-            return "/user/browse-backends.xhtml";
-
-        } catch (EntityAlreadyExistsException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }catch(ValidationFailedException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }catch(AuthorizationException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }
-
-        return "";
+        return null;
     }
 
     public String deleteBackend(){
-
-        /*
-         * Why would this ever happen?
-         */
-        if(selectedBackend == null){
-            addMessage(null, FacesMessage.SEVERITY_WARN, "Please select a Backend", null);
-            return "/user/browse-backends.xhtml";
-        }
-        try{
-            af.deleteBackend(selectedBackend);
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Deleted Backend '"+selectedBackend.getBackendName()+"'", null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Deleted Backend '"+selectedBackend.getBackendName()+"'");
-            resetWEVars();
-            return "/public/browse-backends.xhtml";
-        }catch(EntityNotFoundException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }catch(NotSafeToDeleteException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        } catch (AuthorizationException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return "";
+        return null;
     }
 
     public int getNewBEAbstractId() {
@@ -4312,27 +4219,12 @@ public class BackingBean implements Serializable {
         return af.getBeInstanceAll();
     }
 
-    public void setChangeEngineExec(){
-        changeEngineExec = !changeEngineExec;
-    }
-
-    public boolean getChangeEngineExec(){
-        return changeEngineExec;
-    }
-
     public boolean getCanCreateBackend(){
         return (err = af.canUserCreateBackends(getCurrentUser().getId())) == null;
     }
 
     public String getBackendName(WEImplementation _WEImp){
-        ArrayList<Backend> nameList = new ArrayList<Backend>();
-        for(Backend t : nameList)
-        {
-            if (t.getIdBackend()== _WEImp.getIdBackendInst().getIdBackendInst())
-                return t.getBackendName();
-        }
-
-        return null;
+        return _WEImp.getIdBackendInst().getBackend();
     }
 
     public boolean getCanViewBEI(){
@@ -4348,25 +4240,6 @@ public class BackingBean implements Serializable {
             return true;
         }
         return false;
-    }
-
-    //whether the user needs to supply the maximum parallelism or not
-    public boolean isGT4GT2(){
-        if(newBEInstance.getIdBackend() == null){
-            return false;
-        }else if(newBEInstance.getIdBackend().getBackendName().equalsIgnoreCase("GT4") || newBEInstance.getIdBackend().getBackendName().equalsIgnoreCase("GT2")){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    public NewBeInstanceBean getNewBEInstance() {
-        return newBEInstance;
-    }
-
-    public void setNewBEInstance(NewBeInstanceBean newBackendInstance) {
-        this.newBEInstance = newBackendInstance;
     }
 
     public BeInstance getSelectedBEInstance() {
@@ -4403,35 +4276,6 @@ public class BackingBean implements Serializable {
 
     public void handleExistingBEI(boolean edit){
 
-        selectedBEInstance = af.getBEInstanceById(selectedBEInstanceId);
-
-        if(edit == false){
-            newWEImplementation.setIdBackendInst(selectedBEInstance);
-            showBEIDetails = true;
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Assigned new Backend Configuration " + selectedBEInstance.getBackendInstName() + " to " + newWEImplementation.getNameWEImp() + " Successfully");
-        }else{
-            selectedWEImp.setIdBackendInst(selectedBEInstance);
-            try{
-                af.updateWEImp(selectedWEImp);
-                addMessage(null, FacesMessage.SEVERITY_INFO, "Update of " + selectedWEImp.getNameWEImp() + " successful!", null);
-                Platform temp1 = selectedWorkflowEngine;
-                WEImplementation temp2 = selectedWEImp;
-                resetWEVars();
-                selectedWorkflowEngine = temp1;
-                selectedWEImp = temp2;
-                Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Update of ".concat(selectedWEImp.getNameWEImp().concat(" successful!")));
-            }catch(ValidationFailedException e){
-                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            }catch(AuthorizationException e){
-                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            }catch(WEBuildingException e){
-                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
-                Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            }
-        }
-        //Should only happen if selection was successful
     }
 
     public int getNewBEIoperatingSysId() {
@@ -4440,13 +4284,6 @@ public class BackingBean implements Serializable {
 
     public void setNewBEIoperatingSysId(int newBEIoperatingSysId) {
         this.newBEIoperatingSysId = newBEIoperatingSysId;
-    }
-
-    public void handleBEIoperatingSystem(boolean edit){
-        if(!edit)
-            newBEInstance.setIdOS(af.getOperatingSystemById(newBEIoperatingSysId));
-        else
-            selectedBEInstance.setIdOS(af.getOperatingSystemById(newBEIoperatingSysId));
     }
 
     public boolean canModifyBEInst(BeInstance beinst){
@@ -4501,316 +4338,7 @@ public class BackingBean implements Serializable {
 
     public void createBEInstance(boolean edit){
 
-        /*
-         * This is awful!
-         * Change everything.
-         */
 
-        BeInstance temp;
-
-        try{
-            temp = af.createBeInstance(newBEInstance.getName(), newBEInstance.getIdBackend(), newBEInstance.getSite(), newBEInstance.getBackendOutput(), newBEInstance.getBackendErrorOut(), newBEInstance.getJobManager(), newBEInstance.getJobType(), newBEInstance.getIdOS(), newBEInstance.getResource(), this.getCurrentUser().getId());
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Successfully created " + temp.getBackendInstName() + " backend configuration");
-        } catch (ValidationFailedException e){
-            addMessage(null, FacesMessage.SEVERITY_INFO, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return;
-        } catch(EntityAlreadyExistsException e) {
-            addMessage(null, FacesMessage.SEVERITY_INFO, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return;
-        } catch (AuthorizationException e){
-            addMessage(null, FacesMessage.SEVERITY_INFO, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return;
-        }
-
-        WEImplementation temp3 = selectedWEImp;
-
-
-        if(!edit){
-            newWEImplementation.setIdBackendInst(temp);
-        }else{
-            selectedWEImp.setIdBackendInst(temp);
-            setWEIUpdate();
-        }
-
-
-        addMessage(null, FacesMessage.SEVERITY_INFO, "Successfully created " + temp.getBackendInstName() + " backend configuration", null);
-
-        WEImplementation temp1 = newWEImplementation;
-        Platform temp2 = selectedWorkflowEngine;
-        displayBEInstance = newBEInstance;
-        resetWEVars();
-
-
-        selectedBEInstance = temp;
-
-        newWEImplementation = temp1;
-        selectedWorkflowEngine = temp2;
-
-        //Should only happen if creation was successful
-        if(!edit)
-            showBEIDetails = true;
-
-    }
-
-    /*
-     * Configure the display bean to show exceptional information about
-     * inherited backend types GT2 and GT4
-     */
-    public void useExistingBEInstance(){
-        /* TODO: add growl messages and validation */
-        if(selectedBEInstance != null || newWEImplementation.getIdBackendInst() != null){
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Using Backend Instance " + selectedBEInstance.getBackendInstName() , null);
-
-            /*
-             * Support for inherited entity types GT4 and GT2
-             * If extra information is needed to be displayed or managed set the Bean here!!
-             */
-            if(selectedBEInstance instanceof GT4 || selectedBEInstance instanceof GT4) {
-                displayBEInstance.setSite(((GT4)selectedBEInstance).getSite());
-                displayBEInstance.setJobManager(((GT4)selectedBEInstance).getJobManager());
-                displayBEInstance.setJobType(((GT4)selectedBEInstance).getJobTypeId());
-            }
-
-            if(selectedBEInstance instanceof GT2 || selectedBEInstance instanceof GT2){
-                displayBEInstance.setSite(((GT2)selectedBEInstance).getSite());
-                displayBEInstance.setJobManager(((GT2)selectedBEInstance).getJobManager());
-                displayBEInstance.setJobType(((GT2)selectedBEInstance).getJobTypeId());
-            }
-        }else{
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Please select a Backend Configuration to use" , null);
-        }
-    }
-
-    public void handleJobManUpdate(){
-        if(selectedBEInstance instanceof GT2){
-            ((GT2)selectedBEInstance).setJobManager(newBEInstance.getJobManager());
-        }
-
-        if(selectedBEInstance instanceof GT4){
-            ((GT4)selectedBEInstance).setJobManager(newBEInstance.getJobManager());
-        }
-    }
-
-    public void setBEIUpdate(){
-        try {
-            af.updateBEI(selectedBEInstance);
-            addMessage(null, FacesMessage.SEVERITY_INFO,"Updated Backend Configuration " + selectedBEInstance.getBackendInstName(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Updated ".concat(selectedBEInstance.getBackendInstName()));
-        } catch (EntityNotFoundException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (AuthorizationException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ValidationFailedException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void deleteBEI(){
-        try {
-            af.deleteBEI(selectedBEInstance);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Successfully deleted Backend Configuration " + selectedBEInstance.getBackendInstName());
-            addMessage(null, FacesMessage.SEVERITY_INFO, "Successfully deleted Backend Configuration " + selectedBEInstance.getBackendInstName(), null);
-            resetWEVars();
-        } catch (EntityNotFoundException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (AuthorizationException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ValidationFailedException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void dupeBEI(){
-        try {
-            selectedBEInstance = af.dupeBeInstance(selectedBEInstance, newBEInstance.getName());
-            addMessage(null, FacesMessage.SEVERITY_INFO,"Created Backend Configuration " + selectedBEInstance.getBackendInstName(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Duplicated ".concat(selectedBEInstance.getBackendInstName()));
-        } catch (EntityAlreadyExistsException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (AuthorizationException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ValidationFailedException ex) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public NewBeInstanceBean getDisplayBEInstance() {
-        return displayBEInstance;
-    }
-
-    public void setDisplayBEInstance(NewBeInstanceBean displayBEInstance) {
-        this.displayBEInstance = displayBEInstance;
-    }
-
-
-
-    /*
-     * Operating System Functions ----------------------------------------------------
-     */
-
-    public boolean getCanCreateOS(){
-        return (err = af.canUserModifyOS(getCurrentUser().getId())) == null;
-    }
-
-    public OperatingSystems getSelectedOS() {
-        return selectedOS;
-    }
-
-    public void setSelectedOS(OperatingSystems selectedOS) {
-        this.selectedOS = selectedOS;
-    }
-
-    public OperatingSystems getNewOS() {
-        return newOS;
-    }
-
-    public void setNewOS(OperatingSystems newOS) {
-        this.newOS = newOS;
-    }
-
-    public void onOSRowSelectNavigate(SelectEvent event) {
-        //TODO auth checks
-        //Need to make backend edit form!!!
-        nav.performNavigation("/user/edit-os?faces-redirect=true");
-    }
-
-    public String createOS(){
-
-        try{
-            selectedOS = af.createOS(newOS.getName(), newOS.getVersion());
-            addMessage(null, FacesMessage.SEVERITY_INFO,"Successfully Created " + selectedOS.getName(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, "Successfully Created ".concat(selectedOS.getName()));
-        }catch(ValidationFailedException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        }catch(EntityAlreadyExistsException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        }catch(AuthorizationException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        }
-
-        resetWEVars();
-
-        return "/user/browse-os";
-    }
-
-    public String updateOS(){
-        //TODO: Add validation messages via growl!
-        try{
-            selectedOS = af.updateOS(selectedOS);
-            addMessage(null, FacesMessage.SEVERITY_INFO, selectedOS.getName() + " updated!", null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, selectedOS.getName().concat(" updated!"));
-        } catch (ValidationFailedException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        } catch (AuthorizationException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        } catch (EntityAlreadyExistsException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        }
-
-        resetWEVars();
-
-        return "/user/browse-os";
-    }
-
-    public String deleteOS(){
-
-        try{
-            af.deleteOS(selectedOS);
-            addMessage(null, FacesMessage.SEVERITY_INFO, selectedOS.getName() + " deleted Successfully", null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.INFO, selectedOS.getName() + " deleted Successfully");
-        } catch (ValidationFailedException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        } catch (AuthorizationException e) {
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        } catch (EntityNotFoundException e){
-            addMessage(null, FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
-            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, null, e);
-            return "";
-        }
-
-        resetWEVars();
-
-        return "/user/browse-os";
-    }
-
-    //returns the list of OperatingSystems names (without doubles)
-    public List<OperatingSystems> getOsNames(){
-        return af.listOperatingSystemsNames();
-    }
-
-    /*
-     * Job Manager and Job Type Functions ----------------------------------------------------------
-     */
-
-    public ArrayList<String> getSelectedJobManagers(){
-            return (ArrayList<String>)selectedJobManagers;
-    }
-
-    public void setSelectedJobManagers(ArrayList<String> _jM){
-            selectedJobManagers = (ArrayList<String>) _jM;
-    }
-
-    public List<JobManager> getJobManagers(){
-        return af.listJobManagers();
-    }
-
-    public void jobTypeIdListener(boolean edit){
-        if(!edit)
-            newBEInstance.setJobType(af.getJobTypeFromString(selectedBEIJobTypeId));
-        else{
-            if(selectedBEInstance instanceof GT4){
-                ((GT4)selectedBEInstance).setJobTypeId(af.getJobTypeFromString(selectedBEIJobTypeId));
-            }
-            if(selectedBEInstance instanceof GT2){
-                ((GT2)selectedBEInstance).setJobTypeId(af.getJobTypeFromString(selectedBEIJobTypeId));
-            }
-        }
-    }
-
-    public int getSelectedBEIJobTypeId() {
-        return selectedBEIJobTypeId;
-    }
-
-    public void setSelectedBEIJobTypeId(int selectedBEIJobTypeId) {
-        this.selectedBEIJobTypeId = selectedBEIJobTypeId;
-    }
-
-    public void handleJobManExistBEMenus(){
-        /* Need validation here! Throw some errors! */
-        newBEInstance.setIdBackend(af.getBackendById(newBEAbstractId));
-    }
-
-    public List<JobType> getJobTypes(){
-        return af.listJobTypes();
     }
 
     /*
