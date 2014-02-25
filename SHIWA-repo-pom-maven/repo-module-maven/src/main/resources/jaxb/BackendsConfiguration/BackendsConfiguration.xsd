@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="configuration.repository.shiwa.org"
+           xmlns:ns1="configuration.repository.shiwa.org"
+           elementFormDefault="qualified">
+    
+    <xs:element name="value" type="xs:string"/>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+    
+    <xs:element name="backends">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns1:backend" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="backend">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns1:attribute" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute ref="ns1:name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="attribute">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns1:value" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute ref="ns1:name" use="required"/>
+            <xs:attribute ref="ns1:type" use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
