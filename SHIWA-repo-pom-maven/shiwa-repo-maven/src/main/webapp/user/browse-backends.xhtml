@@ -5,46 +5,61 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
-    
+
     <body>
         <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
             <ui:define name="content">
-                    <h:form id="mainForm">                        
+
+                    <h:form id="mainForm">
                         <div align="left" style="vertical-align: middle; min-height: 40px">
                             <h:outputText value="Backends" style="font-size: 22pt" />
                             <hr size="3" noshade="true"/>
                         </div>
                         <p:dataTable id="BackendBrowserTable"
                                      var="backend"
-                                     value="#{backingBean.backendAll}"
-                                     selection="#{backingBean.selectedBackend}"
-                                     rowKey="#{backend.backendName}"
-                                     selectionMode="single"                                                                                                                                              
+                                     value="#{backingBean.backends}"
+                                     rowKey="#{backend.name}"
                                      paginator="true"
                                      paginatorPosition="top"
                                      rows="25"
                                      paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                      rowsPerPageTemplate="25,50,100">
-                            <p:ajax event="rowSelect" listener="#{backingBean.onBackendRowSelectNavigate}"/>
                             <f:facet name="header">
                                 <div align="left" style="vertical-align: middle">
                                     <h:outputText value="Backends" style="font-size: 22pt"/>
-                                    <p:menuButton value="Actions" style="float: right">
-                                        <p:menuitem value="New" url="/user/create-Backend.xhtml" />
-                                    </p:menuButton>
                                 </div>
                             </f:facet>
+                            <p:column style="width:2%">
+                                <p:rowToggler />
+                            </p:column>
                             <p:column headerText="Name"
-                                      filterBy="#{backend.backendName}"
+                                      filterBy="#{backend.name}"
                                       filterMatchMode="contains">
-                                <h:outputText value="#{backend.backendName}" />
+                                <h:outputText value="#{backend.name}" />
                             </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText value="#{backend.backendDesc}" />
-                            </p:column>
-                            <p:column headerText="Job Managers Supported">
-                                <h:outputText value="#{backend.jobManagerCollectionString}" />
-                            </p:column>
+
+                            <p:rowExpansion id="rowExp1">
+                                    <p:dataTable id="attrTable"
+                                                 var="attr"
+                                                 value="#{backend.attribute}"
+                                                 rowKey="#{attr.name}">
+
+                                        <p:column style="width:2%">
+                                            <p:rowToggler/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <h:outputText value="#{attr.name}"/>
+                                        </p:column>
+                            
+                                        <p:rowExpansion id="rowExp2">
+                                            <p:dataList var="value"
+                                                         value="#{attr.value}">
+                                                    <h:outputText value="#{value}"/>
+                                            </p:dataList>
+                                        </p:rowExpansion>
+                                    </p:dataTable>
+                            </p:rowExpansion>
                         </p:dataTable>
                     </h:form>
             </ui:define>
