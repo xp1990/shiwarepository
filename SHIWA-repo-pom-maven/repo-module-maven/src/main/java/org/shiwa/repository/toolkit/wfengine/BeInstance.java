@@ -50,8 +50,6 @@ public abstract class BeInstance implements Serializable {
     @JoinColumn(name = "we_dev", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User WEDev;
-    @OneToMany(mappedBy = "id")
-    private Collection<BeAttr> beAttrCollection;
 
     public BeInstance() {
     }
@@ -92,14 +90,6 @@ public abstract class BeInstance implements Serializable {
 
     public void setWEDev(User WEDev) {
         this.WEDev = WEDev;
-    }
-
-    public Collection<BeAttr> getBeAttrCollection() {
-        return beAttrCollection;
-    }
-
-    public void setBeAttrCollection(Collection<BeAttr> beAttrCollection) {
-        this.beAttrCollection = beAttrCollection;
     }
 
     @Override

@@ -4,19 +4,34 @@
            targetNamespace="configuration.repository.shiwa.org"
            xmlns:ns1="configuration.repository.shiwa.org"
            elementFormDefault="qualified">
-    
-    <xs:element name="value" type="xs:string"/>
-    <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="type" type="xs:string"/>
-    
+
+    <xs:element name="value">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:maxLength value="250"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:attribute name="name">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:maxLength value="50"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+
     <xs:element name="backends">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="ns1:backend" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
+        <xs:unique name="UniqueBackendName">
+            <xs:selector xpath="ns1:backend"/>
+            <xs:field xpath="@ns1:name"/>
+        </xs:unique>
     </xs:element>
-    
+
     <xs:element name="backend">
         <xs:complexType>
             <xs:sequence>
@@ -24,15 +39,18 @@
             </xs:sequence>
             <xs:attribute ref="ns1:name" use="required"/>
         </xs:complexType>
+        <xs:unique name="UniqueAttributeName">
+            <xs:selector xpath="ns1:attribute"/>
+            <xs:field xpath="@ns1:name"/>
+        </xs:unique>
     </xs:element>
-    
+
     <xs:element name="attribute">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="ns1:value" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute ref="ns1:name" use="required"/>
-            <xs:attribute ref="ns1:type" use="required"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>
