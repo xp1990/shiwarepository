@@ -4240,7 +4240,7 @@ public class BackingBean implements Serializable {
                 addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
             } catch (ValidationFailedException ex) {
                 addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
-            } catch (EntityNotFoundException ex) {
+            } catch (EntityAlreadyExistsException ex) {
                 addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
             }
         }
