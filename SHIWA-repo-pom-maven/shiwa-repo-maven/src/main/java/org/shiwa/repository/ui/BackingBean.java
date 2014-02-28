@@ -134,6 +134,10 @@ public class BackingBean implements Serializable {
     WEUploadedFile[] selectedWEFiles = null;
 
     /* WEImplementation */
+    String beiName = "";
+    String backendCreationType = "";
+    String backendSelString="";
+    List<NewAttributeBean> backendAttribs = null;
     BeInstance selectedBEInstance = null;
     boolean showExistingBEI = true;
     int selectedBEIJobTypeId = 0;
@@ -3987,6 +3991,7 @@ public class BackingBean implements Serializable {
         selectedWEFiles = null;
 
         /* WEImplementation */
+        backendAttribs = null;
         selectedBEInstance = null;
         showExistingBEI = true;
         selectedBEIJobTypeId = 0;
@@ -4177,11 +4182,69 @@ public class BackingBean implements Serializable {
         return null;
     }
 
-
     /*
      * Backend Functions -------------------------------------------------------------
      */
+    public String getBeiName() {
+        return beiName;
+    }
 
+    public void setBeiName(String beiName) {
+        this.beiName = beiName;
+    }
+
+    public String getBackendCreationType() {
+        return backendCreationType;
+    }
+
+    public void setBackendCreationType(String backendCreationType) {
+        this.backendCreationType = backendCreationType;
+    }
+
+    public String getBackendSelString(){
+        return "";
+    }
+
+    public void setBackendSelString(String selString){
+        backendSelString = selString;
+        addBackendAttribute(selString);
+    }
+
+    public void addBackendAttribute(String s){
+        if(backendAttribs == null){
+            backendAttribs = new ArrayList<NewAttributeBean>();
+        }
+
+        if(s != null && !s.isEmpty()){
+            String kv[] = s.split("\\:");
+
+            backendAttribs.add(new NewAttributeBean(kv[0], kv[1], kv[2]));
+            Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Type = " + kv[0] + " Key = " + kv[1] + " Value = " + kv[2]);
+        }
+    }
+
+    public void createBEInstance(){
+        HashMap<String, String> attribMap = new HashMap<String, String>();
+
+        if(backendCreationType != null && !backendCreationType.isEmpty() && backendAttribs != null && !backendAttribs.isEmpty()){
+            //get only attributes for creation type
+            for(NewAttributeBean a : backendAttribs){
+                if(a.getType().equalsIgnoreCase(backendCreationType)){
+                    attribMap.put(a.getName(), a.getValue());
+                }
+            }
+            try {
+                BeInstance b = af.createBeInstance(beiName, attribMap, getCurrentUser().getId(), backendCreationType);
+                addMessage(null, FacesMessage.SEVERITY_INFO, "Backend Configuration " + b.getName() + " has been created successfully!" , null);
+            } catch (AuthorizationException ex) {
+                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
+            } catch (ValidationFailedException ex) {
+                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
+            } catch (EntityNotFoundException ex) {
+                addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+ex.getMessage(), null);
+            }
+        }
+    }
 
     public void onBackendRowSelectNavigate(SelectEvent event) {
         nav.performNavigation("/user/edit-backend?faces-redirect=true");
@@ -4334,11 +4397,6 @@ public class BackingBean implements Serializable {
 
             }
         }
-    }
-
-    public void createBEInstance(boolean edit){
-
-
     }
 
     /*

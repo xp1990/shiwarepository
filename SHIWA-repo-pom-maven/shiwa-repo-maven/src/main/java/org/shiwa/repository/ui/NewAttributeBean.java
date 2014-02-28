@@ -13,10 +13,25 @@ import java.io.Serializable;
  */
 public class NewAttributeBean implements Serializable {
 
+    String type = "";
     String name = "";
     String value = "";
 
     public NewAttributeBean() {
+    }
+
+    public NewAttributeBean(String t, String k, String v) {
+        type = t;
+        name = k;
+        value = v;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {

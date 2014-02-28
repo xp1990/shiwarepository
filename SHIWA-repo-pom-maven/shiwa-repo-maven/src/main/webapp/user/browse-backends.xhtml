@@ -44,23 +44,43 @@
                                                  value="#{backend.attribute}"
                                                  rowKey="#{attr.name}">
 
-                                        <p:column style="width:2%">
-                                            <p:rowToggler/>
-                                        </p:column>
-
-                                        <p:column>
+                                        <p:column headerText="Attribute">
                                             <h:outputText value="#{attr.name}"/>
                                         </p:column>
-                            
-                                        <p:rowExpansion id="rowExp2">
-                                            <p:dataList var="value"
-                                                         value="#{attr.value}">
-                                                    <h:outputText value="#{value}"/>
-                                            </p:dataList>
-                                        </p:rowExpansion>
+
+                                        <p:column headerText="Available Values">
+                                            <p:selectOneMenu disabled="#{!backingBean.canCreateWEImplementations}" value="#{backingBean.backendSelString}">
+                                                <f:selectItem itemLabel="Please Select..." itemValue=""/>
+                                                <f:selectItems value="#{attr.value}" var="v" itemLabel="#{v}" itemValue="#{backend.name}:#{attr.name}:#{v}"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
                                     </p:dataTable>
+                                <div  align="right" style="padding-top: 5px; padding-left: 5px;">
+                                    <p:commandButton id="create" disabled="#{!backingBean.canCreateWEImplementations}" icon="ui-icon-plus" title="Add Backend Configuration" onclick="createBEIWidget.show();">
+                                        <f:setPropertyActionListener target="#{backingBean.backendCreationType}" value="#{backend.name}"/>
+                                    </p:commandButton>
+                                </div>
                             </p:rowExpansion>
                         </p:dataTable>
+
+                        <p:dialog id="createBEI"
+                              widgetVar="createBEIWidget"
+                              modal="true"
+                              header="Create Backend Configuration"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                            <p:ajax event="close" update="growl BEIBrowserTable"/>
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Name: " />
+                                <h:inputText value="#{backingBean.beiName}"/>
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="createBEIWidget.hide();" action="#{backingBean.createBEInstance}" ajax="false" update="growl @all"/>
+                                <p:commandButton value="No" onclick="createBEIWidget.hide();" type="button" />
+                            </div>
+                        </p:dialog>
                     </h:form>
             </ui:define>
         </ui:composition>
