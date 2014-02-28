@@ -5,21 +5,16 @@
 package org.shiwa.repository.toolkit.wfengine;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import uk.ac.wmin.edgi.repository.entities.User;
@@ -29,12 +24,11 @@ import uk.ac.wmin.edgi.repository.entities.User;
  * @author xp
  */
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "idBackend", discriminatorType = DiscriminatorType.INTEGER)
 @Table(name = "be_instance")
 @NamedQueries({
-    @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b")})
-public abstract class BeInstance implements Serializable {
+    @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b"),
+    @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b WHERE b.name= :name")})
+public class BeInstance implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -114,6 +108,6 @@ public abstract class BeInstance implements Serializable {
 
     @Override
     public String toString() {
-        return "org.shiwa.repository.toolkit.wfengine.BeInstance[ idBackendInst=" + id + " ]";
+        return "org.shiwa.repository.toolkit.wfengine.BeInstance[ id=" + id + " ]";
     }
 }

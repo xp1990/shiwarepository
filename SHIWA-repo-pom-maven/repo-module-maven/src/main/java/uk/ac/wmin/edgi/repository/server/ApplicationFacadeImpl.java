@@ -7,18 +7,15 @@ package uk.ac.wmin.edgi.repository.server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +23,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -36,6 +34,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.xml.bind.JAXBException;
+import org.shiwa.repository.configuration.Attribute;
 import org.shiwa.repository.configuration.Backend;
 import org.shiwa.repository.configuration.Backends;
 import org.shiwa.repository.submission.SubmissionHelpers;
@@ -4304,6 +4303,65 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     /*
      * Backend Instance Management Functions ------------------------------------------------
      */
+
+    @Override
+    public BeInstance createBeInstance(String name, Map<String, String>attribMap, int userId, String backend)
+            throws AuthorizationException, ValidationFailedException, EntityAlreadyExistsException
+    {
+        if(name == null || name.isEmpty()){
+            logger.log(Level.SEVERE, "New BeInstance name error");
+            throw new ValidationFailedException("Name improperly formatted");
+        }
+
+        if(!em.createNamedQuery("BeInstance.findByName", BeInstance.class).setParameter("name", name).getResultList().isEmpty()){
+            logger.log(Level.SEVERE, "Entity with this name already exists: " + name);
+            throw new EntityAlreadyExistsException("Please chose another name, this field must be unique.");
+        }
+
+        User we_dev = em.find(User.class, userId);
+
+        if(we_dev == null || canUserCreateWEImplementations(userId) != null){
+            logger.log(Level.SEVERE, "User not found or not authorized to do this");
+            throw new AuthorizationException("Id " + userId + " User not found or has improper rights to perform this action");
+        }
+
+        //check attributes list is complete
+        for(Backend be : listBackendAll()){
+            if(be.getName().equalsIgnoreCase(backend)){
+                for(Attribute t : be.getAttribute()){
+                    if(!attribMap.containsKey(t.getName())){
+                        logger.log(Level.SEVERE, t.getName() + " is missing from the attribMap");
+                        throw new ValidationFailedException("Missing attribute in list");
+                    }
+                }
+            }
+        }
+
+        BeInstance b = new BeInstance(name, backend, we_dev);
+        em.persist(b);
+        em.flush();
+
+
+        /*
+         * Persist the backend Attribs
+         */
+        for(String key : attribMap.keySet()){
+            if(attribMap.get(key) == null || attribMap.get(key).isEmpty()){
+                logger.log(Level.SEVERE, attribMap.get(key) + " has a missing value in the attribMap");
+                throw new ValidationFailedException("Missing value in attributes list or value is null");
+            }
+            BeAttr a = new BeAttr(b, key, attribMap.get(key));
+            em.persist(a);
+
+        }
+
+        em.flush();
+        return b;
+
+        //Generate roll-back policy
+
+
+    }
 
     @Override
     public BeInstance getBEInstanceById(int _bId){

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Local;
 import org.shiwa.repository.submission.objects.EngineData;
@@ -290,7 +291,7 @@ public interface ApplicationFacadeLocal {
     //these are for backend management
     public List<Backend> listBackendAll();
     public String canUserCreateBackends(int callId);
-
+    public BeInstance createBeInstance(String name, Map<String, String>attribMap, int userId, String backend) throws AuthorizationException, ValidationFailedException, EntityAlreadyExistsException;
 
     public void deleteBackend(Backend _be) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
     public Backend getBackendById(int _bId);

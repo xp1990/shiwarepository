@@ -60,8 +60,8 @@ public class BeAttr implements Serializable {
         this.id = id;
     }
 
-    public BeAttr(Integer id, String name, String attrValue) {
-        this.id = id;
+    public BeAttr(BeInstance be_id, String name, String attrValue) {
+        this.beId = be_id;
         this.name = name;
         this.attrValue = attrValue;
     }
