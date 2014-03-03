@@ -853,7 +853,7 @@
                                                      readonly="#{!backingBean.canUpdateImplementation}"
                                                      disabled="#{!backingBean.canUpdateImplementation}"
                                                      style="width: 90%">
-                                        <f:selectItems value="#{backingBean.workflowEnginesNoDupes}"
+                                        <f:selectItems value="#{backingBean.platformNames}"
                                                var="we1"
                                                itemLabel="#{we1}"
                                                itemValue="#{we1}"/>
@@ -866,10 +866,7 @@
                                                      readonly="#{!backingBean.canUpdateImplementation}"
                                                      disabled="#{!backingBean.canUpdateImplementation}"
                                                      style="width: 90%">
-                                        <f:selectItems value="#{backingBean.workflowEnginesByString}"
-                                                       var="we2"
-                                                       itemLabel="#{we2.version}"
-                                                       itemValue="#{we2.version}" />
+                                        <f:selectItems value="#{backingBean.platformVersionsForSelected}"/>
                                     </h:selectOneMenu>
                                     </h:panelGrid>
                                      <div align="right" style="padding-top: 5px">

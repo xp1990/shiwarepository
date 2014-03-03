@@ -1381,6 +1381,13 @@ public class BackingBean implements Serializable {
             return null;
         }
 
+
+        /*
+        if((selectedImp.getPlatformName() != null || selectedImp.getPlatformName().isEmpty()) && (selectedImp.getPlatformVersion() == null || selectedImp.getPlatformVersion().isEmpty())){
+            addMessage(null, FacesMessage.SEVERITY_WARN, "Please select a workflow engine name and version", null);
+            return null;
+        }*/
+
         try {
             selectedImp = af.updateVersionedImp(selectedImp.getId(), selectedImp.getPlatformName(), selectedImp.getPlatformVersion(), selectedImp.getVersion());
             if (selectedApp != null) {
