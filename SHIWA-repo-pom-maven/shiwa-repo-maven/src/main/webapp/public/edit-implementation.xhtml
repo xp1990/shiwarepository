@@ -96,59 +96,44 @@
                     <p:tabView id ="editImpDetails">
                         <p:tab title="Details">
                             <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" >
-                            <h:outputText value="ID:"/>
-                            <h:outputText value="#{backingBean.selectedImp.id}"/>
-                            <h:outputText/>
-                            <h:outputText value="Views:"/>
-                            <h:outputText value="#{backingBean.selectedImp.views}"/>
-                            <h:outputText/>
+                                <h:outputText value="ID:"/>
+                                <h:outputText value="#{backingBean.selectedImp.id}"/>
+                                <h:outputText/>
+                                <h:outputText value="Views:"/>
+                                <h:outputText value="#{backingBean.selectedImp.views}"/>
+                                <h:outputText/>
                             </h:panelGrid>
                             <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" id="createPlatformPanel" rendered="#{!backingBean.userGuest}">
-                            <h:outputText value="Engine name:" />
-                            <h:selectOneMenu value="#{backingBean.selectedImp.platformName}"
-                                             style="width: 90%"
-                                             readonly="#{!backingBean.canUpdateImplementation}"
-                                             disabled="#{!backingBean.canUpdateImplementation}">
-                                <f:selectItems value="#{backingBean.platformNames}"
-                                               var="selectPlatformName"
-                                               itemLabel="#{selectPlatformName}"
-                                               itemValue="#{selectPlatformName}" />
-                            </h:selectOneMenu>
-                            <p:commandButton value="Select" action="#{backingBean.update()}" ajax="false" update="createPlatformPanel createPlatformPanel1" rendered="#{backingBean.canUpdateImplementation}"/>
 
-                            <h:outputText value="" rendered="#{!backingBean.canUpdateImplementation}"/>
+                                <h:outputText value="Engine name:" />
+                                <h:outputText value="#{backingBean.selectedImp.platformName}"/>
+                                <h:outputText value="" rendered="#{!backingBean.canUpdateImplementation}"/>
+                                <p:commandButton value="Change Workflow Engine" oncomplete="editWorkflowEngineVar.show();" rendered="#{backingBean.canUpdateImplementation}" disabled="#{true}"/>
 
-                            <h:outputText value="Engine version:" />
-                            <h:selectOneMenu value="#{backingBean.selectedImp.platformVersion}"
+                                <h:outputText value="Engine Version:"/>
+                                <h:outputText value="#{backingBean.selectedImp.platformVersion}"/>
+                                <h:outputText />
+
+                                <h:outputText value="Version:" />
+                                <h:inputText id="newImpVersion"
+                                             value="#{backingBean.selectedImp.version}"
+                                             label="Version"
                                              readonly="#{!backingBean.canUpdateImplementation}"
                                              disabled="#{!backingBean.canUpdateImplementation}"
-                                             style="width: 90%">
-                                <f:selectItems value="#{backingBean.platformVersionsForSelected}"
-                                               var="selectPlatformVersion"
-                                               itemLabel="#{selectPlatformVersion}"
-                                               itemValue="#{selectPlatformVersion}" />
-                            </h:selectOneMenu>
-                            <h:outputText/>
-
-                            <h:outputText value="Version:" />
-                            <h:inputText id="newImpVersion"
-                                         value="#{backingBean.selectedImp.version}"
-                                         label="Version"
-                                         readonly="#{!backingBean.canUpdateImplementation}"
-                                         disabled="#{!backingBean.canUpdateImplementation}"                                        style="width: auto"
-                                         title="This is a required field and must be at least 3 characters long">
-                            </h:inputText>
-                            <h:outputText/>
+                                             style="width: auto"
+                                             title="This is a required field and must be at least 3 characters long">
+                                </h:inputText>
+                                <h:outputText/>
                             </h:panelGrid>
                             <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft" id="createPlatformPanel1">
-                            <h:outputText value="Workflow graph:" rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}"/>
-                            <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}">
-                                <a href="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" title="Download full size">
-                                    <p:graphicImage value="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" width="300" style="border-style: none"/>
-                                </a>
-                            </p:outputPanel>
-                            <h:outputText/>
-                        </h:panelGrid>
+                                <h:outputText value="Workflow graph:" rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}"/>
+                                <p:outputPanel rendered="#{backingBean.impSummaryOfSelImp.hasGraph()}">
+                                    <a href="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" title="Download full size">
+                                        <p:graphicImage value="../download?impid=#{backingBean.selectedImp.id}&amp;filename=#{backingBean.impSummaryOfSelImp.graph}" width="300" style="border-style: none"/>
+                                    </a>
+                                </p:outputPanel>
+                                <h:outputText/>
+                             </h:panelGrid>
 
 
                         <div align="right" style="padding-top: 5px">
@@ -859,6 +844,41 @@
                                         </p:tab>>
                                     </p:tabView>
                                 </p:outputPanel>
+                            </p:dialog>
+                            <p:dialog header="Change Workflow Engine" showEffect="fade" widgetVar="editWorkflowEngineVar">
+                                <p:outputPanel id="editWorkflowEngine">
+                                    <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft,justifyLeft">
+                                    <h:outputText value="Engine name:" />
+                                    <h:selectOneMenu value="#{backingBean.selectedImp.platformName}"
+                                                     readonly="#{!backingBean.canUpdateImplementation}"
+                                                     disabled="#{!backingBean.canUpdateImplementation}"
+                                                     style="width: 90%">
+                                        <f:selectItems value="#{backingBean.platformNames}"
+                                                       var="selectPlatformName"
+                                                       itemLabel="#{selectPlatformName}"
+                                                       itemValue="#{selectPlatformName}" />
+                                        <p:ajax event="change" listener="#{backingBean.handleEditImpWEIdString}" update="versionMenuDialog" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="Engine version:" />
+                                    <h:selectOneMenu id="versionMenuDialog"
+                                                     value="#{backingBean.selectedImp.platformVersion}"
+                                                     readonly="#{!backingBean.canUpdateImplementation}"
+                                                     disabled="#{!backingBean.canUpdateImplementation}"
+                                                     style="width: 90%">
+                                        <f:selectItem itemLabel="#{backingBean.selectedImp.platformVersion}" itemValue="#{backingBean.selectedImp.platformVersion}"/>
+                                        <f:selectItems value="#{backingBean.workflowEnginesByString}"
+                                                       var="we2"
+                                                       itemLabel="#{we2.version}"
+                                                       itemValue="#{we2.version}" />
+                                    </h:selectOneMenu>
+                                    </h:panelGrid>
+                                     <div align="right" style="padding-top: 5px">
+                                        <p:commandButton value="Save" action="#{backingBean.update()}"
+                                             update="createPlatformPanel createPlatformPanel1 growl"
+                                             rendered="#{backingBean.canUpdateImplementation}" oncomplete="editWorkflowEngineVar.close();" />
+                                    </div>
+                                    </p:outputPanel>
                             </p:dialog>
                 </h:form>
             </ui:define>

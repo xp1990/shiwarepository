@@ -1307,6 +1307,10 @@ public class BackingBean implements Serializable {
         this.impWEIdString = newImplementation.getPlatformName();
     }
 
+    public void handleEditImpWEIdString(){
+        this.impWEIdString = selectedImp.getPlatformName();
+    }
+
     public String createImplementation() {
         if (selectedApp == null) {
             addMessage(null, FacesMessage.SEVERITY_WARN, "Please select an application", null);
