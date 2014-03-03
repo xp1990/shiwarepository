@@ -108,7 +108,7 @@
                                 <h:outputText value="Engine name:" />
                                 <h:outputText value="#{backingBean.selectedImp.platformName}"/>
                                 <h:outputText value="" rendered="#{!backingBean.canUpdateImplementation}"/>
-                                <p:commandButton value="Change Workflow Engine" oncomplete="editWorkflowEngineVar.show();" rendered="#{backingBean.canUpdateImplementation}" disabled="#{true}"/>
+                                <p:commandButton value="Change Workflow Engine" oncomplete="editWorkflowEngineVar.show();" rendered="#{backingBean.canUpdateImplementation}"/>
 
                                 <h:outputText value="Engine Version:"/>
                                 <h:outputText value="#{backingBean.selectedImp.platformVersion}"/>
@@ -853,10 +853,10 @@
                                                      readonly="#{!backingBean.canUpdateImplementation}"
                                                      disabled="#{!backingBean.canUpdateImplementation}"
                                                      style="width: 90%">
-                                        <f:selectItems value="#{backingBean.platformNames}"
-                                                       var="selectPlatformName"
-                                                       itemLabel="#{selectPlatformName}"
-                                                       itemValue="#{selectPlatformName}" />
+                                        <f:selectItems value="#{backingBean.workflowEnginesNoDupes}"
+                                               var="we1"
+                                               itemLabel="#{we1}"
+                                               itemValue="#{we1}"/>
                                         <p:ajax event="change" listener="#{backingBean.handleEditImpWEIdString}" update="versionMenuDialog" />
                                     </h:selectOneMenu>
 
@@ -866,7 +866,6 @@
                                                      readonly="#{!backingBean.canUpdateImplementation}"
                                                      disabled="#{!backingBean.canUpdateImplementation}"
                                                      style="width: 90%">
-                                        <f:selectItem itemLabel="#{backingBean.selectedImp.platformVersion}" itemValue="#{backingBean.selectedImp.platformVersion}"/>
                                         <f:selectItems value="#{backingBean.workflowEnginesByString}"
                                                        var="we2"
                                                        itemLabel="#{we2.version}"
@@ -874,9 +873,9 @@
                                     </h:selectOneMenu>
                                     </h:panelGrid>
                                      <div align="right" style="padding-top: 5px">
-                                        <p:commandButton value="Save" action="#{backingBean.update()}"
+                                        <p:commandButton value="Save" action="#{backingBean.updateImplementation}"
                                              update="createPlatformPanel createPlatformPanel1 growl"
-                                             rendered="#{backingBean.canUpdateImplementation}" oncomplete="editWorkflowEngineVar.close();" />
+                                             rendered="#{backingBean.canUpdateImplementation}" ajax="#{false}"/>
                                     </div>
                                     </p:outputPanel>
                             </p:dialog>
