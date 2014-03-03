@@ -8,23 +8,22 @@
     <packaging>ejb</packaging>
 
     <name>repo_module_maven</name>
-    
-    <repositories>  
-        <repository>  
-            <id>prime-repo</id>  
-            <name>PrimeFaces Maven Repository</name>  
-            <url>http://repository.primefaces.org</url>  
-            <layout>default</layout>  
-        </repository>     
+
+    <repositories>
+        <repository>
+            <id>prime-repo</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>http://repository.primefaces.org</url>
+            <layout>default</layout>
+        </repository>
     </repositories>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-    </properties>        
-    
-    <dependencies>       
+    </properties>
+
+    <dependencies>
         <dependency>
             <groupId>org.atmosphere</groupId>
             <artifactId>atmosphere-runtime</artifactId>
@@ -44,11 +43,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>  
-            <groupId>org.primefaces</groupId>  
-            <artifactId>primefaces</artifactId>  
-            <version>2.2.1</version>  
-        </dependency>  
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>2.2.1</version>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -59,7 +58,7 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.2</version>
         </dependency>
-        
+
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -73,7 +72,7 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-    </dependencies>    
+    </dependencies>
 
     <build>
         <plugins>
@@ -119,7 +118,7 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>                    
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
