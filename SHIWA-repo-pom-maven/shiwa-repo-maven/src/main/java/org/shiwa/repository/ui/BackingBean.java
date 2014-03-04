@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
+import org.shiwa.repository.configuration.Attribute;
 import org.shiwa.repository.configuration.Backend;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationNodeRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationRTO;
@@ -4280,6 +4281,10 @@ public class BackingBean implements Serializable {
 
     public List<BeInstance> getBeInstanceAll(){
         return af.getBeInstanceAll();
+    }
+
+    public List<BeAttr> getAttributesOfBeI(BeInstance _be) {
+        return af.getAttributesOfBeI(_be);
     }
 
     public boolean getCanCreateBackend(){
