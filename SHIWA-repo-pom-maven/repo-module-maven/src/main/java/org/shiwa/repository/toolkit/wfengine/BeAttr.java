@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "BeAttr.findAll", query = "SELECT b FROM BeAttr b"),
     @NamedQuery(name = "BeAttr.findById", query = "SELECT b FROM BeAttr b WHERE b.id = :id"),
+    @NamedQuery(name = "BeAttr.findByBeId", query = "SELECT b FROM BeAttr b WHERE b.beId = :id"),
     @NamedQuery(name = "BeAttr.findByName", query = "SELECT b FROM BeAttr b WHERE b.name = :name"),
     @NamedQuery(name = "BeAttr.findByAttrValue", query = "SELECT b FROM BeAttr b WHERE b.attrValue = :attrValue")})
 public class BeAttr implements Serializable {

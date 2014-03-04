@@ -4352,7 +4352,8 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             }
             BeAttr a = new BeAttr(b, key, attribMap.get(key));
             em.persist(a);
-
+            b.getAttributes().add(a);
+            b = em.merge(b);
         }
 
         em.flush();
@@ -4395,6 +4396,13 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     @Override
     public List<BeInstance> getBeInstanceAll(){
         return em.createNamedQuery("BeInstance.findAll", BeInstance.class).getResultList();
+    }
+
+    public List<BeAttr> getAttributesOfBeI(BeInstance _be) {
+        List<BeAttr> tempList = new ArrayList<BeAttr>();
+        tempList = em.createNamedQuery("BeAttr.findByBeId", BeAttr.class).setParameter("id", _be).getResultList();
+        return tempList;
+        //return _be.getAttributes();
     }
 
     /**

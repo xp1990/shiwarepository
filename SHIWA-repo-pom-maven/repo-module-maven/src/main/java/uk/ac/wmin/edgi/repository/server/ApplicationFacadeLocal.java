@@ -303,6 +303,7 @@ public interface ApplicationFacadeLocal {
     public BeInstance updateBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public void deleteBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public List<BeInstance> getBeInstanceAll();
+    public List<BeAttr> getAttributesOfBeI(BeInstance _be);
 
     //functions for the ratings management
     public void removeSingleRating(int impId, int userId) throws AuthorizationException, EntityNotFoundException;

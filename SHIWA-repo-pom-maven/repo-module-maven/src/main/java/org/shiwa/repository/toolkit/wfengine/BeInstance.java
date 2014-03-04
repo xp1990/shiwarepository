@@ -5,6 +5,7 @@
 package org.shiwa.repository.toolkit.wfengine;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import uk.ac.wmin.edgi.repository.entities.User;
@@ -27,7 +29,7 @@ import uk.ac.wmin.edgi.repository.entities.User;
 @Table(name = "be_instance")
 @NamedQueries({
     @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b"),
-    @NamedQuery(name = "BeInstance.findAll", query = "SELECT b FROM BeInstance b WHERE b.name= :name")})
+    @NamedQuery(name = "BeInstance.findByName", query = "SELECT b FROM BeInstance b WHERE b.name= :name")})
 public class BeInstance implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,6 +46,8 @@ public class BeInstance implements Serializable {
     @JoinColumn(name = "we_dev", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User WEDev;
+    @OneToMany(mappedBy = "beId")
+    List<BeAttr> attributes;
 
     public BeInstance() {
     }
@@ -60,6 +64,14 @@ public class BeInstance implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public List<BeAttr> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<BeAttr> attributes) {
+        this.attributes = attributes;
     }
 
     public String getName() {
