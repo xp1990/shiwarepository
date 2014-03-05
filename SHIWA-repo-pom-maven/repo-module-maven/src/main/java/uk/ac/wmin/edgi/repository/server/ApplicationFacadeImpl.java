@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -4008,13 +4009,13 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
-    public List<Backend> listBackendAll() {
+    public Backends listBackendAll() {
 
         Backends list;
 
         try {
             list = jaxBackend.xmlToObject(new FileInputStream(backendSchema));
-            return list.getBackend();
+            return list;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JAXBException ex) {
@@ -4022,6 +4023,27 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         }
 
         return null;
+    }
+
+    @Override
+    public void writeBackends(Backend _b){
+        Backends list;
+
+        try {
+            list = jaxBackend.xmlToObject(new FileInputStream(backendSchema));
+            for(Backend b : list.getBackend()){
+                if(b.getName().equals(_b.getName())){
+                    list.getBackend().remove(b);
+                    break;
+                }
+            }
+            list.getBackend().add(_b);
+            jaxBackend.objectToXml(list, new FileOutputStream(backendSchema));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -4326,7 +4348,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         }
 
         //check attributes list is complete
-        for(Backend be : listBackendAll()){
+        for(Backend be : listBackendAll().getBackend()){
             if(be.getName().equalsIgnoreCase(backend)){
                 for(Attribute t : be.getAttribute()){
                     if(!attribMap.containsKey(t.getName())){

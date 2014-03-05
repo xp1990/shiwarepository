@@ -289,7 +289,8 @@ public interface ApplicationFacadeLocal {
     public Platform deleteWEFiles(WEUploadedFile _weFile) throws EntityNotFoundException, AuthorizationException, FileOperationFailedException, ValidationFailedException;
 
     //these are for backend management
-    public List<Backend> listBackendAll();
+    public void writeBackends(Backend _be);
+    public Backends listBackendAll();
     public String canUserCreateBackends(int callId);
     public BeInstance createBeInstance(String name, Map<String, String>attribMap, int userId, String backend) throws AuthorizationException, ValidationFailedException, EntityAlreadyExistsException;
 
@@ -299,7 +300,7 @@ public interface ApplicationFacadeLocal {
     public BeInstance getBEInstanceByName(String name);
     public String canUserModifyBEInst(int callerId, BeInstance beinst);
     public boolean isBEInstOwner(int callerId, BeInstance beinst);
-    
+
     public void deleteBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public List<BeInstance> getBeInstanceAll();
     public List<BeAttr> getAttributesOfBeI(BeInstance _be);
