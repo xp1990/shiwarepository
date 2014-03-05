@@ -17,6 +17,7 @@
                         <p:dataTable id="BEIBrowserTable"
                                      var="BEI"
                                      value="#{backingBean.beInstanceAll}"
+                                     selection="#{backingBean.selectedBEInstance}"
                                      rowKey="#{BEI.name}"
                                      paginator="true"
                                      paginatorPosition="top"
@@ -26,8 +27,17 @@
                         <f:facet name="header">
                                 <div align="left" style="vertical-align: middle">
                                     <h:outputText value="Backend Configurations" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canCreateWEImplementations}">
+                                            <p:menuitem value="Delete"
+                                                        onclick="deleteBEIDialogWidget.show();"
+                                                        rendered="#{backingBean.canCreateWEImplementations}"
+                                                        update="BEIBrowserTable"/>
+                                    </p:menuButton>
                                 </div>
                         </f:facet>
+
+                            <p:column selectionMode="single" rendered="#{backingBean.canCreateWEImplementations}"/>
+
                             <p:column style="width:2%">
                                 <p:rowToggler />
                             </p:column>
@@ -73,7 +83,7 @@
                               resizable="false"
                               closable="false">
                             <p:ajax event="close" update="growl BEIBrowserTable"/>
-                            <h:outputText value="Are you sure you want to delete the #{backingBean.selectedBEInstance.backendInstName} backend instance?"/>
+                            <h:outputText value="Are you sure you want to delete the #{backingBean.selectedBEInstance.name} backend instance?"/>
                             <div align="right" style="padding-top: 5px">
                                 <p:commandButton value="Yes" onclick="deleteBEIDialogWidget.hide();" action="#{backingBean.deleteBEI()}" ajax="false" update="growl @all WEFileTable"/>
                                 <p:commandButton value="No" onclick="deleteBEIDialogWidget.hide();" type="button" />

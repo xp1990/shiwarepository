@@ -3,8 +3,8 @@
 <!-- =========== FULL CONFIGURATION FILE ================================== -->
 
 <faces-config version="2.0"
-    xmlns="http://java.sun.com/xml/ns/javaee" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
 
     <navigation-rule>
@@ -45,7 +45,7 @@
         <navigation-case>
             <from-action>back</from-action>
             <from-outcome>back</from-outcome>
-            <to-view-id>/user/browse-users.xhtml</to-view-id> 
+            <to-view-id>/user/browse-users.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
 
@@ -104,7 +104,7 @@
             <to-view-id>/user/browse-platforms.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-    
+
     <navigation-rule>
         <from-view-id>/user/create-platform.xhtml</from-view-id>
         <navigation-case>
@@ -118,7 +118,7 @@
             <to-view-id>/user/browse-platforms.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-    
+
     <navigation-rule>
         <from-view-id>/user/edit-platform.xhtml</from-view-id>
         <navigation-case>
@@ -160,7 +160,7 @@
             <to-view-id>/user/browse-applications.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-    
+
     <navigation-rule>
         <from-view-id>/public/edit-application.xhtml</from-view-id>
         <navigation-case>
@@ -208,7 +208,7 @@
             <to-view-id>/public/edit-application.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-    
+
     <navigation-rule>
         <from-view-id>/user/edit-application-attribute.xhtml</from-view-id>
         <navigation-case>
@@ -269,6 +269,11 @@
             <to-view-id>/public/edit-implementation.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
+
+    <converter>
+        <converter-id>beInstanceConverter</converter-id>
+        <converter-class>org.shiwa.repository.ui.BeInstanceConverter</converter-class>
+    </converter>
 
     <navigation-rule>
         <from-view-id>/user/edit-implementation-attribute.xhtml</from-view-id>

@@ -4255,6 +4255,10 @@ public class BackingBean implements Serializable {
         return af.listBackendAll();
     }
 
+    public List<BeInstance> getBeInstances(){
+        return af.getBeInstanceAll();
+    }
+
     public String createBackend(){
         return null;
     }
@@ -4278,6 +4282,20 @@ public class BackingBean implements Serializable {
     /*
      * Backend Instance Functions ----------------------------------------------------
      */
+
+    public void deleteBEI(){
+        try {
+            af.deleteBEI(selectedBEInstance);
+            addMessage(null, FacesMessage.SEVERITY_INFO, selectedBEInstance.getName() + " deleted successfully!", null);
+            resetWEVars();
+        } catch (EntityNotFoundException ex) {
+            addMessage(null, FacesMessage.SEVERITY_INFO, ex.getMessage(), null);
+        } catch (AuthorizationException ex) {
+            addMessage(null, FacesMessage.SEVERITY_INFO, ex.getMessage(), null);
+        } catch (ValidationFailedException ex) {
+            addMessage(null, FacesMessage.SEVERITY_INFO, ex.getMessage(), null);
+        }
+    }
 
     public List<BeInstance> getBeInstanceAll(){
         return af.getBeInstanceAll();
@@ -4342,8 +4360,18 @@ public class BackingBean implements Serializable {
         this.selectedBEInstanceId = selectedBEInstanceId;
     }
 
-    public void handleExistingBEI(boolean edit){
+    public BeInstance getBeInstanceByName(String name){
+        return af.getBEInstanceByName(name);
+    }
 
+    public void handleExistingBEI(){
+        if(newWEImplementation.getIdBackendInst() == null){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Please select a backend configuration to associate with this new Workflow Engine Implementation", null);
+            showBEIDetails = false;
+        }else{
+            addMessage(null, FacesMessage.SEVERITY_INFO, "Backend Configuration: " + newWEImplementation.getIdBackendInst().getName() + " has been selected!", null);
+                        showBEIDetails = true;
+        }
     }
 
     public int getNewBEIoperatingSysId() {

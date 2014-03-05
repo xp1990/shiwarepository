@@ -53,7 +53,7 @@
                                                 <f:selectItem itemLabel="Please Select..." itemValue=""/>
                                                 <f:selectItems value="#{attr.value}" var="v" itemLabel="#{v}" itemValue="#{backend.name}:#{attr.name}:#{v}"/>
                                             </p:selectOneMenu>
-                                        </p:column>
+                                        </p:column>                                                                               
                                     </p:dataTable>
                                 <div  align="right" style="padding-top: 5px; padding-left: 5px;">
                                     <p:commandButton id="create" disabled="#{!backingBean.canCreateWEImplementations}" icon="ui-icon-plus" title="Add Backend Configuration" onclick="createBEIWidget.show();">
