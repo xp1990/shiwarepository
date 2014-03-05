@@ -4371,26 +4371,41 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
-    public BeInstance updateBEI(BeInstance _be)
-            throws ValidationFailedException, AuthorizationException, EntityNotFoundException
-    {
-        return null;
+    public BeInstance getBEInstanceByName(String name){
+        return em.createNamedQuery("BeInstance.findByName", BeInstance.class).setParameter("name", name).getSingleResult();
+
     }
 
     @Override
     public void deleteBEI(BeInstance _beI)
            throws EntityNotFoundException, AuthorizationException, ValidationFailedException
     {
+        /*
+         * Check management of relationships
+         */
 
-    }
+        if((_beI = em.find(BeInstance.class, _beI.getId())) == null){
+            logger.log(Level.SEVERE,"Entity not found in DB");
+            throw new EntityNotFoundException("Entity not found in DB");
+        }
 
-    @Override
-    public BeInstance dupeBeInstance (BeInstance _bei, String _name)
-            throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException
-    {
+        if(em.createNamedQuery("WEImplementation.findByBEI", WEImplementation.class).setParameter("bei", _beI).getResultList().size() > 0){
+            logger.log(Level.SEVERE, "Backend Configuration: {0} cannot be deleted. It is used in one or more Workflow Engine Implementations", _beI.getName());
+            throw new EntityNotFoundException("Backend Configuration: " + _beI.getName() + " cannot be deleted. It is used in one or more Workflow Engine Implementations");
+        }
+
+        if(!(getCallerUser().isAdmin() || getCallerUser().equals(_beI.getWEDev()))){
+            logger.log(Level.SEVERE,"Not permitted to perform this action - Deleting a Backend Configuration");
+             throw new AuthorizationException("Not permitted to perform this action - Deleting a Backend Configuration " + _beI.getName());
+        }
 
 
-        return null;
+        for(BeAttr b : _beI.getAttributes()){
+            em.remove(b);
+        }
+
+        em.remove(_beI);
+        em.flush();
     }
 
     @Override

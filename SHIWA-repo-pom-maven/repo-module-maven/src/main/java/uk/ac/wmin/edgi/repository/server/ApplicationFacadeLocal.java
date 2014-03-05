@@ -296,11 +296,10 @@ public interface ApplicationFacadeLocal {
     public void deleteBackend(Backend _be) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
     public Backend getBackendById(int _bId);
     public BeInstance getBEInstanceById(int _bId);
+    public BeInstance getBEInstanceByName(String name);
     public String canUserModifyBEInst(int callerId, BeInstance beinst);
     public boolean isBEInstOwner(int callerId, BeInstance beinst);
-
-    public BeInstance dupeBeInstance(BeInstance _bei, String _name) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException;
-    public BeInstance updateBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
+    
     public void deleteBEI(BeInstance _beI) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public List<BeInstance> getBeInstanceAll();
     public List<BeAttr> getAttributesOfBeI(BeInstance _be);
