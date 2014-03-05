@@ -53,7 +53,14 @@
                                                 <f:selectItem itemLabel="Please Select..." itemValue=""/>
                                                 <f:selectItems value="#{attr.value}" var="v" itemLabel="#{v}" itemValue="#{backend.name}:#{attr.name}:#{v}"/>
                                             </p:selectOneMenu>
-                                        </p:column>                                                                               
+                                        </p:column>
+
+                                        <p:column>
+                                            <p:commandButton id="addValButton" disabled="#{!backingBean.canCreateWEImplementations}" icon="ui-icon-plus" title="Add Backend Value" onclick="addValWidget.show();">
+                                                <f:setPropertyActionListener target="#{backingBean.selectedBackend}" value="#{backend}"/>
+                                                <f:setPropertyActionListener target="#{backingBean.selectedAttribute}" value="#{attr}"/>
+                                            </p:commandButton>
+                                        </p:column>
                                     </p:dataTable>
                                 <div  align="right" style="padding-top: 5px; padding-left: 5px;">
                                     <p:commandButton id="create" disabled="#{!backingBean.canCreateWEImplementations}" icon="ui-icon-plus" title="Add Backend Configuration" onclick="createBEIWidget.show();">
@@ -78,6 +85,24 @@
                             </h:panelGrid>
                             <div align="right" style="padding-top: 5px">
                                 <p:commandButton value="Yes" onclick="createBEIWidget.hide();" action="#{backingBean.createBEInstance}" ajax="false" update="growl @all"/>
+                                <p:commandButton value="No" onclick="createBEIWidget.hide();" type="button" />
+                            </div>
+                        </p:dialog>
+                        <p:dialog id="addVal"
+                              widgetVar="addValWidget"
+                              modal="true"
+                              header="Add Value"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="false">
+                            <p:ajax event="close" update="growl BEIBrowserTable"/>
+                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                                <h:outputText value="Value: " />
+                                <h:inputText value="#{backingBean.addValString}"/>
+                            </h:panelGrid>
+                            <div align="right" style="padding-top: 5px">
+                                <p:commandButton value="Yes" onclick="createBEIWidget.hide();" action="#{backingBean.addValueToSelectedAttribue}" ajax="false" update="growl @all"/>
                                 <p:commandButton value="No" onclick="createBEIWidget.hide();" type="button" />
                             </div>
                         </p:dialog>

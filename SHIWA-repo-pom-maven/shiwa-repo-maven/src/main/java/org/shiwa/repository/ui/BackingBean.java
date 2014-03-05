@@ -27,8 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
-import org.shiwa.repository.configuration.Attribute;
-import org.shiwa.repository.configuration.Backend;
+import org.shiwa.repository.configuration.*;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationNodeRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationRTO;
 import org.shiwa.repository.toolkit.transferobjects.DependencyRTO;
@@ -113,11 +112,6 @@ public class BackingBean implements Serializable {
     String myExpWorkflowID = "";
     String myExpWorkflowName = "";
 
-    /*
-     * emk
-     * TODO: Check usage of created vars!!
-     */
-
     Node displayNode = null;
 
     /* Workflow Engine - emk */
@@ -149,6 +143,10 @@ public class BackingBean implements Serializable {
     int newShellFileId = 0;
     Boolean showBEIDetails;
     Boolean changeEngineExec = false;
+    String addValString = "";
+    Attribute selectedAttribute = null;
+    Backend selectedBackend = null;
+    Backends backendList = null;
 
     //for implementation table
     String impWEIdString;
@@ -4252,7 +4250,16 @@ public class BackingBean implements Serializable {
     }
 
     public List<Backend> getBackends(){
-        return af.listBackendAll();
+        backendList = af.listBackendAll();
+        return backendList.getBackend();
+    }
+
+    public Backends getBackendList() {
+        return backendList;
+    }
+
+    public void setBackendList(Backends backendList) {
+        this.backendList = backendList;
     }
 
     public List<BeInstance> getBeInstances(){
@@ -4282,6 +4289,36 @@ public class BackingBean implements Serializable {
     /*
      * Backend Instance Functions ----------------------------------------------------
      */
+    public String getAddValString() {
+        return addValString;
+    }
+
+    public void setAddValString(String addValString) {
+        this.addValString = addValString;
+    }
+
+    public Attribute getSelectedAttribute() {
+        return selectedAttribute;
+    }
+
+    public void setSelectedAttribute(Attribute selectedAttribute) {
+        this.selectedAttribute = selectedAttribute;
+    }
+
+    public void addValueToSelectedAttribue(){
+        selectedBackend.getAttribute().remove(selectedAttribute);
+        selectedAttribute.getValue().add(addValString);
+        selectedBackend.getAttribute().add(selectedAttribute);
+        af.writeBackends(selectedBackend);
+    }
+
+    public Backend getSelectedBackend() {
+        return selectedBackend;
+    }
+
+    public void setSelectedBackend(Backend selectedBackend) {
+        this.selectedBackend = selectedBackend;
+    }
 
     public void deleteBEI(){
         try {
