@@ -4360,6 +4360,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         }
 
         BeInstance b = new BeInstance(name, backend, we_dev);
+        b.setAttributes(new ArrayList<BeAttr>());
         em.persist(b);
         em.flush();
 
