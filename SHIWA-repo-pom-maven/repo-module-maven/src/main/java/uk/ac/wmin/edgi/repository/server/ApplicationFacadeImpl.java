@@ -66,7 +66,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     private String globusUserpass;
     private String globusUsercert;
     private String globusUserkey;
-    private final String backendSchema = "/home/edward/BackendConfiguration.xml";
+    private final String backendSchema = "/srv/shiwa/BackendConfiguration.xml";
 
     private JaxbWrapper <Backends> jaxBackend;
 
@@ -3799,9 +3799,9 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
                 /*
                 if(weImp.getIdBackendInst().getWeImplementationCollection() == null){
                     weImp.getIdBackendInst().setWeImplementationCollection(new ArrayList<WEImplementation>());
-                }*/
+                }
 
-                /*
+
                 weImp.getIdBackendInst().getWeImplementationCollection().add(weImp);
                 */
 
