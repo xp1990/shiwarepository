@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <f:view contentType="text/html">
+            <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
+                <ui:define name="content">
+                    <p:outputPanel rendered="#{!backingBean.canCreateBackend}" >
+                        <h:outputText value="#{backingBean.errorMessage}"/>
+                    </p:outputPanel>
+                    <h:form id="mainForm" rendered="#{backingBean.canCreateBackend}">
+                        <div align="left" style="vertical-align: middle; min-height: 40px">
+                            <h:outputText value="New Workflow Engine File for #{backingBean.selectedWorkflowEngine.name} #{backingBean.selectedWorkflowEngine.version}" style="font-size: 22pt" />
+                            <hr size="3" noshade="true"/>
+                        </div>
+                        <p:panel>
+                            <h:panelGrid  columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+
+                                <h:outputLabel for="WEFileName1" value="File Name" />
+                                <h:inputText id="WEFileName1"
+                                             value="#{backingBean.newWEFile.name}" />
+
+                                <h:outputLabel for="WEFileDesc1" value="Description"/>
+                                <h:inputText id="WEFileDesc1" value="#{backingBean.newWEFile.description}"/>
+
+                                <h:outputLabel for="WEFileType1" value="Data or Executable"/>
+                                <h:selectOneRadio id="WEFileType1" value="#{backingBean.newWEFile.isData}">
+                                    <f:selectItem itemValue="#{true}" itemLabel="Data"/>
+                                    <f:selectItem itemValue="#{false}" itemLabel="Executable"/>
+                                </h:selectOneRadio>
+
+                                <h:outputLabel for="uploadWEFile1" value="Select Workflow Engine File" />
+                                <p:fileUpload id="uploadWEFile1"
+                                              fileUploadListener="#{backingBean.handleWEFileUpload}"
+                                              label="Browse"
+                                              mode="advanced"
+                                              auto="false"
+                                              update="growl"/>
+                                <div align="right" style="padding-top: 5px">
+                                    <p:commandButton value="Finish" action="#{backingBean.handleWEFileAttribs()}" ajax="false" update="growl"/>
+                                </div>
+                            </h:panelGrid>
+                        </p:panel>
+                    </h:form>
+                </ui:define>
+            </ui:composition>
+        </f:view>
+    </body>
+</html>
+
