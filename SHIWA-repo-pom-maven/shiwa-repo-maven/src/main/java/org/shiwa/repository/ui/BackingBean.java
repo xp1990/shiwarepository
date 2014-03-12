@@ -784,6 +784,7 @@ public class BackingBean implements Serializable {
     public String createGroup() {
         try {
             selectedGroup = af.createGroup(newGroup.getName());
+            af.addUserToGroup(selectedGroup.getId(), getCurrentUser().getLoginName());
             newGroup.clear();
             addMessage(null, FacesMessage.SEVERITY_INFO, "Created group '" + selectedGroup.getName() + "'", null);
             return "success";
@@ -792,6 +793,8 @@ public class BackingBean implements Serializable {
         } catch (ValidationFailedException e) {
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + e.getMessage(), null);
         } catch (AuthorizationException e) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + e.getMessage(), null);
+        } catch (EntityNotFoundException e){
             addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: " + e.getMessage(), null);
         }
         return null;
@@ -2408,6 +2411,10 @@ public class BackingBean implements Serializable {
 
     public List<ApplicationTO> getApplicationsReadyForValidation() {
         return appListCache = af.listApplicationsReadyForValidation();
+    }
+
+    public List<ApplicationTO> getApplicationByGroup(){
+        return af.listApplicationsOfGroup(selectedGroup.getId());
     }
 
     public List<ApplicationTO> getApplications() {

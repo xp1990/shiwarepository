@@ -5,18 +5,18 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
-    
+
     <body>
         <ui:composition template="./../WEB-INF/templates/header-template.xhtml">
             <ui:define name="content">
                 <p:outputPanel rendered="#{!backingBean.canReadGroup}" >
                     <h:outputText value="#{backingBean.errorMessage}"/>
                 </p:outputPanel>
-                <h:form id="mainForm" rendered="#{backingBean.canReadGroup}">                    
+                <h:form id="mainForm" rendered="#{backingBean.canReadGroup}">
                     <div align="left" style="vertical-align: middle; min-height: 40px">
                         <h:outputText value="#{backingBean.selectedGroup.name}" style="font-size: 22pt" />
                         <p:menuButton value="Actions" style="float: right">
-                            <p:menuitem value="Delete" onclick="deleteGroupDialogWidget.show()" />
+                            <p:menuitem value="Delete" onclick="deleteGroupDialogWidget.show();" />
                         </p:menuButton>
                         <hr size="3" noshade="true"/>
                     </div>
@@ -33,7 +33,7 @@
                             </h:panelGrid>
                             <p:message for="leaderName" />
                             <div align="right">
-                                <p:commandButton value="Change leader" 
+                                <p:commandButton value="Change leader"
                                                  action="#{backingBean.changeGroupLeader}"
                                                  update="userTable,growl"
                                                  disabled="#{!backingBean.canChangeGroupLeader}"/>
@@ -45,7 +45,6 @@
                                          var="groupUser"
                                          value="#{backingBean.usersOfSelectedGroup}"
                                          selection="#{backingBean.selectedGroupUser}"
-                                         selectionMode="single"
                                          paginator="true"
                                          rowKey="#{groupUser.loginName}"
                                          paginatorPosition="top"
@@ -55,12 +54,13 @@
                                 <f:facet name="header">
                                     <div align="left" style="vertical-align: middle">
                                         <h:outputText value="Users of group" style="font-size: 22pt"/>
-                                        <p:menuButton value="Actions" style="float: right">
+                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canAddUsersToGroup or backingBean.canRemoveUsersFromGroup}" >
                                             <p:menuitem value="Add user to group" onclick="addUserToGroupDialogWidget.show()" rendered="#{backingBean.canAddUsersToGroup}" />
                                             <p:menuitem value="Remove user from group" onclick="removeUserFromGroupDialogWidget.show()" rendered="#{backingBean.canRemoveUsersFromGroup}" />
                                         </p:menuButton>
                                     </div>
                                 </f:facet>
+                                <p:column selectionMode="single"/>
                                 <p:column headerText="Login name" sortBy="#{groupUser.loginName}" filterBy="#{groupUser.loginName}" filterMatchMode="contains">
                                     <h:outputText value="#{groupUser.loginName}" />
                                 </p:column>
@@ -75,19 +75,57 @@
                                 </p:column>
                             </p:dataTable>
                         </p:tab>
-                        <p:tab title="Workflows" rendered="false">
-                             <h:outputText value="Under construction" />
+                        <p:tab title="Workflows">
+                             <p:dataTable id="appBrowserTableByGroup"
+                                     var="app"
+                                     value="#{backingBean.applicationsOfSelectedGroup}"
+                                     selectionMode="single"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="25,50,100"
+                                     rowKey="#{app.name}"
+                                     rows="25">
+                            <f:facet name="header">
+                                <div align="left" style="vertical-align: middle">
+                                    <h:outputText value="Workflows" style="font-size: 22pt"/>
+                                    <p:menuButton value="Actions" style="float: right" rendered="#{!backingBean.userGuest}">
+                                        <p:menuitem value="New" url="/user/create-application.xhtml" />
+                                    </p:menuButton>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}" filterMatchMode="contains">
+                                <h:outputText value="#{backingBean.truncateForTable(app.name)}"/>
+                            </p:column>
+                            <p:column headerText="Owner" sortBy="#{app.ownerLoginName}" filterBy="#{app.ownerLoginName}" filterMatchMode="contains">
+                                <h:outputText value="#{app.ownerLoginName}" />
+                            </p:column>
+                            <p:column headerText="Status" sortBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterBy="#{backingBean.getPublishedFriendlyName(app.published)}" filterMatchMode="contains">
+                                <h:outputText value="#{backingBean.getPublishedFriendlyName(app.published)}" />
+                            </p:column>
+                            <p:column headerText="Description" >
+                                <h:outputText value="#{app.shortDescription}" />
+                            </p:column>
+                            <p:column headerText="Popularity" sortBy="#{backingBean.getPercentPopApp(app)}">
+                                <h:outputText value="#{backingBean.getPercentPopApp(app)}%"/>
+                            </p:column>
+                            <p:column style="width:4%">
+                                    <p:commandButton id="selectButton" actionListener="#{backingBean.onApplicationsRowSelectNavigate(app)}" icon="ui-icon-carat-1-e" title="View">
+                                        <f:setPropertyActionListener value="#{app}" target="#{backingBean.selectedApp}" />
+                                    </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
                         </p:tab>
                     </p:tabView>
+                </h:form>
+                <h:form id="dialogUserGroup">
                     <p:dialog id="deleteGroupDialog"
                               widgetVar="deleteGroupDialogWidget"
                               modal="true"
                               header="Delete group?"
                               showEffect="fade"
-                              hideEffect="fade"                              
+                              hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl"/>
                         <p:panel>
                             <h:outputText value="Are you sure you want to delete this group?" />
                             <div align="right" style="padding-top: 5px">
@@ -104,14 +142,13 @@
                               hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl usersOfGroupTable"/>
                         <p:panel>
                             <h:outputText value="Login name:" />
                             <p:autoComplete forceSelection="false"
                                             value="#{backingBean.userLoginNameToAddToGroup}"
                                             completeMethod="#{backingBean.completeAddUserToGroupUserLoginName}"/>
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Add" action="#{backingBean.addUserToGroup}" onclick="addUserToGroupDialogWidget.hide()" ajax="true" update="growl,UsersOfGroupTable" />
+                                <p:commandButton value="Add" action="#{backingBean.addUserToGroup}" onclick="addUserToGroupDialogWidget.hide()" update="growl mainForm" />
                                 <p:commandButton value="Cancel" onclick="addUserToGroupDialogWidget.hide()" type="button" />
                             </div>
                         </p:panel>
@@ -124,11 +161,10 @@
                               hideEffect="fade"
                               resizable="false"
                               closable="false">
-                        <p:ajax event="close" update="growl,usersOfGroupTable"/>
                         <p:panel>
                             <h:outputText value="Are you sure you want to remove selected user from this group?" />
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Yes" onclick="removeUserFromGroupDialogWidget.hide()" action="#{backingBean.removeUserFromGroup}" ajax="true" update="growl,usersOfGroupTable" />
+                                <p:commandButton value="Yes" onclick="removeUserFromGroupDialogWidget.hide()" action="#{backingBean.removeUserFromGroup}" update="growl mainForm" />
                                 <p:commandButton value="No" onclick="removeUserFromGroupDialogWidget.hide()" type="button" />
                             </div>
                         </p:panel>

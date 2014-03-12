@@ -20,8 +20,9 @@
                                      rowKey="#{appImp.appName}"
                                      rows="25">
                                 <f:facet name="header">
-                                    <div align="right">
+                                    <div align="left">
                                         <h:outputText value="Implementations" style="font-size: 20pt"/>
+                                        <p:commandButton icon="ui-icon-help" style="float: right" title="Help" onclick="helpImpsWidget.show();"/>
                                     </div>
                                 </f:facet>
                                 <p:column headerText="Submittable" sortBy="#{appImp.isSubmittable()}" style="width: 100px;">
@@ -86,6 +87,44 @@
                                     </p:commandButton>
                                 </p:column>
                             </p:dataTable>
+                        <p:dialog header="Workflow Implementations Help"
+                            id="helpImps"
+                            widgetVar="helpImpsWidget"
+                            modal="#{true}"
+                            draggable="#{true}"
+                            width="400"
+                            closable="#{true}">
+                        <p:outputPanel>
+                          <p>
+                              In this page we list all the different Workflow Implementations that have been created by our users that are available for you to see.
+                              A Workflow Implementation is the concrete representation of the associated workflow. Usually this has specific data assigned to it. Such
+                              as Submission Execution data and specific data sets as you will see if you select an Implementation from this page.
+                          </p>
+                          <h:panelGrid columns="2">
+                              <p:graphicImage value="/resources/images/disabled-grey.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed next to an Implementation it means that the developer has not enabled it as submittable using the Submission Service.
+                                  This decision is entirely up to the developer to make and relies on many factors:
+                                  <ul>
+                                      <li>The associated Workflow Engine (the Engine column below) must be supported by the Submission Service.</li>
+                                      <li>The Implementation of the Workflow and the Workflow itself must be flagged as public.</li>
+                                      <li>The Implementation must have a configured Submission Execution Node associated with it. This is viewable in the next screen
+                                      and is a collection of specific parameters relevant to this particular Implementation's execution.</li>
+                                  </ul>
+                              </p>
+
+                              <p:graphicImage value="/resources/images/play-blue.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed it means that this Workflow Implementation has been flagged as Submittable by the developer. It may be
+                                  selected for execution in th SSP platform.
+                              </p>
+                          </h:panelGrid>
+                      </p:outputPanel>
+                  </p:dialog>
                     </h:form>
             </ui:define>
         </ui:composition>

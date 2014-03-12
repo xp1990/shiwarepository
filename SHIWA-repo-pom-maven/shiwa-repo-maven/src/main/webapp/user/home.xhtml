@@ -146,19 +146,30 @@
                                      value="#{backingBean.myWorkflowEngines}"
                                      selectionMode="single"
                                      rowKey="#{workflowEngine.id}"
-                                     paginator="true"
-                                     paginatorPosition="top"
-                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                                     rowsPerPageTemplate="25,50,100"
-                                     rows="25">
+                                     rows="30">
                                 <f:facet name="header">
                                     <div align="left">
                                         <h:outputText value="Workflow Engines" style="font-size: 20pt"/>
                                         <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canCreateWEImplementations}">
                                             <p:menuitem value="New" url="/user/create-WorkflowEngine.xhtml"/>
                                         </p:menuButton>
+                                        <p:commandButton icon="ui-icon-help" style="float: right" title="Help" onclick="helpWorkflowEnginesWidget.show();"/>
                                     </div>
                                 </f:facet>
+                                <p:column id="ssEnabledCol" headerText="Submission Service Enabled" sortBy="#{workflowEngine.submittable}" style="white-space: normal; width:4%">
+                                    <p:outputPanel>
+                                        <p:graphicImage value="/resources/images/disabled-grey.png"
+                                                       width="26"
+                                                       rendered="#{!workflowEngine.submittable}"
+                                                       style="border-style: none"
+                                                       title="Not enabled for submission by the Submission Service!"/>
+                                        <p:graphicImage value="/resources/images/play-blue.png"
+                                                        width="26"
+                                                        rendered="#{workflowEngine.submittable}"
+                                                        style="border-style: none"
+                                                        title="This Engine is SHIWA Simulation Platform enabled by use of the Submission Service"/>
+                                    </p:outputPanel>
+                                </p:column>
                                 <p:column headerText="Name" filterBy="#{workflowEngine.name}">
                                     <h:outputText value="#{workflowEngine.name}" />
                                 </p:column>
@@ -176,6 +187,41 @@
                             </p:dataTable>
                         </p:tab>
                     </p:tabView>
+                    <p:dialog header="Workflow Engines Help"
+                            id="helpWorkflowEngines"
+                            widgetVar="helpWorkflowEnginesWidget"
+                            modal="#{true}"
+                            draggable="#{true}"
+                            width="400"
+                            closable="#{true}">
+                      <p:outputPanel>
+                          <p>
+                              In this page we list all the <b>Workflow Engines</b> that are supported by the SHIWA Repository.
+                          </p>
+                          <h:panelGrid columns="2">
+                              <p:graphicImage value="/resources/images/disabled-grey.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed then it means that the associated Workflow Engine is not supported by the Submission Service.
+                                  The decision to allow a Workflow Engine to be used by the Submission Service rests with the developer.
+                              </p>
+
+                              <p:graphicImage value="/resources/images/play-blue.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed then it means that the associated Workflow Engine is supported by the Submission Service. This implies
+                                  that any Workflow Implementation that is associated to an Engine of this type can be flagged as Submittable by the developer.
+                                  A developer can only flag their Workflow Implementation as Submittable if:
+                                  <ul>
+                                      <li>The Implementation of the Workflow and the Workflow itself must be flagged as public.</li>
+                                      <li>The Implementation must have a configured Submission Execution Node associated with it.</li>
+                                  </ul>
+                              </p>
+                          </h:panelGrid>
+                      </p:outputPanel>
+                  </p:dialog>
                 </h:form>
             </ui:define>
         </ui:composition>
