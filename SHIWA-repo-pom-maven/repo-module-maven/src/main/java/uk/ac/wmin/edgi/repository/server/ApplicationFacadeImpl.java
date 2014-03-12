@@ -3382,8 +3382,16 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     @Override
     public boolean getPlatformSubmittable(String name, String version){
-        Platform platform = em.createNamedQuery("Platform.findByNameAndVersion", Platform.class).setParameter("name", name).setParameter("version", version).getSingleResult();
-        return platform.isSubmittable();
+
+        try{
+             Platform platform = em.createNamedQuery("Platform.findByNameAndVersion", Platform.class).setParameter("name", name).setParameter("version", version).getSingleResult();
+             if(platform != null){
+                 return platform.isSubmittable();
+             }
+             return false;
+         }catch(NoResultException e){
+             return false;
+         }
     }
 
     @Override
