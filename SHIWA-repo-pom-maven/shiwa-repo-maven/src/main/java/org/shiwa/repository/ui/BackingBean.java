@@ -1167,6 +1167,11 @@ public class BackingBean implements Serializable {
         return err == null;
     }
 
+
+    public void handleEditImpWEIdString(){
+         this.impWEIdString = selectedImp.getPlatformName();
+    }
+
     public boolean getCanCreateAppAttributes() {
         if (selectedApp == null) {
             err = "Please select an application.";
