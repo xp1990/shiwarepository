@@ -26,7 +26,7 @@ import javax.persistence.TableGenerator;
 @Table(name = "imp_embed")
 @NamedQueries({
     @NamedQuery(name = "ImpEmbed.listAll", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e"),
-    @NamedQuery(name = "ImpEmbed.listByImpId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.id = :id"),
+    @NamedQuery(name = "ImpEmbed.listByImpId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.implementation.id = :id"),
     @NamedQuery(name = "ImpEmbed.listAllByExtServiceId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId"),
     @NamedQuery(name = "ImpEmbed.loadImpEmbed", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId AND e.extUserId = :extUserId AND e.implementation.id = :impId"),
     @NamedQuery(name = "ImpEmbed.listAllByExtServiceIdAndExtUserId", query = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ImpEmbedTO(e.id, e.implementation.id, e.extUserId, e.extServiceId) FROM ImpEmbed e WHERE e.extServiceId = :extServiceId AND e.extUserId = :extUserId")

@@ -1862,12 +1862,6 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         //System.out.println("getAppsReadInvoked");
         User caller = getListCaller();
         if(caller == null || !caller.isActive()){ //only active users may list applications
-            //return new ArrayList<ApplicationTO>(0);
-
-            // the intended functionality is not to show non-validated wfs for guest users,
-            // but since there are only a few validated wfs and we want to show some content
-            // to attract users, temporaily non-validated wfs can be seen as well
-            //return em.createNamedQuery("Application.loadPublishedApplications", ApplicationTO.class).getResultList();
             return em.createNamedQuery("Application.loadAppsReadableByOthers", ApplicationTO.class).getResultList();
         }else{
             if(caller.isAdmin()){
@@ -2440,11 +2434,11 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         if(group == null){
             return "group does not exist";
         }
-        if(caller.isAdmin()){
-            return null;
-        }
         if(group.getApplications().size() > 0){
             return "the group can not be deleted right now, remove all its applications and try again";
+        }
+        if(caller.isAdmin()){
+            return null;
         }
         if(caller.equals(group.getLeader())){
             return null;
