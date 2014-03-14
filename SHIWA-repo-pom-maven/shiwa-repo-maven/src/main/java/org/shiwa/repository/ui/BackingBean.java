@@ -1057,6 +1057,15 @@ public class BackingBean implements Serializable {
 
         boolean isPublic = selectedApp.getPublished();
 
+        if(!isPublic){
+            for(ImplementationTO i : getImplementationsOfSelectedApplication()){
+                if(i.isPublic()){
+                    addMessage(null, FacesMessage.SEVERITY_WARN, "Workflow cannot be made private if it has public Implementations.", null);
+                    selectedApp.setPublished(true);
+                    return null;
+                }
+            }
+        }
         if ((selectedApp.getGroupDownload() && !selectedApp.getGroupRead())
                 || selectedApp.getOthersDownload() && !selectedApp.getOthersRead()) {
             addMessage(null, FacesMessage.SEVERITY_WARN, "Cannot make workflow downloadable if it is not readable.", null);
@@ -1439,6 +1448,12 @@ public class BackingBean implements Serializable {
             return null;
         }
         try {
+            if(selectedImp.isSubmittable() && !this.validateImp){
+                addMessage(null, FacesMessage.SEVERITY_WARN, "Cannot make Implementation private if it is flagged as submittable!", null);
+                validateImp = true;
+                return null;
+            }
+
             if (this.validateImp) {
                 selectedImp = af.validateImp(selectedImp.getId());
                 addMessage(null, FacesMessage.SEVERITY_INFO, "Implementation set to public", null);

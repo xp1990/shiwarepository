@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <body>
         <f:metadata>
@@ -132,7 +133,7 @@
                         </h:panelGrid>
 
 
-                        <div align="right" style="padding-top: 5px">
+                        <div align="right" style="padding-top: 5px;">
                             <p:commandButton value="Save" action="#{backingBean.updateImplementation}"
                                              update="growl"
                                              rendered="#{backingBean.canUpdateImplementation}" />
@@ -187,15 +188,16 @@
                         <p:tab title="Attributes">
                             <div align="left" style="vertical-align: middle">
                                 <h:outputText value="Attributes" style="font-size: 22pt"/>
-
-                                <p:menuButton value="Actions" style="float: right">
+                            </div>
+                            <div align="right" style="vertical-align:  middle">
+                                <p:commandButton icon="ui-icon-help" style="padding-right: 5px;" title="Help" onclick="helpImpConfigWidget.show();"/>
+                                <p:menuButton value="Actions" style="padding-right: 5px;">
                                     <p:menuitem value="Expand/Collapse" update="growl impAttrTreeTable" ajax="false" action="#{backingBean.impAttrTree.expandColapse}"/>
                                     <p:menuitem value="Reload" update="growl" ajax="false" action="#{backingBean.reloadImplementationAttributeTree}"/>
                                     <p:menuitem value="Toggle Submittable" update="growl submittable" action="#{backingBean.toggleSubmittable}" rendered="#{backingBean.canCreateImpAttributes and backingBean.platformSubmittable}"/>
                                 </p:menuButton>
 
-                                <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}" style="float: right"/>
-
+                                <p:commandButton value="Save" update="growl" ajax="false" action="#{backingBean.updateAttributesOfSelectedImplementation}" rendered="#{backingBean.canCreateImpAttributes}"/>
                             </div>
 
                             <p:dialog id="errorLogs" header="Error Logs:" widgetVar="ErrorLogs" modal="true" width="780">
@@ -872,6 +874,71 @@
                                     </div>
                                     </p:outputPanel>
                             </p:dialog>
+                    <p:dialog header="Implementation Configuration Help"
+                            id="helpImpConfig"
+                            widgetVar="helpImpConfigWidget"
+                            modal="#{true}"
+                            draggable="#{true}"
+                            width="400"
+                            height="500"
+                            closable="#{true}">
+                      <p:outputPanel>
+                          <p>
+                              In this page we see a list of attributes that are available for a <b>Workflow Implementation</b> to have. If you have the correct rights
+                              to view and change this information then do so using the links on the right hand side of the row.
+
+                              It is imperative to <b>SAVE</b> your changes after you modify any of the data in the list. Otherwise your changes will be lost.
+
+                              Below is a quick description of some of the features and metadata found on the page:
+                              <ul>
+                                  <li><b>Dependencies</b> - These attributes refer to any files or services that are necessary for executing the Workflow.
+                                  It can also refer to the DCI platform that the Workflow is designed to work with. We encourage the setting of this value as it helps
+                                  other users reuse your workflows!</li>
+                                  <li><b>Configurations</b> - These attributes relate to the different configurations of the listed dependencies. In the case of a DCI
+                                  dependency it will be a VO or grid. In the case of a Parameter map it could be a file.</li>
+                                  <li><b>Title</b> - The friendly name for the Workflow Implementation. It is highly recommended that this field is filled as this
+                                  is often how external services may identify your Workflow Implementation.</li>
+                                  <li><b>Definition</b> - The Workflow descriptor file that contains information regarding the layout and overall configuration of your
+                                  workflow. This value is <b>necessary</b> for the Implementation to be used by the Submission Service</li>
+                                  <li><b>Graph</b> - An image file that is a visual representation of your Workflow Implementation. It is highly recommended that this
+                                  is set as it gives context to your work. (Also it is displayed on the front page after anyone selects your Workflow from the repository!!)</li>
+                                  <li><b>Language</b> - Language of the Workflow Descriptor file (<b>defintion</b> attribute). </li>
+                                  <li><b>Submission Execution Node (SEN)</b> - This is the most important attribute for your Workflow Implementation if you wish to use it
+                                  with the <b>Submission Service</b>. It resolves the input and output ports that were defined in the Workflow Attributes page.</li>
+                              </ul>
+                          </p>
+
+
+                          <h:panelGrid columns="2">
+                              <p:graphicImage value="/resources/images/disabled-grey.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed then it means that the associated Workflow Engine is not supported by the Submission Service.
+                                  The decision to allow a Workflow Engine to be used by the Submission Service rests with the developer.
+                              </p>
+
+                              <p:graphicImage value="/resources/images/disabled-blue.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed it means that the associated Workflow Engine is supported by the Submission Service but the current
+                                  Implementation has not been toggled for submission. To toggle the Implementation for Subbmission the developer has to ensure that:
+                                  <ul><li>The Implementation of the Workflow and the Workflow itself must be flagged as public.</li>
+                                      <li>The Implementation must have a configured Submission Execution Node associated with it.</li>
+                                  </ul>
+                              </p>
+
+                              <p:graphicImage value="/resources/images/play-blue.png"
+                                              width="26"
+                                              style="border-style: none"/>
+                              <p>
+                                  If this image is displayed it means that this Workflow Implementation has been flagged as Submittable by the developer. It may be
+                                  selected for execution in th SSP platform.
+                              </p>
+                          </h:panelGrid>
+                      </p:outputPanel>
+                  </p:dialog>
                 </h:form>
             </ui:define>
         </ui:composition>
