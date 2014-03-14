@@ -153,7 +153,7 @@ public class BackingBean implements Serializable {
     int impWEId;
 
     //for workflow engine management
-    List<Platform> wfEngineList = null;
+    List<Platform> wfEngineList = new ArrayList<Platform>();
 
     private MyExperimentManager manager = new MyExperimentManager(this);
 
@@ -3845,23 +3845,18 @@ public class BackingBean implements Serializable {
      * Workflow Engine Management Functions ------------------------------------------
      */
 
-    /*
-     * Allows user specific viewing rights over Worfklow Engine Management data
-     */
-    public boolean getWEManagementAccessLevel1(){
-        return getCurrentUser().getActive();
-    }
-
-    /*
-     * Allows user complete access and modification rights over Workflow Engine data
-     */
-    public boolean getWEManagementAccessLevel2(){
-        return getCurrentUser().getAdmin();
-    }
-
     //returns a list of all workflow engines
     public List<Platform> getMyWorkflowEngines() {
-        return af.listWorkflowEngines();
+
+        if(wfEngineList == null || wfEngineList.isEmpty()){
+            wfEngineList = af.listWorkflowEngines();
+        }
+
+        return wfEngineList;
+    }
+
+    public void setMyWorkflowEngines(List<Platform> list) {
+        wfEngineList = list;
     }
 
     public List<String> getWorkflowEnginesNoDupes(){
