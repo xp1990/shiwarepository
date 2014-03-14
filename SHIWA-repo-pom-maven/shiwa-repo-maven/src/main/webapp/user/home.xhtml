@@ -205,7 +205,7 @@
                                               style="border-style: none"/>
                               <p align="left">
                                   If this image is displayed then it means that the associated Workflow Engine is not supported by the Submission Service.
-                                  The decision to allow a Workflow Engine to be used by the Submission Service rests with the developer.
+                                  The decision to allow a Workflow Engine to be used by the Submission Service rests with the Workflow Engine Developer.
                               </p>
 
                               <p:graphicImage value="/resources/images/play-blue.png"
@@ -214,9 +214,10 @@
                               <p align="left">
                                   If this image is displayed then it means that the associated Workflow Engine is supported by the Submission Service. This implies
                                   that any Workflow Implementation that is associated to an Engine of this type can be flagged as Submittable by the developer.
-                                  A developer can only flag their Workflow Implementation as Submittable if:
+                                  A Workflow Developer can only flag their Workflow Implementation as Submittable if all of the following conditions are met:
                                   <ul>
                                       <li>The Implementation of the Workflow and the Workflow itself must be flagged as public.</li>
+                                      <li>The Implementation must be configured with a Workflow Engine that is supported by the Submission Service.</li>
                                       <li>The Implementation must have a configured Submission Execution Node associated with it.</li>
                                       <li>The Implementation must have a Workflow Definition file associated with it!</li>
                                   </ul>
