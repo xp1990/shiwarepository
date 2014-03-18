@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,21 +33,24 @@ import uk.ac.wmin.edgi.repository.server.ApplicationFacadeLocal;
  */
 @WebServlet(name = "ListContents", urlPatterns = {"/workflows/*","/engines","/applications","/domains","/tasktypes","/groups", "/workflows_guest/*"})
 public class ListContents extends HttpServlet {
-    
-    @EJB ApplicationFacadeLocal af;       
+
+    @EJB ApplicationFacadeLocal af;
 
     // this holds the contents of the dummy repository
-    ToolkitInterface repo;                  
-    
+    ToolkitInterface repo;
+
+    //private Logger logger;
+
     @Override
     public void init() throws ServletException {
         super.init();
         // building repo content
         repo = new ToolkitImplementation(af);
+        //this.logger = Logger.getLogger(GetConcepts.class.getName());
     }
-    
-    
-    /** 
+
+
+    /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
@@ -53,14 +58,17 @@ public class ListContents extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //logger.log(Level.INFO, "Starting servlet... " + this.getClass().getName());
+
         response.setContentType("text/html;charset=UTF-8");
-        
+
         String path = request.getPathInfo();
         List<String> components = new ArrayList<String>();
-        
+
         String resp = "";
         int resposneValue;
-        
+
         if(path!=null){
             String[] cs = path.split("/");
             for (String component : cs) {
@@ -71,10 +79,10 @@ public class ListContents extends HttpServlet {
         }
 
         try {
-            
-            
+
+
             int userId = RepoUtil.getUserId(request, af);
-        
+
             Iterator<String> pathIter = components.iterator();
 
             if(request.getServletPath().equals("/engines")) {
@@ -86,11 +94,11 @@ public class ListContents extends HttpServlet {
             } else if (request.getServletPath().equals("/tasktypes")) {
                 resp += listAttribute("Tasktype", userId);
             } else if(request.getServletPath().equals("/groups")) {
-                resp += listGroups(userId);            
+                resp += listGroups(userId);
             } else {
                 resp += listItems(pathIter, userId);
             }
-            
+
             resposneValue = 201;
         } catch (ForbiddenException e) {
             resp = e.getMessage();
@@ -104,21 +112,21 @@ public class ListContents extends HttpServlet {
         } catch (Throwable e) {
             resp = e.getMessage();
             resposneValue = 401;
-        } 
+        }
 
         if (resposneValue >= 400) {
             response.sendError(resposneValue, resp);
         } else {PrintWriter out = response.getWriter();
             try {
-                out.println(resp);            
-            } finally {            
+                out.println(resp);
+            } finally {
                 out.close();
-            }   
-        }      
+            }
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -130,7 +138,7 @@ public class ListContents extends HttpServlet {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -142,7 +150,7 @@ public class ListContents extends HttpServlet {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
      * @return a String containing servlet description
      */
@@ -150,16 +158,16 @@ public class ListContents extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
+
     protected String listItems(Iterator<String> pathIter, int userId) throws UnauthorizedException, ForbiddenException, NotFoundException {
-        
+
 //        if(af==null){
 //            System.out.println("ListContents af is null");
 //        }else{
 //            System.out.println("ListContents af is not null");
 //        }
-       
-        
+
+
         String item;
         if(pathIter==null || !pathIter.hasNext()) {
             //workflows to be listed
@@ -168,10 +176,10 @@ public class ListContents extends HttpServlet {
             item = pathIter.next();
             if(item.equals("modify")){
                 //workflows to be listed that user can modify
-                return listWorkflows(true, userId);                
+                return listWorkflows(true, userId);
             }
         }
-        
+
         //imps or confs to be listed
         String workflowIdStr = item;
         if(pathIter.hasNext()) {
@@ -186,7 +194,7 @@ public class ListContents extends HttpServlet {
 
         return "no items to list";
     }
-    
+
     protected String listWorkflows(boolean modify, int userId) throws UnauthorizedException
     {
         String resp="";
@@ -200,15 +208,15 @@ public class ListContents extends HttpServlet {
         while(iter.hasNext()){
             resp += iter.next().toString()+ RepoUtil.RECORD;
         }
-        
+
         return resp;
     }
-    
+
     protected String listImplementations(String workflowIdStr, int userId) throws UnauthorizedException, ForbiddenException, NotFoundException
     {
         String resp="";
         // generate implementation list
-        
+
         int workflowId = Integer.parseInt(workflowIdStr);
         List<ImplementationSummaryRTO> imsList = repo.listImplementations(userId, workflowId);
         Iterator<ImplementationSummaryRTO> iter = imsList.iterator();
@@ -218,13 +226,13 @@ public class ListContents extends HttpServlet {
         while(iter.hasNext()){
             resp += iter.next().toString()+RepoUtil.RECORD;
         }
-        
-        return resp;        
+
+        return resp;
     }
-    
+
     protected String listConfigurations(String workflowIdStr, int userId) {
         //TODO: change here, throw exception like other functions instead of try
-        // - catch Exception 
+        // - catch Exception
         String resp = "";
         // generate implementation list
         try {
@@ -240,7 +248,7 @@ public class ListContents extends HttpServlet {
         } catch (Exception e) {
             resp += e.getClass() + ":" + e.getMessage();
         }
-        
+
         return resp;
     }
 
@@ -248,45 +256,45 @@ public class ListContents extends HttpServlet {
     {
         String resp="";
         // generate engine list
-        
+
         List<EngineRTO> engsList = repo.getEngines(userId, null);
         if(engsList==null || engsList.isEmpty()) {
             resp += "No items found";
         } else {
             Iterator<EngineRTO> iter = engsList.iterator();
             resp += "ID"+RepoUtil.UNIT+"Title"+RepoUtil.RECORD+"Version"+RepoUtil.RECORD+"Description"+RepoUtil.RECORD;
-            
+
             while(iter.hasNext()) {
                 resp += iter.next().toString()+RepoUtil.RECORD;
             }
-        } 
-        
+        }
+
         return resp;
     }
 
     protected String listAttribute(String attribute, int userId) throws UnauthorizedException, NotFoundException {
         String resp="";
-        
+
         List<String> aList = repo.getWFAttributeValues(userId, attribute.toLowerCase());
-        
+
         if(aList==null || aList.isEmpty()) {
             resp += "No items found";
         } else {
             Iterator<String> iter = aList.iterator();
             resp += attribute + RepoUtil.RECORD;
-            
+
             while(iter.hasNext()) {
                 resp += iter.next() + RepoUtil.RECORD;
             }
         }
         return resp;
-    }  
+    }
 
     protected String listGroups(int userId) throws UnauthorizedException, NotFoundException
     {
         String resp="";
         List<GroupRTO> aList = repo.getUsersGroups(userId);
-        
+
         if (aList==null || aList.isEmpty()) {
             resp += "No items found";
         } else {
@@ -294,9 +302,9 @@ public class ListContents extends HttpServlet {
                 resp += anAList.toString() + RepoUtil.RECORD;
             }
         }
-        
+
         return resp;
     }
-    
-    
+
+
 }

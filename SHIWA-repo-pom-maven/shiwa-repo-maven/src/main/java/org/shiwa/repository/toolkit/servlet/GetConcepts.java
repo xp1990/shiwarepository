@@ -7,6 +7,7 @@ package org.shiwa.repository.toolkit.servlet;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -14,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.logging.Logger;
 import org.shiwa.desktop.data.description.bundle.Concepts;
 import org.shiwa.desktop.data.description.workflow.Application;
 import org.shiwa.desktop.data.description.workflow.Engine;
@@ -38,11 +40,13 @@ import uk.ac.wmin.edgi.repository.server.ApplicationFacadeLocal;
 @WebServlet(name="GetConcepts", urlPatterns={"/getconcepts/*"})
 @MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5*5)
 public class GetConcepts extends HttpServlet {
-    
-    @EJB ApplicationFacadeLocal af;      
+
+    @EJB ApplicationFacadeLocal af;
 
     static ToolkitInterface repo;
     int userId=-1;
+
+    //private Logger logger;
 
     private PrintWriter pw;
 
@@ -50,6 +54,7 @@ public class GetConcepts extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         repo = new ToolkitImplementation(af);
+        //this.logger = Logger.getLogger(GetConcepts.class.getName());
     }
 
     @Override
@@ -73,6 +78,9 @@ public class GetConcepts extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //logger.log(Level.INFO, "Starting servlet... " + this.getClass().getName());
+
         File log = File.createTempFile("execution",".log");
         pw = new PrintWriter(new FileOutputStream(log));
         String id = UUID.randomUUID().toString();
@@ -84,7 +92,7 @@ public class GetConcepts extends HttpServlet {
         int resposneValue = 201;
 
         try {
-            userId = af.loadUser(request.getRemoteUser()).getId();            
+            userId = af.loadUser(request.getRemoteUser()).getId();
             result = getConcepts(request, out);
             resposneValue = 201;
         } catch (ForbiddenException e) {
@@ -164,20 +172,20 @@ public class GetConcepts extends HttpServlet {
                     break;
                 }
             }
-            
+
             if (engine == null) {
                 engine = new Engine(engineRTO.getTitle());
                 concepts.getEngines().add(engine);
             }
-            
+
             boolean versionPresent = false;
-            
+
             for (String v : engine.getVersions()) {
                 if (v.equals(engineRTO.getVersion())) {
                     versionPresent = true;
                 }
             }
-            
+
             if (!versionPresent) {
                 engine.getVersions().add(engineRTO.getVersion());
             }
