@@ -1859,7 +1859,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     @Override
     public List<ApplicationTO> listApplicationsUserCanRead() {
-        //System.out.println("getAppsReadInvoked");
+        Logger.getLogger(ApplicationFacadeImpl.class.getName()).log(Level.INFO, "getAppsReadInvoked");
         User caller = getListCaller();
         if(caller == null || !caller.isActive()){ //only active users may list applications
             return em.createNamedQuery("Application.loadAppsReadableByOthers", ApplicationTO.class).getResultList();
