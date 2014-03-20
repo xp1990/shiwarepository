@@ -25,8 +25,6 @@ import org.shiwa.repository.toolkit.transferobjects.SignatureRTO;
 import org.shiwa.repository.toolkit.transferobjects.WorkflowRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationRTO;
 import org.shiwa.repository.toolkit.transferobjects.ImplementationSummaryRTO;
-
-
 import org.shiwa.repository.toolkit.transferobjects.AccessRightsRTO;
 import org.shiwa.repository.toolkit.transferobjects.BundleFileRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationNodeRTO;
@@ -66,23 +64,27 @@ public class ToolkitImplementation implements ToolkitInterface {
     @Override
     public List<WorkflowSummaryRTO> listWorkflows(int userId, boolean modify) throws UnauthorizedException {
         checkUserAuthorized(userId);
-        System.out.println("user authorized");
+        Logger.getLogger(ToolkitImplementation.class.getName()).log(Level.INFO, "User Authorized as ID: " + userId);
         List<WorkflowSummaryRTO> wfsList = new ArrayList<WorkflowSummaryRTO>();
         List<ApplicationTO> appList;
         if (modify) {
-            //System.out.println("getAppsModify");
+            Logger.getLogger(ToolkitImplementation.class.getName()).log(Level.INFO, "getAppsModify");
+            System.out.println();
             appList = af.listApplicationsUserCanModify();
         } else {
-            //System.out.println("getAppsRead");
+            Logger.getLogger(ToolkitImplementation.class.getName()).log(Level.INFO, "getAppsRead");
             appList = af.listApplicationsUserCanRead();
         }
 
         if (appList != null) {
-            //System.out.println("app list is not null");
-            Iterator<ApplicationTO> iter = appList.iterator();
-            while (iter.hasNext()) {
-                wfsList.add(getWorkflowSummaryRTO(iter.next()));
+            Logger.getLogger(ToolkitImplementation.class.getName()).log(Level.INFO, "App list not null. Getting workflow summaries....");
+
+            for(ApplicationTO a : appList){
+                if(a.getPublished()){
+                    wfsList.add(getWorkflowSummaryRTO(a));
+                }
             }
+
         }
         return wfsList;
     }
