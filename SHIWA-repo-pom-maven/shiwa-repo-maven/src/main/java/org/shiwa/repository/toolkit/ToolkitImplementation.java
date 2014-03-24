@@ -126,10 +126,14 @@ public class ToolkitImplementation implements ToolkitInterface {
         if (implementations.isEmpty()) {
             throw new NotFoundException("The given workflow has no implementations!");
         }
-        Iterator<ImplementationTO> iter = implementations.iterator();
-        while (iter.hasNext()) {
-            imsList.add(getImlementationSummaryRTO(iter.next()));
+
+        for(ImplementationTO i : implementations){
+            if(i.isPublic()){
+                imsList.add(getImlementationSummaryRTO(i));
+            }
         }
+
+
         return imsList;
     }
 
