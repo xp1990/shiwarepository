@@ -3878,6 +3878,9 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         if ( _WEImp.getPrefixData().length() > 500)
 	    throw new WEBuildingException( "extraArg", _WEImp.getPrefixData() );
 
+        //remove unupdated _WEImp
+        _WEImp.getIdWE().getWeImplementationCollection().remove(_WEImp);
+
         /*
          * Ensure that predeployed fields are set or not set depending on value
          */
@@ -3897,9 +3900,13 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             _WEImp.setShellPath("");
         }
 
-        em.merge(_WEImp);
+        _WEImp = em.merge(_WEImp);
         em.flush();
         logger.log(Level.INFO, "Updated WEImp {0}", _WEImp.getNameWEImp());
+
+        //fix for name change WEImp bug.
+        _WEImp.getIdWE().getWeImplementationCollection().add(_WEImp);
+        em.merge(_WEImp.getIdWE());
     }
 
     @Override
