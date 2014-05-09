@@ -5,6 +5,7 @@
 
 package uk.ac.wmin.edgi.repository.server;
 
+import com.sun.imageio.plugins.common.PaletteBuilder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -3560,6 +3561,33 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
         return _WE;
     }
 
+    /*
+     * Only ever used to update the description
+     */
+    @Override
+    public Platform updateWE(Platform _we)
+            throws EntityNotFoundException, AuthorizationException, ValidationFailedException
+    {
+        User caller = getCallerUser();
+        String err = canUserCreateWorkflowEngines(caller);
+        if(err != null){
+            logger.log(Level.SEVERE , err);
+            throw new AuthorizationException(err);
+        }
+        
+        if(_we == null || em.find(Platform.class, _we.getId()) == null){
+            logger.log(Level.SEVERE , "Entity not found in Database or doesn't exist");
+            throw new EntityNotFoundException("Entity not found in Database or doesn't exist");
+        }
+     
+        if( _we.getDescription() == null || _we.getDescription().length() > 5000){            
+            logger.log(Level.SEVERE, "Could not update Workflow Engine " + _we.getName() + " " + _we.getVersion() + " Description not present or exceeds 5000 characters");
+            throw new ValidationFailedException("Description not present or exceeds 5000 characters");
+        }
+                
+        return em.merge(_we);
+    }
+    
     @Override
     public void deleteWE(Platform _we)
             throws EntityNotFoundException, AuthorizationException, NotSafeToDeleteException

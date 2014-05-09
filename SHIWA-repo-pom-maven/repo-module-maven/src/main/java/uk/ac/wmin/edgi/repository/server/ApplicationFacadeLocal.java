@@ -255,6 +255,7 @@ public interface ApplicationFacadeLocal {
     Platform getWEById(int idWE);
     public String canUserCreateWorkflowEngines(int id);
     public Platform createWorkflowEngine(String nameWE, String version, String desc) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, WEBuildingException;
+    public Platform updateWE(Platform _we) throws EntityNotFoundException, AuthorizationException, ValidationFailedException;
     public void deleteWE(Platform _we) throws EntityNotFoundException, NotSafeToDeleteException, AuthorizationException;
 
     //these are for Workfow Engines Implementation
