@@ -3963,6 +3963,21 @@ public class BackingBean implements Serializable {
 
         return "";
     }
+    
+    public void updateWorkflowEngine(){
+        
+        try {
+            selectedWorkflowEngine = af.updateWE(selectedWorkflowEngine);
+            addMessage(null, FacesMessage.SEVERITY_INFO, "Workflow Engine Updated Successfully", null);
+        } catch (EntityNotFoundException e) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
+        } catch (AuthorizationException e) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
+        } catch (ValidationFailedException e) {
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Error: "+e.getMessage(), null);
+        }
+        
+    }
 
     public String deleteWE(){
 

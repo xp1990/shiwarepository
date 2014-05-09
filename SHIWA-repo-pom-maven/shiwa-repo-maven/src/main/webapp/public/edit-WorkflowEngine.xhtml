@@ -23,15 +23,24 @@
                     </div>
                     <p:tabView id ="editWEDetails">
                         <p:tab title="Details">
-                            <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
+                            <h:panelGrid columns="3" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
                                 <h:outputText value="ID:"/>
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.id}"/>
+                                <h:outputText/>
                                 <h:outputText value="Name:" />
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.name}" />
+                                <h:outputText/>
                                 <h:outputText value="Version" />
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.version}" />
+                                <h:outputText/>
                                 <h:outputText value="Description:" style="width: 13ex"/>
                                 <h:outputText value="#{backingBean.selectedWorkflowEngine.description}" />
+                                <p:commandButton oncomplete="editWEDescWidget.show();"
+                                                           title="Edit Workflow Engine Description"
+                                                           immediate="true"
+                                                           disabled="#{!backingBean.canCreateWEImplementations}"                                                           
+                                                           icon="ui-icon-pencil"
+                                                           update="editWEDesc"/>
                                 <h:outputText value="Submittable to the SSP by the Submission Service:"/>
                                 <p:outputPanel id="submittableIcons">
                                     <p:commandLink action="#{backingBean.togglePlatformSubmittable()}"
@@ -57,6 +66,7 @@
                                                  style="border-style: none"
                                                  rendered="#{backingBean.selectedWorkflowEngine.submittable and !backingBean.canCreateWEImplementations}"/>
                                  </p:outputPanel>
+                                 <h:outputText/>
                             </h:panelGrid>
                             <p:commandButton value="Delete" onclick="deleteWEDialogWidget.show();" rendered="#{backingBean.canCreateWEImplementations}"/>
                         </p:tab>
@@ -414,7 +424,26 @@
                             <h:inputText value="#{backingBean.selectedWEImp.prefixData}"/>
                         </h:panelGrid>
                         <div align="right" style="padding-top: 5px">
-                            <p:commandButton value="Update" onclick="deleteWEFilesDialogWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+                            <p:commandButton value="Update" onclick="PrefixDataEditWidget.hide();" action="#{backingBean.setWEIUpdate()}" ajax="false" update="growl WEImpBrowserTable"/>
+
+                        </div>
+                    </p:dialog>
+                </h:form>
+                <h:form id="editWEDescForm">
+                    <p:dialog id="editWEDesc"
+                              widgetVar="editWEDescWidget"
+                              modal="true"
+                              header="#{backingBean.selectedWorkflowEngine.name} (#{backingBean.selectedWorkflowEngine.version}) Description"
+                              showEffect="fade"
+                              hideEffect="fade"
+                              resizable="false"
+                              closable="true">
+                        <h:panelGrid columns="2" cellpadding="4" style="width:300px;" styleClass=" ui-widget-content grid">
+                            <h:outputText value="Description:"/>
+                            <p:inputTextarea maxlength="5000" autoResize="FALSE" rows="10"  value="#{backingBean.selectedWorkflowEngine.description}"/>
+                        </h:panelGrid>
+                        <div align="right" style="padding-top: 5px">
+                            <p:commandButton value="Update" onclick="editWEDescWidget.hide();" action="#{backingBean.updateWorkflowEngine()}" ajax="false" update="growl editWEDetails"/>
 
                         </div>
                     </p:dialog>
