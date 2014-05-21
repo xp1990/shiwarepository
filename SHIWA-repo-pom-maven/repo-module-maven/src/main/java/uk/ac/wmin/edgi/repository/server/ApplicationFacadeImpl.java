@@ -690,7 +690,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
                 throw new ValidationFailedException("application names can only contain alphanumeric, - and _ characters and must be between 3 and 250 charaters long");
         }
 
-        if( !name.equals(a.getName()) && !em.createNamedQuery("Application.findByName", Application.class).setParameter("name", name).getResultList().isEmpty()){
+        if( !name.equalsIgnoreCase(a.getName()) && !em.createNamedQuery("Application.findByName", Application.class).setParameter("name", name).getResultList().isEmpty()){
             throw new ValidationFailedException("A Workflow with this name already exists. Try again.");
         }
 
