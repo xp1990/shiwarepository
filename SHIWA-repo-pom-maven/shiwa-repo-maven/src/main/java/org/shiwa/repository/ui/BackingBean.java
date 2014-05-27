@@ -40,6 +40,7 @@ import uk.ac.wmin.repo.myexperiment.client.MyExperimentClient;
 import org.shiwa.repository.toolkit.wfengine.*;
 import uk.ac.wmin.edgi.repository.entities.Implementation;
 import uk.ac.wmin.edgi.repository.entities.Platform;
+import org.shiwa.repository.configuration.*;
 
 /**
  *
