@@ -327,8 +327,7 @@
                                                    value=" Remove ">
                                                 <f:setPropertyActionListener value="#{node}"
                                                                              target="#{backingBean.impAttrTree.selectedNode}" />
-                                    </p:commandLink>
-                                </p:column>
+                                    </p:commandLink>                                </p:column>
                             </p:treeTable>
                         </p:tab>
                         <p:tab title="Files">
@@ -459,7 +458,7 @@
                                         </h:panelGrid>
                                      </p:outputPanel>
                                      <div align="right" style="padding-top: 5px">
-                                        <p:commandButton value="Create" action="#{backingBean.impAttrTree.addExecutionAttr()}" ajax="false" />
+                                        <p:commandButton value="Create" action="#{backingBean.createExecutionNode()}" ajax="false" />
                                         <p:commandButton value="Reset" type="reset" />
                                      </div>
                             </p:dialog>

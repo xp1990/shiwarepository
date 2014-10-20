@@ -25,6 +25,7 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
     String status;
     String keywords;
     String domain;
+    String linkAppDesc;
     private String subdomain;
     String application;
     String owner;
@@ -35,7 +36,7 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
     List<PortRTO> outputs = new ArrayList<PortRTO>();
     List<ConfigurationRTO> confs = new ArrayList<ConfigurationRTO>();
     ApplicationTO to;
-    
+   
     @Override
     public int compareTo(WorkflowSummary w) {
         return workflowName.compareTo(w.workflowName);
@@ -44,7 +45,7 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
     List<ImplementationSummary> imps = null;
 
 
-    public WorkflowSummary(int workflowId, String workflowName, String description, String status, Date created, Date updated, String keywords, String domain, String application, String owner, String group, List<PortRTO> inputs, List<PortRTO> outputs, List<ConfigurationRTO> confs,  List<ImplementationSummary> imps, ApplicationTO to) {
+    public WorkflowSummary(int workflowId, String workflowName, String description, String status, Date created, Date updated, String keywords, String domain, String application, String owner, String group, List<PortRTO> inputs, List<PortRTO> outputs, List<ConfigurationRTO> confs,  List<ImplementationSummary> imps, ApplicationTO to, String linkAppDesc) {
         this.workflowId = workflowId;
         this.workflowName = workflowName;
         this.description = description;
@@ -61,9 +62,10 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
         this.confs = confs;
         this.imps = imps;
         this.to = to;
+        this.linkAppDesc = linkAppDesc;
     }
     
-    public WorkflowSummary(int workflowId, String workflowName, String description, String status, Date created, Date updated, String keywords, String domain, String application, String owner, String group, List<PortRTO> inputs, List<PortRTO> outputs, List<ConfigurationRTO> confs, ApplicationTO to) {
+    public WorkflowSummary(int workflowId, String workflowName, String description, String status, Date created, Date updated, String keywords, String domain, String application, String owner, String group, List<PortRTO> inputs, List<PortRTO> outputs, List<ConfigurationRTO> confs, ApplicationTO to, String linkAppDesc) {
         this.workflowId = workflowId;
         this.workflowName = workflowName;
         this.description = description;
@@ -79,6 +81,7 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
         this.outputs = outputs;
         this.confs = confs;
         this.to = to;
+        this.linkAppDesc = linkAppDesc;
     }
     
     
@@ -329,6 +332,14 @@ public class WorkflowSummary implements Comparable<WorkflowSummary>{
         this.workflowName = workflowName;
     }
 
+    public String getLinkAppDesc(){
+        return linkAppDesc;
+    }
+    
+    public void setLinkAppDesc(String linkAppDesc){
+        this.linkAppDesc = linkAppDesc;
+    }
+    
     /**
      * @return the subdomain
      */

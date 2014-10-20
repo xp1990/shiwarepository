@@ -1083,7 +1083,77 @@ public class ImpAttrTree extends AttrTree{
         this.paraPool = paraPool;
     }
 
+    private void getParaAttr(TreeNode treeNode, boolean isInput, TreeNode parent, String portId){
+        TreeNode item1;
+        String name="";
+        String value="";
+        String port="OUTPUT_PORT";
+        if(isInput){
+            port="INPUT_PORT";
+        }
+        TreeNode result = (TreeNode) new DefaultTreeNode(new Node("type",port), parent);
+        ( (Node) result.getData()).setTreeNode(result);
+        Iterator index1 = treeNode.getChildren().iterator();
+        
+        boolean isFile=false;
+        while (index1.hasNext()){
+            item1 = (TreeNode) index1.next();
+            name = ( (Node) item1.getData()).getName();
+            value = ( (Node) item1.getData()).getValue();
+            if (name.equals("datatype") && value.equals("file")){
+                isFile=true;
+            }
+            if (name.equals("title")){                                   
+                    result = (TreeNode) new DefaultTreeNode(new Node("portId",portId), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    result = (TreeNode) new DefaultTreeNode(new Node("title", value), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    result = (TreeNode) new DefaultTreeNode(new Node("defaultValue",getDefaultValueOfParameter(portId)), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    result = (TreeNode) new DefaultTreeNode(new Node("cmdLine", "true"), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    result = (TreeNode) new DefaultTreeNode(new Node("switchName", ""), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    result = (TreeNode) new DefaultTreeNode(new Node("fixed", "false"), parent);
+                    ( (Node) result.getData()).setTreeNode(result);
+                    if(isFile){
+                        result = (TreeNode) new DefaultTreeNode(new Node("file", "true"), parent);
+                        ( (Node) result.getData()).setTreeNode(result);
+                    }else{
+                        result = (TreeNode) new DefaultTreeNode(new Node("file", "false"), parent);
+                        ( (Node) result.getData()).setTreeNode(result);
+                    }
+                    if(isInput){
+                          result = (TreeNode) new DefaultTreeNode(new Node("input", "true"), parent);
+                        ( (Node) result.getData()).setTreeNode(result);
+                    }else{
+                        result = (TreeNode) new DefaultTreeNode(new Node("input", "false"), parent);
+                        ( (Node) result.getData()).setTreeNode(result);
+                    }
+                break;
+            }
+        }
+        
+        
+    }
 
+    private String getDefaultValueOfParameter(String portId){
+        TreeNode item1;
+        String paramId;
+        String value = "";
+        if(aTree.configurations.getChildCount() != 0){
+        Iterator index1 = aTree.configurations.getChildren().get(0).getChildren().iterator();
+        while (index1.hasNext()){
+            item1 = (TreeNode) index1.next();
+            paramId = ( (Node) item1.getData()).getName();
+            if (paramId.equals(portId)){
+                value = ( (Node) item1.getData()).getValue();
+                break;
+            }
+        }
+        }
+        return value;
+    }
     public void addExecutionAttr(){
                 TreeNode newMaxWallTime = (TreeNode) new DefaultTreeNode(new Node("maxWallTime",getMaxWallTime()), execution);
                 ( (Node) newMaxWallTime.getData()).setTreeNode(newMaxWallTime);
@@ -1091,6 +1161,133 @@ public class ImpAttrTree extends AttrTree{
                 ( (Node) newMaxParallelism.getData()).setTreeNode(newMaxParallelism);
                 TreeNode newParameters = (TreeNode) new DefaultTreeNode(new Node("parameters"),execution);
                 ( (Node) newParameters.getData()).setTreeNode(newParameters);
+                
+                TreeNode item1;
+                TreeNode item2;
+                TreeNode item3;
+                String paraId;
+                String portId;
+                String name;
+                String value;
+                Iterator index1 = aTree.inports.getChildren().iterator();
+                Iterator index2;
+                while ( index1.hasNext() ){
+                    item1 = (TreeNode) index1.next();
+                    portId = ( (Node) item1.getData()).getName();
+                    paraId = "para" + portId.substring(portId.indexOf("0"));
+                    
+                    
+                    //paraId = "para" + item1.getData().toString().contains("port");
+                    TreeNode newParameter = (TreeNode) new DefaultTreeNode(new Node(paraId), newParameters);
+                    ( (Node) newParameter.getData()).setTreeNode(newParameter);
+                    
+                    getParaAttr(item1, true,newParameter, portId);
+                    /*TreeNode attributes = (TreeNode) new DefaultTreeNode(new Node("type", "INPUT_PORT"), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                    attributes = (TreeNode) new DefaultTreeNode(new Node("portId", portId), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                    index2 = item1.getChildren().iterator();
+                    while (index2.hasNext()){
+                        item2 = (TreeNode) index2.next();
+                        name = ( (Node) item2.getData()).getName();
+                        value = ( (Node) item2.getData()).getValue();
+                        
+                        if ( name.equals("title")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node(name,value), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            
+                            
+                        }else if(name.equals("datatype") && value.equals("file")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("defaultValue", getDefaultValueOfParameter(portId)), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("cmdLine", "true"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("switchName", ""), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("fixed", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("file", "true"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            
+                        }else if(name.equals("datatype") && !value.equals("file")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("defaultValue", getDefaultValueOfParameter(portId)), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("cmdLine", "true"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("switchName", ""), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("fixed", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("file", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                        }
+                        
+                    }
+                    attributes = (TreeNode) new DefaultTreeNode(new Node("input", "true"), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                 */  
+                }
+                index1 = aTree.outports.getChildren().iterator();
+                while ( index1.hasNext() ){
+                    item1 = (TreeNode) index1.next();
+                    portId = ( (Node) item1.getData()).getName();
+                    paraId = "para" + portId.substring(portId.indexOf("0"));
+                    
+                    //paraId = "para" + item1.getData().toString().contains("port");
+                    TreeNode newParameter = (TreeNode) new DefaultTreeNode(new Node(paraId), newParameters);
+                    ( (Node) newParameter.getData()).setTreeNode(newParameter);
+                    
+                    getParaAttr(item1, false,newParameter, portId);
+                    /*TreeNode attributes = (TreeNode) new DefaultTreeNode(new Node("type", "OUTPUT_PORT"), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                    attributes = (TreeNode) new DefaultTreeNode(new Node("portId", portId), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                    index2 = item1.getChildren().iterator();
+                    Parameter p = new Parameter();
+                    while (index2.hasNext()){
+                        item2 = (TreeNode) index2.next();
+                        name = ( (Node) item2.getData()).getName();
+                        value = ( (Node) item2.getData()).getValue();
+                        
+                        if ( name.equals("title")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node(name,value), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes); 
+                            
+                            
+                        }else if(name.equals("datatype") && value.equals("file")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("defaultValue", getDefaultValueOfParameter(portId)), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("cmdLine", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("switchName", ""), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("fixed", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("file", "true"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            
+                        }else if(name.equals("datatype") && !value.equals("file")){
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("defaultValue", getDefaultValueOfParameter(portId)), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("cmdLine", "true"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("switchName", ""), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("fixed", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                            attributes = (TreeNode) new DefaultTreeNode(new Node("file", "false"), newParameter);
+                            ( (Node) attributes.getData()).setTreeNode(attributes);
+                        }
+                        
+                    }
+                    attributes = (TreeNode) new DefaultTreeNode(new Node("input", "false"), newParameter);
+                    ( (Node) attributes.getData()).setTreeNode(attributes);
+                   */
+                }
+                
+               
+                          
+                
                 selectedNode.setValue("");
 
 
@@ -2710,5 +2907,87 @@ public class ImpAttrTree extends AttrTree{
              DEPENDENCY,
              CUSTOM;
           }
+    /*public void reloadExecutionNode(){
+        
+        int index = execution.getChildren().size() - 1;
+        TreeNode parent = execution.getChildren().get(index);
+        Iterator index3 = aTree.inports.getChildren().iterator();
+        Iterator index4 = aTree.outports.getChildren().iterator();
+        TreeNode item1;
+        TreeNode item3;
+        String name, portId, paraId;
+        
+        if ( (aTree.inports.getChildCount() != 0 || aTree.outports.getChildCount() !=0 )&& aTree.configurations.getChildCount() == 0){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Can't refresh the workflow executable in the SSP, Dataset must be set", null);
+        }else{
+            while(index3.hasNext()){
+            
+                item1 = (TreeNode) index3.next();
+                portId = ( (Node) item1.getData()).getName();
+                paraId = "para" + portId.substring(portId.indexOf("0"));
+                Iterator <TreeNode> parameters = parent.getChildren().iterator();
 
+                while(parameters.hasNext()){
+                    item3 = parameters.next();
+                    name = ( (Node) item3.getData()).getName();
+                    if(name.equals(paraId)){
+                        parameters.remove();
+                                      
+                    }   
+                }      
+            }
+        
+            while (index4.hasNext()){
+            
+                item1 = (TreeNode) index4.next();
+                portId = ( (Node) item1.getData()).getName();
+                paraId = "para" + portId.substring(portId.indexOf("0"));
+                Iterator<TreeNode> parameters = execution.getChildren().get(index).getChildren().iterator();
+                while(parameters.hasNext()){
+                    item3 = parameters.next();
+                    name = ( (Node) item3.getData()).getName();
+                    if(name.equals(paraId)){
+                        parameters.remove();
+                  
+                    }
+                }
+            }
+            getAttrForReload();
+        }
+    }
+    
+    private void getAttrForReload(){
+        TreeNode item1;
+        String paraId;
+        String portId;
+        Iterator index1 = aTree.inports.getChildren().iterator();
+        TreeNode newParameters = execution.getChildren().get(execution.getChildren().size()-1);
+        while ( index1.hasNext() ){
+            item1 = (TreeNode) index1.next();
+            portId = ( (Node) item1.getData()).getName();
+            paraId = "para" + portId.substring(portId.indexOf("0"));
+            TreeNode newParameter = (TreeNode) new DefaultTreeNode(new Node(paraId), newParameters);
+            ( (Node) newParameter.getData()).setTreeNode(newParameter);
+            getParaAttr(item1, true,newParameter, portId);
+            
+        }
+        index1 = aTree.outports.getChildren().iterator();
+        while ( index1.hasNext() ){
+            item1 = (TreeNode) index1.next();
+            portId = ( (Node) item1.getData()).getName();
+            paraId = "para" + portId.substring(portId.indexOf("0"));
+            
+            TreeNode newParameter = (TreeNode) new DefaultTreeNode(new Node(paraId), newParameters);
+            ( (Node) newParameter.getData()).setTreeNode(newParameter);
+                    
+            getParaAttr(item1, false,newParameter, portId);           
+        }
+        
+        selectedNode.setValue("");
+
+
+    }*/
+        
+    
+    
 }

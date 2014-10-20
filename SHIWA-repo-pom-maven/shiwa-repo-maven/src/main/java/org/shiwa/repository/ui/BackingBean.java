@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
+import org.primefaces.model.TreeNode;
 import org.shiwa.repository.configuration.*;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationNodeRTO;
 import org.shiwa.repository.toolkit.transferobjects.ConfigurationRTO;
@@ -91,8 +92,10 @@ public class BackingBean implements Serializable {
     String impAttrValueFilter = "";
     String wfSearchStr = "";
     String prevWfSearchStr = "";
+    String prevWfDomainSearch = "";
     String impSearchStr = "";
     String prevImpSearchStr = "";
+    String prevImpDomainSearch = "";
     String selectedWfApplication = "";
     final String defaultWfDomain = "All Domains";
     String selectedWfDomain = defaultWfDomain;
@@ -937,7 +940,7 @@ public class BackingBean implements Serializable {
 
     public String createApplication() {
         try {
-            selectedApp = af.createApp(newApplication.getName(), newApplication.getDescription(), newApplication.getGroupName(), false, false, false, false, false, false);
+            selectedApp = af.createApp(newApplication.getName(), newApplication.getDescription(), newApplication.getGroupName(), false, false, false, false, false, false, newApplication.getLinkAppDesc());
             newApplication.clear();
             addMessage(null, FacesMessage.SEVERITY_INFO, "Created application '" + selectedApp.getName() + "'", null);
             return "success";
@@ -985,7 +988,7 @@ public class BackingBean implements Serializable {
             return null;
         }
         try {
-            selectedApp = af.updateAppDetails(selectedApp.getId(), selectedApp.getDescription(), selectedApp.getName());
+            selectedApp = af.updateAppDetails(selectedApp.getId(), selectedApp.getDescription(), selectedApp.getName(), selectedApp.getLinkAppDesc());
             addMessage(null, FacesMessage.SEVERITY_INFO, "Updated application '" + selectedApp.getName() + "'", null);
             return null;
         } catch (EntityNotFoundException e) {
@@ -2363,7 +2366,7 @@ public class BackingBean implements Serializable {
         if (selectedWfDomain.equals(defaultWfDomain) && searchStr.isEmpty()) {
             wfSummaryListCache = getAllWorkflowSummaries();
         }else{
-            if(!prevWfSearchStr.equals(wfSearchStr)){
+            if(!prevWfSearchStr.equals(wfSearchStr) || prevWfDomainSearch.isEmpty() || !prevWfDomainSearch.equals(selectedWfDomain)){
                 appListHash = 0;
             }
             List<WorkflowSummary> wfList = getAllWorkflowSummaries();
@@ -2381,6 +2384,7 @@ public class BackingBean implements Serializable {
                 }
             }
             prevWfSearchStr = wfSearchStr;
+            prevWfDomainSearch = selectedWfDomain;
             wfSummaryListCache = newWfList;
         }
 
@@ -2401,7 +2405,7 @@ public class BackingBean implements Serializable {
         if(searchStr.isEmpty() && selectedImpDomain.equals(defaultWfDomain)){
             impSummaryListCache = getAllImpSummaries();
         }else{
-            if(!prevImpSearchStr.equals(impSearchStr)){
+            if(!prevImpSearchStr.equals(impSearchStr) || prevImpDomainSearch.isEmpty() || !prevImpDomainSearch.equals(selectedImpDomain)){
                 impListHash = 0;
             }
             if (!selectedImpDomain.equals(defaultWfDomain)) {
@@ -2416,6 +2420,7 @@ public class BackingBean implements Serializable {
                 }
             }
             prevImpSearchStr = impSearchStr;
+            prevImpDomainSearch = selectedImpDomain;
             impSummaryListCache = newImpList;
         }
     }
@@ -2918,7 +2923,8 @@ public class BackingBean implements Serializable {
                 outports,
                 confs,
                 isList,
-                applicationTO);
+                applicationTO,
+                applicationTO.getLinkAppDesc());
 
         if (!subdomain.isEmpty()) {
             workflowSummary.setSubdomain(subdomain);
@@ -4253,7 +4259,7 @@ public class BackingBean implements Serializable {
         }
 
         if(s != null && !s.isEmpty()){
-            String kv[] = s.split("\\:");
+            String kv[] = s.split("\\;");
 
             backendAttribs.add(new NewAttributeBean(kv[0], kv[1], kv[2]));
             Logger.getLogger(BackingBean.class.getName()).log(Level.SEVERE, "Type = " + kv[0] + " Key = " + kv[1] + " Value = " + kv[2]);
@@ -4344,10 +4350,18 @@ public class BackingBean implements Serializable {
     }
 
     public void addValueToSelectedAttribue(){
-        selectedBackend.getAttribute().remove(selectedAttribute);
-        selectedAttribute.getValue().add(addValString);
-        selectedBackend.getAttribute().add(selectedAttribute);
-        af.writeBackends(selectedBackend);
+        
+        if(addValString.isEmpty()){
+            addMessage(null, FacesMessage.SEVERITY_WARN, "Field is empty, please enter a value ", null);
+             
+        }else{
+            selectedBackend.getAttribute().remove(selectedAttribute);
+            selectedAttribute.getValue().add(addValString);
+            selectedBackend.getAttribute().add(selectedAttribute);
+            af.writeBackends(selectedBackend);
+            addValString="";
+        }
+        
     }
 
     public Backend getSelectedBackend() {
@@ -4758,5 +4772,35 @@ public class BackingBean implements Serializable {
     public String getRepoVersion() {
         return REPO_VERSION;
     }
+    
+    public void createExecutionNode(){
+        
+        int portConfigCount = 0;
+        int inputCount = aTree.inports.getChildCount();
+        int outputCount = aTree.outports.getChildCount();
+        
+        if(aTree.configurations.getChildCount()!=0){
+            Iterator index = aTree.configurations.getChildren().get(0).getChildren().iterator();
+            TreeNode item;
+            while (index.hasNext()){
+                item = (TreeNode) index.next();
+                
+                if( ( (Node) item.getData()).getName().contains("port") ){
+                
+                    portConfigCount++;
+                }
+            }
+            
+        }
+        if( (inputCount + outputCount) <= portConfigCount){
+            iTree.addExecutionAttr();
+            
+        }else if( (inputCount + outputCount) > portConfigCount && aTree.configurations.getChildCount()!=0){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "there's missing port(s) in the dataset", null);
+        }else if( (inputCount != 0 || outputCount != 0) && aTree.configurations.getChildCount()==0){
+            addMessage(null, FacesMessage.SEVERITY_ERROR, "Can't create the workflow executable in the SSP, Dataset must be set", null);           
+        }
+       
+    }   
 
 }

@@ -177,7 +177,7 @@
                                                        <f:setPropertyActionListener value="#{imp.to}" target="#{backingBean.selectedImp}"/>
                                                     </p:commandLink>
                                                     <br/>
-
+                                                    
                                                     <h:outputText style="font-weight:bold" value="Engine: " />
                                                     <h:outputText value="#{imp.engineName}(#{imp.engineVersion})" />
                                                     <br/>
@@ -244,7 +244,10 @@
                                                     <h:outputText style="font-weight:bold" value="Modified: " />
                                                     <h:outputText value="#{imp.updatedShort}" />
                                                     <br/>
-
+                                                    <p:outputPanel rendered="#{not empty imp.wf.linkAppDesc}">
+                                                        <a href="#{imp.wf.linkAppDesc}" target='_blank' title="Application Template document">Application Description</a>
+                                                    <br/>
+                                                    </p:outputPanel>
                                                     <p:outputPanel id="sspLinks" rendered="#{backingBean.isSspSession()}">
                                                         <h:outputText style="font-weight:bold" value="Embedding: "/>
                                                         <p:commandLink action="#{backingBean.selectImpForEmbedding()}"

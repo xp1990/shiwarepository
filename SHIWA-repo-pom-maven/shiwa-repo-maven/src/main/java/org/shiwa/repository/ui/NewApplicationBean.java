@@ -14,6 +14,7 @@ public class NewApplicationBean {
     private String name = "";
     private String groupName = "";
     private String description = "";
+    private String linkAppDesc="";
 
     public NewApplicationBean() {
     }
@@ -40,6 +41,14 @@ public class NewApplicationBean {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getLinkAppDesc(){
+        return linkAppDesc;
+    }
+    
+    public void setLinkAppDesc(String linkAppDesc){
+        this.linkAppDesc = linkAppDesc;
     }
 
     public void clear(){

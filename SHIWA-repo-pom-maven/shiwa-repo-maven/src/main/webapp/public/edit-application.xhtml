@@ -59,6 +59,18 @@
                                                  title="This is an optional field and must be less than 5000 characters long">
                                     <f:validateLength minimum="0" maximum="5000"/>
                                 </h:inputTextarea>
+                                <h:outputText value="Link to application template"/>
+                                <h:inputText id="editAppLinkTemplate"
+                                             value="#{backingBean.selectedApp.linkAppDesc}"
+                                             readonly="#{!backingBean.canUpdateAppDetails}"
+                                             required="false"
+                                             label="LinkAppDesc"
+                                             style="width: 100%; cursor: pointer"
+                                             title="This is an optional field, which can be used to specify the URL of the Application Template document. Clicking on this field will open the Application Template document in another tab"                         
+                                             ondblclick="window.open('#{backingBean.selectedApp.linkAppDesc}','_blank')">                                                                                                                            
+                                    <f:validateLength minimum="0" maximum="2083"/>
+                                </h:inputText>
+                                             
                             </h:panelGrid>
                             <p:message for="editAppDescription" />
                             <div align="right">
@@ -300,7 +312,9 @@
                                 <f:facet name="header">
                                     <div align="left" style="vertical-align: middle">
                                         <h:outputText value="Files" style="font-size: 22pt"/>
-                                        <p:menuButton value="Actions" style="float: right" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}">
+                                    </div>
+                                        <div align="right" style="vertical-align: middle">
+                                        <p:menuButton value="Actions" style="padding-right: 5px;" rendered="#{backingBean.canUploadAppFile or backingBean.canDeleteAppFiles}">
                                             <p:menuitem value="Upload"
                                                         onclick="uploadAppFilesDialogWidget.show();"
                                                         update="growl,appFileTable"
@@ -310,7 +324,7 @@
                                                         update="growl,appFileTable"
                                                         rendered="#{backingBean.canDeleteAppFiles}"/>
                                         </p:menuButton>
-                                    </div>
+                                        </div>
                                 </f:facet>
                                 <p:column selectionMode="multiple" rendered="#{backingBean.canDeleteAppFiles}"/>
                                 <p:column headerText="Filename" sortBy="#{appFile.pathName}" filterBy="#{appFile.pathName}" rendered="#{backingBean.canDownloadAppFiles}">

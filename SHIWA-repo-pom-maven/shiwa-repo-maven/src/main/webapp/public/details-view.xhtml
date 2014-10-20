@@ -98,10 +98,14 @@
                                                                 <br/>
 
                                                                 <h:outputText style="font-weight:bold" value="Created: " />
-                                                                <h:outputText value="#{wf.createdShort}, " />
-
+                                                                <h:outputText value="#{backingBean.selectedWf.createdShort}" />
+                                                                <br/>
                                                                 <h:outputText style="font-weight:bold" value="Modified: " />
-                                                                <h:outputText value="#{wf.updatedShort}" />
+                                                                <h:outputText value="#{backingBean.selectedWf.updatedShort}" />
+                                                                <br/>
+                                                                <h:panelGroup rendered="#{not empty backingBean.selectedWf.linkAppDesc}">
+                                                                    <a href="#{backingBean.selectedWf.linkAppDesc}" target="_blank" title="Application Template description" style="color: blue">Application description</a>
+                                                                </h:panelGroup>
                                                                 <br/>
                                                                 <br/>
                                                             </div>

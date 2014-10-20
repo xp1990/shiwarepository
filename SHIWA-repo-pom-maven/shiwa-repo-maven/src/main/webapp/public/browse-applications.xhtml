@@ -334,7 +334,11 @@
                                                             </h:outputLink>
                                                             <h:outputText value=" "/>
                                                         </ui:repeat>
-
+                                                        <br/>
+                                                        <h:panelGroup rendered="#{not empty wf.linkAppDesc}">
+                                                            <a href="#{wf.linkAppDesc}" style="color: blue" target="_blank" title="Application Template document">Application description</a>
+                                                            <br/>
+                                                        </h:panelGroup>
                                                     </div>
                                                 </p:panel>
 

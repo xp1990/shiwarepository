@@ -51,7 +51,7 @@
                                         <p:column headerText="Available Values">
                                             <p:selectOneMenu disabled="#{!backingBean.canCreateWEImplementations}" value="#{backingBean.backendSelString}">
                                                 <f:selectItem itemLabel="Please Select..." itemValue=""/>
-                                                <f:selectItems value="#{attr.value}" var="v" itemLabel="#{v}" itemValue="#{backend.name}:#{attr.name}:#{v}"/>
+                                                <f:selectItems value="#{attr.value}" var="v" itemLabel="#{v}" itemValue="#{backend.name};#{attr.name};#{v}"/>
                                             </p:selectOneMenu>
                                         </p:column>
 
@@ -99,11 +99,11 @@
                             <p:ajax event="close" update="growl BEIBrowserTable"/>
                             <h:panelGrid columns="2" cellpadding="4" width="100%" columnClasses="justifyRight,justifyLeft">
                                 <h:outputText value="Value: " />
-                                <h:inputText value="#{backingBean.addValString}"/>
+                                <h:inputText id="addValueField" value="#{backingBean.addValString}"/>
                             </h:panelGrid>
                             <div align="right" style="padding-top: 5px">
-                                <p:commandButton value="Yes" onclick="createBEIWidget.hide();" action="#{backingBean.addValueToSelectedAttribue}" ajax="false" update="growl @all"/>
-                                <p:commandButton value="No" onclick="createBEIWidget.hide();" type="button" />
+                                <p:commandButton value="Yes" onclick="addValWidget.hide();"  action="#{backingBean.addValueToSelectedAttribue}" ajax="false" update="growl @all"/>
+                                <p:commandButton value="No" onclick="addValWidget.hide();" type="button" />
                             </div>
                         </p:dialog>
                     </h:form>
