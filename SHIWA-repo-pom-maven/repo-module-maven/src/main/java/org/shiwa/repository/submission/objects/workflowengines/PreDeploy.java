@@ -5,7 +5,7 @@
 package org.shiwa.repository.submission.objects.workflowengines;
 
 /**
- *
+ * Class representing a pre-deploy configuration for a workflow engine implementation
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class PreDeploy extends AbstractDeployment {

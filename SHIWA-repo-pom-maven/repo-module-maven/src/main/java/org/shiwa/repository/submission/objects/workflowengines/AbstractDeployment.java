@@ -8,7 +8,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- *
+ * Parent class defining the deployment strategy of a workflow engine implementation
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 @XmlSeeAlso({

@@ -5,7 +5,7 @@
 package org.shiwa.repository.submission.objects.JSDL;
 
 /**
- *
+ * Class containing all attributes for a parameter
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class Param {

@@ -7,7 +7,8 @@ package org.shiwa.repository.submission.objects;
 import java.io.Serializable;
 
 /**
- *
+ * Class containing the data to retrieve a workflow engine implementation
+ * 
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class EngineData implements Serializable {

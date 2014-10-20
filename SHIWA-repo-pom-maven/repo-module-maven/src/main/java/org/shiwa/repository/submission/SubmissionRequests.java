@@ -16,6 +16,8 @@ import uk.ac.wmin.edgi.repository.entities.Implementation;
 import uk.ac.wmin.edgi.repository.entities.Platform;
 
 /**
+ * Class interacting with the database in order to retrieve data for the 
+ * SHIWA Submission Service.
  *
  * @author glassfish
  */
@@ -23,6 +25,18 @@ public class SubmissionRequests {
 
     private static final Logger logger = Logger.getLogger("SUBMISSION_REQUESTS");
 
+    /**
+     * Get the list of all submission enabled implementations as a list of objects.
+     * Each object has three fields (name of the implementation, description of 
+     * the implementation, if the implementation has been selected 
+     * for the portal id given and the user id given)
+     * @param extServiceId id of the portal
+     * @param extUserId id of the user
+     * @param em database manager
+     * @return list of objects representing the implementation data
+     * @throws DatabaseProblemException
+     * @throws IllegalArgumentException 
+     */
     public static List<Object[]> getAllValidatedImplementations(String extServiceId,
             String extUserId, EntityManager em)
             throws DatabaseProblemException, IllegalArgumentException {
@@ -70,6 +84,15 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the list of all workflow engine implementation names for an 
+     * implementation.
+     * @param implId id of the implementation
+     * @param em database manager
+     * @return list of workflow engine implementation names
+     * @throws DatabaseProblemException
+     * @throws IllegalArgumentException 
+     */
     public static List<String> getAllWorkflowEngineInstances(int implId, EntityManager em)
             throws DatabaseProblemException, IllegalArgumentException {
         logger.fine("getAllWorkflowEngineInstance");
@@ -92,6 +115,14 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the list of all parameters fixed and not fixed for an implementation
+     * @param implId id of the implementation
+     * @param em database manager
+     * @return list of all parameters as ImpAttribute
+     * @throws DatabaseProblemException
+     * @throws IllegalArgumentException 
+     */
     public static List<ImpAttribute> getAllParameters(int implId, EntityManager em)
             throws DatabaseProblemException, IllegalArgumentException {
         logger.fine("getAllParameters");
@@ -113,6 +144,14 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the requested implementation
+     * @param implId id of the implementation
+     * @param em database manager
+     * @return implementation requested
+     * @throws DatabaseProblemException
+     * @throws IllegalArgumentException 
+     */
     public static Implementation getImplementation(int implId, EntityManager em)
             throws DatabaseProblemException, IllegalArgumentException {
         logger.fine("getImplementation");
@@ -132,6 +171,15 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the workflow engine from its version and name (engineData contains
+     * those two information)
+     * @param engineData name, version of the workflow engine
+     * @param em database manager
+     * @return full workflow engine as a Platform
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public static Platform getWorkflowEngineData(EngineData engineData,
             EntityManager em)
             throws IllegalArgumentException, DatabaseProblemException {
@@ -162,6 +210,14 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the workflow engine associated to an implementation
+     * @param implId id of the implementation
+     * @param em database manager
+     * @return workflow engine as a Platform
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public static Platform getWorkflowEngineData(int implId, EntityManager em)
             throws IllegalArgumentException, DatabaseProblemException {
         logger.fine("getWorkflowEngineData");
@@ -178,6 +234,15 @@ public class SubmissionRequests {
         }
     }
 
+    /**
+     * Get the id of an implementation from its name 
+     * (name is: applicationName + # + implementationVersion)
+     * @param implName name of the implementation
+     * @param em database manager
+     * @return id of the implementation
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public static int getValidatedImplementationID(String implName,
             EntityManager em) throws IllegalArgumentException,
             DatabaseProblemException {

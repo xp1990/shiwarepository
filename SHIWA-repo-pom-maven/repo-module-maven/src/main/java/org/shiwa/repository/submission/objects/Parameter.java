@@ -7,7 +7,9 @@ package org.shiwa.repository.submission.objects;
 import java.io.Serializable;
 
 /**
- *
+ * Class representing a parameter formatted as GEMLCA was doing before the 
+ * SHIWA Submission Service. We kept this way to do in order to have a better
+ * integration with the gUSE/WS-PGRADE Portal.
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class Parameter implements Serializable {

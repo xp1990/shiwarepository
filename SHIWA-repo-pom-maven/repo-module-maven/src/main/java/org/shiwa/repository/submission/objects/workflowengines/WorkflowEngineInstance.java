@@ -10,7 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.shiwa.repository.toolkit.wfengine.BeInstance;
 
 /**
- *
+ * Class representing a workfow engine implementation formatted for the SHIWA 
+ * Submission Service and containing all useful data in order to complete 
+ * a JSDL file (deployment part).
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 @XmlRootElement

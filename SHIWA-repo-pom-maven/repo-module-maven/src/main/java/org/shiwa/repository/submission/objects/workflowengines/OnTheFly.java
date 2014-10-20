@@ -5,7 +5,7 @@
 package org.shiwa.repository.submission.objects.workflowengines;
 
 /**
- *
+ * Class representing an On The Fly configuration for a workflow engine implementation
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class OnTheFly extends AbstractDeployment {

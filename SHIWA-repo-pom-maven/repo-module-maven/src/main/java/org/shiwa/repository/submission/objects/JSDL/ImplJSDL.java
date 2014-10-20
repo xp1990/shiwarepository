@@ -8,7 +8,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * Class representing an implementation to return to the SHIWA Submission Service
+ * in order to complete the JSDL file
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 @XmlRootElement

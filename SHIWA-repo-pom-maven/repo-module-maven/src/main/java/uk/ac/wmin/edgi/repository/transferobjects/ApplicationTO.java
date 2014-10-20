@@ -17,7 +17,7 @@ import uk.ac.wmin.edgi.repository.entities.Application;
  */
 public class ApplicationTO implements Serializable{
 
-    public static final String queryPrefix = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(o.id, o.name, o.owner.loginName, o.group.name, o.description, o.groupRead, o.othersRead, o.groupDownload, o.othersDownload, o.groupModify, o.published, o.views) FROM Application o ";
+    public static final String queryPrefix = "SELECT NEW uk.ac.wmin.edgi.repository.transferobjects.ApplicationTO(o.id, o.name, o.owner.loginName, o.group.name, o.description, o.groupRead, o.othersRead, o.groupDownload, o.othersDownload, o.groupModify, o.published, o.views, o.linkAppDesc) FROM Application o ";
     public static final String countPrefix = "SELECT COUNT(o) FROM Application o ";
     private static final String[][] filterFields = {
         {"name", "o.name LIKE :name "},
@@ -58,7 +58,8 @@ public class ApplicationTO implements Serializable{
     private Date created;
     private Date updated;
     private Integer views;
-
+    private String linkAppDesc;
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -87,12 +88,18 @@ public class ApplicationTO implements Serializable{
         this.updated = updated;
     }
 
-
+    public String getLinkAppDesc(){
+        return linkAppDesc;
+    }
+    
+    public void setLinkAppDesc(String linkAppDesc){
+        this.linkAppDesc = linkAppDesc;
+    }
 
     public ApplicationTO() {
     }
 
-    public ApplicationTO(Integer id, String name, String ownerLoginName, String groupName, String description, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, int views) {
+    public ApplicationTO(Integer id, String name, String ownerLoginName, String groupName, String description, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, int views, String linkAppDesc) {
         this.id = id;
         this.name = name;
         this.ownerLoginName = ownerLoginName;
@@ -105,9 +112,10 @@ public class ApplicationTO implements Serializable{
         this.groupModify = groupModify;
         this.published = published;
         this.views = views;
+        this.linkAppDesc = linkAppDesc;
     }
 
-    public ApplicationTO(Integer id, String name, String ownerLoginName, String groupName, String description, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, Date created, Date updated, int views) {
+    public ApplicationTO(Integer id, String name, String ownerLoginName, String groupName, String description, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, Date created, Date updated, int views, String linkAppDesc) {
         this.id = id;
         this.name = name;
         this.ownerLoginName = ownerLoginName;
@@ -122,6 +130,7 @@ public class ApplicationTO implements Serializable{
         this.created = created;
         this.updated = updated;
         this.views = views;
+        this.linkAppDesc = linkAppDesc;
     }
 
 
@@ -141,6 +150,7 @@ public class ApplicationTO implements Serializable{
         this.created = app.getCreated();
         this.updated = app.getUpdated();
         this.views = app.getViews();
+        this.linkAppDesc = app.getLinkAppDesc();
     }
 
     public String getDescription() {

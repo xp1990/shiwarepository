@@ -611,6 +611,38 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
     // use case diagram: All: create application
     @Override
+    public ApplicationTO createApp(String appName, String description, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, String linkAppDesc) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException {
+        try{
+
+            User caller = getCallerUser();
+            logger.log(Level.INFO, "Attempting to create worklfow for user: {0}", caller.getLoginName());
+            UserGroup g = em.createNamedQuery("UserGroup.findByName", UserGroup.class).setParameter("name", groupName).getSingleResult();
+            String err = canUserCreateApplication(caller, g);
+            if(err != null){
+                logger.log(Level.SEVERE, err);
+                throw new AuthorizationException(err);
+            }
+            //validate app name
+            if(!appName.matches("[A-Za-z0-9_-]{3,250}")){
+                //context.setRollbackOnly();
+                logger.log(Level.SEVERE, "Application name: {0} failed validation for user {1}", new Object[]{appName, caller.getLoginName()});
+                throw new ValidationFailedException("application names can only contain alphanumeric, - and _ characters and must be between 3 and 250 charaters long");
+            }
+            if(em.createNamedQuery("Application.findByName", Application.class).setParameter("name", appName).getResultList().size() > 0){
+                logger.log(Level.SEVERE, "User {0} attempted to create a workflow that already exists with name {1}", new Object[]{caller.getLoginName(), appName});
+                throw new EntityAlreadyExistsException("application'"+appName+"' already exists");
+            }
+            Application a = new Application(appName, description, caller, g, groupRead, othersRead, groupDownload, othersDownload, groupModify, published, linkAppDesc);
+            em.persist(a);
+            logger.log(Level.INFO, "Created worklfow {0} for user: {1}", new Object[]{a.getName(), caller.getLoginName()});
+            return new ApplicationTO(a);
+        }catch(NoResultException e){
+            logger.log(Level.SEVERE, "group ''{0}'' does not exist for creating application {1}", new Object[]{groupName, appName});
+            throw new EntityNotFoundException("group '"+groupName+"' does not exist");
+        }
+    }
+    
+    @Override
     public ApplicationTO createApp(String appName, String description, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException {
         try{
 
@@ -643,6 +675,31 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
     }
 
     @Override
+    public ApplicationTO createApp(String appName, String description, Date created, Date updated, int groupId, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, String linkAppDesc) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException {
+        try{
+            User caller = getCallerUser();
+            UserGroup g = em.createNamedQuery("UserGroup.findById", UserGroup.class).setParameter("id", groupId).getSingleResult();
+            String err = canUserCreateApplication(caller, g);
+            if(err != null){
+                throw new AuthorizationException(err);
+            }
+            //validate app name
+            if(!appName.matches("[A-Za-z0-9_-]{3,250}")){
+                //context.setRollbackOnly();
+                throw new ValidationFailedException("application names can only contain alphanumeric, - and _  characters and must be between 3 and 250 charaters long");
+            }
+            if(em.createNamedQuery("Application.findByName", Application.class).setParameter("name", appName).getResultList().size() > 0){
+                throw new EntityAlreadyExistsException("application'"+appName+"' already exists");
+            }
+            Application a = new Application(appName, description, created, updated, caller, g, groupRead, othersRead, groupDownload, othersDownload, groupModify, published, linkAppDesc);
+            em.persist(a);
+            return new ApplicationTO(a);
+        }catch(NoResultException e){
+            throw new EntityNotFoundException("group '"+groupId+"' does not exist");
+        }
+    }
+    
+    @Override
     public ApplicationTO createApp(String appName, String description, Date created, Date updated, int groupId, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException {
         try{
             User caller = getCallerUser();
@@ -666,11 +723,13 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
             throw new EntityNotFoundException("group '"+groupId+"' does not exist");
         }
     }
+    
+    
 
     // use case diagram: Admin: update application
     // use case diagram: User(owner or group+modify flag): update application
     @Override
-    public ApplicationTO updateAppDetails(Integer appId, String description, String name) throws EntityNotFoundException, ValidationFailedException, AuthorizationException {
+    public ApplicationTO updateAppDetails(Integer appId, String description, String name, String linkAppDesc) throws EntityNotFoundException, ValidationFailedException, AuthorizationException {
         User caller = getCallerUser();
         Application a = em.find(Application.class, appId);
         if(a == null){
@@ -700,7 +759,7 @@ public class ApplicationFacadeImpl implements ApplicationFacadeLocal, Serializab
 
         a.setDescription(description);
         a.setName(name);
-
+        a.setLinkAppDesc(linkAppDesc);
         a = em.merge(a);
         return new ApplicationTO(a);
     }

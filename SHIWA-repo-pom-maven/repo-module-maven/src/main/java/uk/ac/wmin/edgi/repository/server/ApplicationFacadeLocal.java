@@ -161,9 +161,11 @@ public interface ApplicationFacadeLocal {
     void removeImpEmbed(Integer impId, String extUserId, String extServiceId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     Boolean isImpSelectedForEmbedding(Integer impId, String extUserID, String extServiceId);
 
+    ApplicationTO createApp(String appName, String description, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, String linkAppDesc) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
+    ApplicationTO createApp(String appName, String description, Date created, Date updated, int groupId, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published, String linkAppDesc) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
     ApplicationTO createApp(String appName, String description, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
     ApplicationTO createApp(String appName, String description, Date created, Date updated, int groupId, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityAlreadyExistsException, ValidationFailedException, AuthorizationException, EntityNotFoundException;
-    ApplicationTO updateAppDetails(Integer appId, String description, String name) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
+    ApplicationTO updateAppDetails(Integer appId, String description, String name, String linkAppDesc) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO updateAppTimestamp(Integer appId) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO updateAppAccess(Integer appId, String groupName, Boolean groupRead, Boolean othersRead, Boolean groupDownload, Boolean othersDownload, Boolean groupModify, Boolean published) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
     ApplicationTO changeAppOwner(Integer appId, String newOwnerLoginName) throws EntityNotFoundException, ValidationFailedException, AuthorizationException;
@@ -316,18 +318,76 @@ public interface ApplicationFacadeLocal {
 
 
     // function for the submission service
+    /**
+     * Get the list of submission enabled implementation for a portal and user.
+     * @param extServiceId name of the portal requesting
+     * @param extUserId name of the user requesting through the portal
+     * @return list of implementation (name, description, selected by user or not)
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public List<ImplShort> listValidatedImplementations(String extServiceId,
             String extUserId)
             throws IllegalArgumentException, DatabaseProblemException;
+    /**
+     * Get the list of workflow engine instance associated to an implementation.
+     * From the implementation, the workflow engine can be retrieved. 
+     * From the workflow engine, the list of workflow engine implementations 
+     * can be extracted.
+     * @param implName name of implementation
+     * @return list of workflow engine implementation names associated to the 
+     * implementation
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public List<String> listWorkflowEngineInstances(String implName)
             throws IllegalArgumentException, DatabaseProblemException;
+    /**
+     * Get the list of all non-fixed parameters for a given implementation.
+     * @param implName name of the implementation
+     * @return list of all parameters
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public List<Parameter> listParametersImpl(String implName)
             throws IllegalArgumentException, DatabaseProblemException;
+    /**
+     * Get a full implementation as an object for an implementation. The URL
+     * of the Repository is given in order to have a downloadable link for 
+     * the input files of the implementation.
+     * @param repositoryURL url of the SHIWA Repository contacted
+     * @param implName name of the implementation
+     * @return complete representation of the implementation
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public ImplJSDL loadImplementationJSDL(String repositoryURL, String implName)
             throws IllegalArgumentException, DatabaseProblemException;
+    /**
+     * Get the full workflow engine implementation out of the engineData.
+     * EngineData is the name of the workflow engine, its version and the name 
+     * of the workflow engine implementation concerned.
+     * The repository URL is required especially to give a downloadable link to
+     * the files (executable and zip) for an On The Fly deployment.
+     * @param repositoryURL url of the SHIWA Repository
+     * @param engineData name of the implementation
+     * @return complete representation of the workflow engine implementation
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public WorkflowEngineInstance loadWEIJSDL(String repositoryURL,
             EngineData engineData)
             throws IllegalArgumentException, DatabaseProblemException;
+    /**
+     * Get the full backend configuration. The implementation gives the 
+     * workflow engine concerned. From it, the workflow engine implementation
+     * can be retrieved and the backend associated to it is returned.
+     * @param implName name of the implementation
+     * @param engineInstance name of the workflow engine implementation
+     * @return complete representation of the backend instance.
+     * @throws IllegalArgumentException
+     * @throws DatabaseProblemException 
+     */
     public BeInstance loadBackendInstance(String implName, String engineInstance)
             throws IllegalArgumentException, DatabaseProblemException;
 }

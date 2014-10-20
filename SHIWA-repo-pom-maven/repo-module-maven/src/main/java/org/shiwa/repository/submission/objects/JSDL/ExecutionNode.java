@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Class representing the Submission Execution Node of an implementation
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class ExecutionNode {

@@ -7,7 +7,7 @@ package org.shiwa.repository.submission.objects;
 import java.io.Serializable;
 
 /**
- *
+ * Class representing a short overview of an implementation
  * @author Benoit Meilhac <B.Meilhac@westminster.ac.uk>
  */
 public class ImplShort implements Serializable {
